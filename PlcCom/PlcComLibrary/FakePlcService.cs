@@ -13,6 +13,12 @@ namespace PlcComLibrary
     {
         private ComState _comState;
 
+        public FakePlcService(ICpuConfig config, List<IDatablock> datablocks)
+        {
+            Config = config;
+            Datablocks = datablocks;
+        }
+
         public string LastError { get; private set; }
 
         public ICpuConfig Config { get; private set; }
@@ -22,21 +28,33 @@ namespace PlcComLibrary
         public event EventHandler ComStateChanged;
         public event EventHandler HasNewData;
 
+        public async Task Connect(ICpuConfig config)
+        {
+            Config = config;
+            await Connect();
+        }
+
         public async Task Connect()
         {
             await DelayAsync(1000);
             ComState = ComState.Connected;
         }
 
-        public Task Connect(ICpuConfig config)
-        {
-            throw new NotImplementedException();
-        }
-
         public void DisConnect()
         {
-            throw new NotImplementedException();
+            ComState = ComState.DisConnected;
         }
+
+        public async Task Write(string address, object value)
+        {
+            VerifyConnection();
+            await DelayAsync(500);
+
+
+
+        }
+
+        
 
         public Task PulseBit(string address)
         {
@@ -62,11 +80,7 @@ namespace PlcComLibrary
             throw new NotImplementedException();
         }
 
-        public Task Write(string address, object value)
-        {
-            VerifyConnection();
-            throw new NotImplementedException();
-        }
+        
 
         public ComState ComState
         {

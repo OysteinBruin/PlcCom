@@ -3,7 +3,6 @@ using S7.Net;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Threading.Tasks;
 using static PlcComLibrary.Common.Enums;
 
@@ -22,7 +21,10 @@ namespace PlcComLibrary
         {
             Config = config;
             Datablocks = datablocks;
-            _plc = new S7.Net.Plc(Config.CpuType, config.Ip, (short)config.Rack, (short)config.Slot);
+
+            S7.Net.CpuType S7NetCpuType = ConvertCpuType(Config.CpuType);
+
+            _plc = new S7.Net.Plc(S7NetCpuType, config.Ip, (short)config.Rack, (short)config.Slot);
         }
 
         public async Task Connect(ICpuConfig config)
@@ -34,21 +36,14 @@ namespace PlcComLibrary
         public async Task Connect()
         {
             ComState = ComState.Connecting;
-            S7CpuType s7CpuType = Config.CpuType;
+            
 
             await DelayAsync(1000);
+
+            S7.Net.CpuType S7NetCpuType = ConvertCpuType(Config.CpuType);
+
             try
             {
-                // Convert UnitTestLibrary.DataAccess.S7CpuType (data.S7CpuType) to S7.Net.CpuType to use
-                // as input parameter for Plc instance
-                bool result = false;
-                result = Enum.TryParse(Enum.GetName(typeof(S7CpuType), s7CpuType), out S7.Net.CpuType S7NetCpuType);
-
-                if (!result)
-                {
-                    throw new Exception($"Plc Connect Error - Invalid Cpu Type: {Enum.GetName(typeof(S7CpuType), s7CpuType)}");
-                }
-
                 _plc = new Plc(S7NetCpuType, Config.Ip, (short)Config.Rack, (short)Config.Slot);
                 await _plc.OpenAsync();
 
@@ -180,6 +175,21 @@ namespace PlcComLibrary
             Random rnd = new Random();
             int delayMs = rnd.Next(minMs, maxMs);
             await Task.Delay(delayMs);
+        }
+
+        private S7.Net.CpuType ConvertCpuType(S7CpuType s7CpuType)
+        {
+            // Convert UnitTestLibrary.DataAccess.S7CpuType (data.S7CpuType) to S7.Net.CpuType to use
+            // as input parameter for Plc instance
+            bool result = false;
+            result = Enum.TryParse(Enum.GetName(typeof(S7CpuType), s7CpuType), out S7.Net.CpuType S7NetCpuType);
+
+            if (!result)
+            {
+                throw new Exception($"Plc Connect Error - Invalid Cpu Type: {Enum.GetName(typeof(S7CpuType), s7CpuType)}");
+            }
+
+            return S7NetCpuType;
         }
 
         private async Task DelayAsync(int ms)
