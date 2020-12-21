@@ -121,8 +121,8 @@
     <Compile Include="EventModels\PlcUiCmdEvent.cs" />
     <Compile Include="Models\CpuDisplayModel.cs" />
     <Compile Include="Models\DatablockDisplayModel.cs" />
-    <Compile Include="Setting\Palette\PaletteHelperExtensions.cs" />
-    <Compile Include="Setting\SettingBindingExtension.cs" />
+    <Compile Include="UserSettings\Palette\PaletteHelperExtensions.cs" />
+    <Compile Include="UserSettings\SettingBindingExtension.cs" />
     <Compile Include="ViewModels\ErrorDialogViewModel.cs" />
     <Compile Include="ViewModels\PaletteSelectorViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />

@@ -10,14 +10,9 @@ namespace PlcComUI.Domain
 {
     public class RelayCommand<T> : ICommand
     {
-        #region Fields
 
         readonly Action<T> _execute;
         readonly Predicate<T> _canExecute;
-
-        #endregion // Fields
-
-        #region Constructors
 
         public RelayCommand(Action<T> execute)
         : this(execute, null)
@@ -32,9 +27,6 @@ namespace PlcComUI.Domain
             _execute = execute;
             _canExecute = canExecute;
         }
-        #endregion // Constructors
-
-        #region ICommand Members
 
         [DebuggerStepThrough]
         public bool CanExecute(object parameter)
@@ -52,35 +44,42 @@ namespace PlcComUI.Domain
         {
             _execute((T)parameter);
         }
-
-        #endregion // ICommand Members
     }
 
-    //public class RelayCommand : ICommand
-    //{
-    //    private readonly Predicate<object> _canExecute;
-    //    private readonly Action<object> _execute;
+    public class RelayCommand : ICommand
+    {
+        private readonly Predicate<object> _canExecute;
+        private readonly Action<object> _execute;
 
-    //    public RelayCommand(Predicate<object> canExecute, Action<object> execute)
-    //    {
-    //        _canExecute = canExecute;
-    //        _execute = execute;
-    //    }
+        public RelayCommand(Predicate<object> canExecute, Action<object> execute)
+        {
+            _canExecute = canExecute;
+            _execute = execute;
+        }
 
-    //    public event EventHandler CanExecuteChanged
-    //    {
-    //        add { CommandManager.RequerySuggested += value; }
-    //        remove { CommandManager.RequerySuggested -= value; }
-    //    }
+        public RelayCommand(Action<object> execute)
+        {
+            _canExecute = null;
+            _execute = execute;
+        }
 
-    //    public bool CanExecute(object parameter)
-    //    {
-    //        return _canExecute(parameter);
-    //    }
+        public event EventHandler CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
+        }
 
-    //    public void Execute(object parameter)
-    //    {
-    //        _execute(parameter);
-    //    }
-    //}
+        public bool CanExecute(object parameter)
+        {
+            if (_canExecute == null)
+                return true;
+
+            return _canExecute(parameter);
+        }
+
+        public void Execute(object parameter)
+        {
+            _execute(parameter);
+        }
+    }
 }

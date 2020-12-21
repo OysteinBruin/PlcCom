@@ -4,6 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PlcComUI.Views"
+             xmlns:usersettings="clr-namespace:PlcComUI.UserSettings"
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:converters="clr-namespace:PlcComUI.Converters"
              xmlns:materialDesignColors="clr-namespace:MaterialDesignColors;assembly=MaterialDesignColors"
              xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
              mc:Ignorable="d" 
@@ -92,7 +95,9 @@
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Margin="8">
                 <TextBlock VerticalAlignment="Center">Light</TextBlock>
-                <ToggleButton Margin="8 0 16 0" Command="{Binding ToggleBaseCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked}" />
+                <ToggleButton x:Name="LightDarkToggle" 
+                    IsChecked="{usersettings:SettingBinding MainWindow.DarkMode}" 
+                    cal:Message.Attach="[Event Click] = [Action LightDarkThemeToggle(LightDarkToggle.IsChecked)]"/>
                 <TextBlock VerticalAlignment="Center">Dark</TextBlock>
             </StackPanel>
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0 12 0 0">

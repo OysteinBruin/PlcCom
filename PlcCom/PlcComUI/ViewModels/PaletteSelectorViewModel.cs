@@ -1,6 +1,7 @@
 ﻿using Caliburn.Micro;
 using MaterialDesignColors;
 using MaterialDesignThemes.Wpf;
+using PlcComUI.Domain;
 using System;
 using System.Collections.Generic;
 using System.Windows.Input;
@@ -13,25 +14,30 @@ namespace PlcComUI.ViewModels
         public PaletteSelectorViewModel()
         {
             Swatches = new SwatchesProvider().Swatches;
+            LightDarkThemeToggle(Properties.Settings.Default.SettingsMain.MainWindow.DarkMode);
         }
 
-        //public ICommand ToggleBaseCommand { get; } = new AnotherCommandImplementation(o => ApplyBase((bool)o));
-
-        private static void ApplyBase(bool isDark)
+        protected override void OnInitialize()
         {
-            ModifyTheme(theme => theme.SetBaseTheme(isDark ? Theme.Dark : Theme.Light));
+            base.OnInitialize();
+            
         }
 
         public IEnumerable<Swatch> Swatches { get; }
 
-        //public ICommand ApplyPrimaryCommand { get; } = new AnotherCommandImplementation(o => ApplyPrimary((Swatch)o));
+        public void LightDarkThemeToggle(bool IsChecked)
+        {
+            ModifyTheme(theme => theme.SetBaseTheme(IsChecked ? Theme.Dark : Theme.Light));
+        }
+
+        public ICommand ApplyPrimaryCommand { get; } = new RelayCommand(o => ApplyPrimary((Swatch)o));
 
         private static void ApplyPrimary(Swatch swatch)
         {
             ModifyTheme(theme => theme.SetPrimaryColor(swatch.ExemplarHue.Color));
         }
 
-        //public ICommand ApplyAccentCommand { get; } = new AnotherCommandImplementation(o => ApplyAccent((Swatch)o));
+        public ICommand ApplyAccentCommand { get; } = new RelayCommand(o => ApplyAccent((Swatch)o));
 
         private static void ApplyAccent(Swatch swatch)
         {

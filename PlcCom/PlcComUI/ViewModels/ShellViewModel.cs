@@ -17,13 +17,14 @@ namespace PlcComUI.ViewModels
 		private IEventAggregator _events;
 		private IConfigManager _configManager;
         private bool _modalViewIsActive = false;
-		public ShellViewModel(IEventAggregator events, IConfigManager configManager)
+        private bool _showDrawer = false;
+
+        public ShellViewModel(IEventAggregator events, IConfigManager configManager)
 		{
 			_events = events;
 			_configManager = configManager;
 
-			_events.Subscribe(this);
-			Console.WriteLine($"ShellViewModel() ctor");
+            _events.Subscribe(this);
 			_configManager.LoadConfigs();
 		}
 
@@ -35,21 +36,18 @@ namespace PlcComUI.ViewModels
 			ActivateItem(_tabablzViewModel);
 		}
 
-        public void SetDarkOrLightTheme(bool IsChecked)
-        {
-            ModifyTheme(theme => theme.SetBaseTheme(IsChecked ? Theme.Dark : Theme.Light));
-        }
-
         public void ActivateHomeView()
         {
             _tabablzViewModel = IoC.Get<TabablzViewModel>();
             ActivateItem(_tabablzViewModel);
+            ShowDrawer = false;
         }
 
         public void ActivatePaletteSelectorView()
         {
             _paletteSelectorVM = IoC.Get<PaletteSelectorViewModel>();
             ActivateItem(_paletteSelectorVM);
+            ShowDrawer = false;
         }
 
         public async void Handle(MessageEvent message)
@@ -58,6 +56,16 @@ namespace PlcComUI.ViewModels
             {
                 _modalViewIsActive = true;
                 await ShowMessageDialog(message);
+            }
+        }
+
+        public bool ShowDrawer
+        {
+            get => _showDrawer; 
+            set 
+            { 
+                _showDrawer = value;
+                NotifyOfPropertyChange(() => ShowDrawer);
             }
         }
 
@@ -91,17 +99,7 @@ namespace PlcComUI.ViewModels
             callback(true);
         }
 
-        private void ModifyTheme(Action<ITheme> modificationAction)
-        {
-            PaletteHelper paletteHelper = new PaletteHelper();
-            ITheme theme = paletteHelper.GetTheme();
 
-            modificationAction?.Invoke(theme);
-
-            paletteHelper.SetTheme(theme);
-        }
-
-        
 
         // TODO: add Squirrel installer
         //private async Task CheckForUpdates()

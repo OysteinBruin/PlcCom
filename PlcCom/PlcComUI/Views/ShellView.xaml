@@ -37,7 +37,7 @@
     <materialDesign:DialogHost Identifier="MainDialogHost" CloseOnClickAway="True" 
                                SnackbarMessageQueue="{Binding ElementName=MainSnackbar, Path=MessageQueue}" >
 
-        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
+        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding ShowDrawer}">
             <materialDesign:DrawerHost.LeftDrawerContent>
                 <DockPanel MinWidth="220">
                     <ToggleButton 
@@ -45,34 +45,13 @@
                         DockPanel.Dock="Top"
                         HorizontalAlignment="Right" 
                         Margin="16"
-                        IsChecked="{Binding ElementName=MenuToggleButton, Path=IsChecked, Mode=TwoWay}" />
+                        IsChecked="{Binding ShowDrawer, Mode=TwoWay}" />
 
-                    <TextBox 
-                        x:Name="DemoItemsSearchBox"
-                        Text="Search"
-                        DockPanel.Dock="Top"
-                        Margin="16, 4"
-                        Width="200"
-                        BorderThickness="0"
-                        materialDesign:HintAssist.Hint="Search"
-                        materialDesign:HintAssist.IsFloating="True"
-                        materialDesign:TextFieldAssist.HasClearButton="True"
-                        materialDesign:TextFieldAssist.HasOutlinedTextField="True"
-                        materialDesign:TextFieldAssist.DecorationVisibility="Collapsed"
-                        materialDesign:TextFieldAssist.TextFieldCornerRadius="4"/>
                     <StackPanel>
-                        <StackPanel Orientation="Horizontal"
-                                                HorizontalAlignment="Center"
-                                                Margin="10">
-                            <TextBlock Text="Light"
-                                                   Margin="0 0 10 0"/>
-                            <ToggleButton  IsChecked="{Binding IsChecked,ElementName=LightDarkToggle, Mode=TwoWay}"/>
 
-                            <TextBlock Text="Dark" Margin="10 0 0 0"/>
-                        </StackPanel>
                         <Separator/>
-                        <Button cal:Message.Attach="ActivateHomeView" Content="Project View" Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Left"/>
-                        <Button cal:Message.Attach="ActivatePaletteSelectorView" Content="Test View" IsEnabled="True" Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Left"/>
+                        <Button cal:Message.Attach="ActivateHomeView" Content="Home" Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Left"/>
+                        <Button cal:Message.Attach="ActivatePaletteSelectorView" Content="Color Theme" IsEnabled="True" Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Left"/>
                         <Separator/>
                         <Button Content="Quit" Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Left"/>
                     </StackPanel>
@@ -88,7 +67,7 @@
                 DockPanel.Dock="Top" >
                     <DockPanel>
                         <ToggleButton
-                            x:Name="MenuToggleButton"
+                            x:Name="ShowDrawer"
                             Style="{StaticResource MaterialDesignHamburgerToggleButton}"
                             IsChecked="False"/>
                         <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="False">

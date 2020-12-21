@@ -22,7 +22,7 @@ namespace PlcComLibrary
         {
             Config = config;
             Datablocks = datablocks;
-            //_plc = new S7.Net.Plc(_config.CpuType, _config.Ip, (short)_config.Rack, (short)_config.Slot);
+            _plc = new S7.Net.Plc(Config.CpuType, config.Ip, (short)config.Rack, (short)config.Slot);
         }
 
         public async Task Connect(ICpuConfig config)
@@ -82,10 +82,7 @@ namespace PlcComLibrary
 
         public async Task Write(string address, object value)
         {
-            if (ComState != ComState.Connected)
-            {
-                throw new Exception("Plc Write Error - Connect to CPU before attempting to write.");
-            }
+            VerifyConnection();
             await _plc.WriteAsync(address, value);
         }
 
@@ -122,10 +119,7 @@ namespace PlcComLibrary
 
         public async Task PulseBit(string address)
         {
-            if (ComState != ComState.Connected)
-            {
-                throw new Exception("Plc Write Error - Connect to CPU before attempting to write.");
-            }
+            VerifyConnection();
             await _plc.WriteAsync(address, true);
             await DelayAsync(100);
             await _plc.WriteAsync(address, false);
@@ -133,10 +127,7 @@ namespace PlcComLibrary
 
         public async Task<object> Read(string address)
         {
-            if (ComState != ComState.Connected)
-            {
-                throw new Exception("Plc Read Error - Connect to CPU before attempting to read.");
-            }
+            VerifyConnection();
             return await _plc.ReadAsync(address);
         }
 
@@ -173,6 +164,14 @@ namespace PlcComLibrary
             {
                 _comState = value;
                 ComStateChanged?.Invoke(this, new EventArgs());
+            }
+        }
+
+        private void VerifyConnection()
+        {
+            if (ComState != ComState.Connected)
+            {
+                throw new Exception("Com Error - Connect to CPU before attempting to read or write data.");
             }
         }
 
