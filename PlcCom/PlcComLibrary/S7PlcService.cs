@@ -1,4 +1,5 @@
-﻿using PlcComLibrary.Config;
+﻿using PlcComLibrary.Common;
+using PlcComLibrary.Config;
 using S7.Net;
 using System;
 using System.Collections.Generic;
@@ -12,15 +13,16 @@ namespace PlcComLibrary
     {
         private S7.Net.Plc _plc;
         private ComState _comState;
-
+        private IUtilities _utils;
 
         public event EventHandler HasNewData;
         public event EventHandler ComStateChanged;
 
-        public S7PlcService(ICpuConfig config, List<IDatablock> datablocks)
+        public S7PlcService(ICpuConfig config, List<IDatablock> datablocks, IUtilities utils)
         {
             Config = config;
             Datablocks = datablocks;
+            _utils = utils;
 
             S7.Net.CpuType S7NetCpuType = ConvertCpuType(Config.CpuType);
 
@@ -77,22 +79,25 @@ namespace PlcComLibrary
 
         public async Task Write(string address, object value)
         {
-            VerifyConnection();
+            VerifyConnectedAndValidateAddress(address);
+
             await _plc.WriteAsync(address, value);
         }
 
         public async Task ToggleBit(string address)
         {
-            if (ComState != ComState.Connected)
-            {
-                throw new Exception("Plc Write Error - Connect to CPU before attempting to write.");
-            }
-            var read = await _plc.ReadAsync(address);
+            VerifyConnected();
 
-            try
+            if (!_utils.AddressIsBoolType(address))
             {
-                bool boolValue = (bool)read;
-                if (boolValue)
+                throw new Exception($"Plc Write Error - attempting to toggle a non boolean address: {address}");
+            }
+
+            (int dbIndex, int signalIndex) = _utils.GetSignalIndexFromAddress(address, Datablocks);
+
+            if (dbIndex >= 0 && signalIndex >= 0)
+            {
+                if (Datablocks[dbIndex].Signals[signalIndex].Value == (object)0)
                 {
                     await _plc.WriteAsync(address, true);
                 }
@@ -101,20 +106,15 @@ namespace PlcComLibrary
                     await _plc.WriteAsync(address, true);
                 }
             }
-            catch(InvalidCastException)
+            else
             {
-                throw new Exception($"Plc Write Error - Cannot toggle a none boolean variable: {address}");
-            }
-            catch (Exception)
-            {
-
                 throw new Exception($"Plc Write Error - Unknown error occured while attempting to toggle: {address}");
             }
         }
 
         public async Task PulseBit(string address)
         {
-            VerifyConnection();
+            VerifyConnectedAndValidateAddress(address);
             await _plc.WriteAsync(address, true);
             await DelayAsync(100);
             await _plc.WriteAsync(address, false);
@@ -122,16 +122,13 @@ namespace PlcComLibrary
 
         public async Task<object> Read(string address)
         {
-            VerifyConnection();
+            VerifyConnectedAndValidateAddress(address);
             return await _plc.ReadAsync(address);
         }
 
         public async Task<IDatablock> ReadDb(IDatablock db)
         {
-            if (ComState != ComState.Connected)
-            {
-                throw new Exception("Com Error - Connect to CPU before attempting to read.");
-            }
+            VerifyConnected();
             //byte[] bytes = new byte;
             byte[] bytes = await _plc.ReadBytesAsync(S7.Net.DataType.DataBlock, db.Number, db.FirstByte, db.ByteCount);
 
@@ -162,13 +159,24 @@ namespace PlcComLibrary
             }
         }
 
-        private void VerifyConnection()
+
+        private void VerifyConnectedAndValidateAddress(string address)
+        {
+            VerifyConnected();
+            if (!_utils.VerifyPlcAddressStr(address, Datablocks))
+            {
+                throw new Exception("");
+            }
+        }
+
+        private void VerifyConnected()
         {
             if (ComState != ComState.Connected)
             {
                 throw new Exception("Com Error - Connect to CPU before attempting to read or write data.");
             }
         }
+
 
         private async Task DelayRandomAsync(int minMs, int maxMs)
         {

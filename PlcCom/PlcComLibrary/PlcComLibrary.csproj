@@ -75,6 +75,7 @@
     <Compile Include="IPlcService.cs" />
     <Compile Include="ISignalModel.cs" />
     <Compile Include="Models\PlcComModel.cs" />
+    <Compile Include="PlcException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="S7PlcService.cs" />
     <Compile Include="SignalModel.cs" />

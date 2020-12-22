@@ -19,7 +19,14 @@ namespace PlcComLibrary
         public DataType DataType { get; set; }// ref Enums.DatatType
         public string Address { get; set; }
 
-        public double Value { get; set; }
-        
+        public object Value { get; set; }
+
+        public bool IsValid 
+        { 
+            get 
+            {
+                return (Db > 0 && Db < 10000 && Name.Length > 0 && Address.Length > 7);
+            }
+        }
     }
 }

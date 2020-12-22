@@ -16,7 +16,7 @@ namespace PlcComUI.Models
     {
         private IEventAggregator _events;
         private (int lower, int upper) _range;
-        private double _value;
+        private object _value;
         private bool _isBool;
 
         public SignalDisplayModel(IEventAggregator events)
@@ -83,7 +83,7 @@ namespace PlcComUI.Models
 
         public string Suffix { get; set; }
 
-        public double Value
+        public object Value
         {
             get => _value;
             set 

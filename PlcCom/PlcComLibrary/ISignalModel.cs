@@ -12,7 +12,8 @@ namespace PlcComLibrary
         string DataTypeStr { get; set; }
         string Description { get; set; }
         string Name { get; set; }
-        double Value { get; set; }
+        object Value { get; set; }
 
+        bool IsValid { get; }
     }
 }

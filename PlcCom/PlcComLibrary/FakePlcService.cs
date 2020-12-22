@@ -12,11 +12,13 @@ namespace PlcComLibrary
     public class FakePlcService : IPlcService
     {
         private ComState _comState;
+        private IUtilities _utils;
 
-        public FakePlcService(ICpuConfig config, List<IDatablock> datablocks)
+        public FakePlcService(ICpuConfig config, List<IDatablock> datablocks, IUtilities utils)
         {
             Config = config;
             Datablocks = datablocks;
+            _utils = utils;
         }
 
         public string LastError { get; private set; }
@@ -50,8 +52,16 @@ namespace PlcComLibrary
             VerifyConnection();
             await DelayAsync(500);
 
-
-
+            (int dbIndex, int signalIndex) = _utils.GetSignalIndexFromAddress(address, Datablocks);
+            
+            if (dbIndex >= 0 && signalIndex >= 0)
+            {
+                Datablocks[dbIndex].Signals[signalIndex].Value = value;
+            }
+            else
+            {
+                throw new Exception("");
+            }
         }
 
         

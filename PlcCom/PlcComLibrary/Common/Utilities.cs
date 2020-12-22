@@ -25,41 +25,64 @@ namespace PlcComLibrary.Common
             return appFiles;
         }
 
-        public void VerifyPlcAddressString(string address, List<IDatablock> datablocks)
+        public bool AddressIsBoolType(string address)
         {
+            // Validate address with regular expression
+            var regex = new Regex(Constants.SignalAddressBoolRegExp, RegexOptions.IgnoreCase);
 
+            if (regex.IsMatch(address))
+            {
+                return true;
+            }
+            return false;
         }
 
-        private ISignalModel ParseAddressString(string address)
+        public (int dbIndex, int signalIndex) GetSignalIndexFromAddress(string address, List<IDatablock> datablocks)
         {
-            SignalModel signal = new SignalModel();
-            var regex = new Regex(Constants.SignalAddressBoolRegExp);
+            // Validate address with regular expression
+            var regex = new Regex(Constants.SignalAddressRegExp, RegexOptions.IgnoreCase);
 
-            MatchCollection matchCollection = regex.Matches(address);
-
-            if (matchCollection.Count < 1)
+            if (!regex.IsMatch(address))
             {
-                throw new Exception("");
+                return (-1, -1);
             }
 
-            return signal;
+            // Get db number from adddress
+            int dbNumber;
+            address = address.Remove(2); // Remove "db" 
+            List<string> strList =  address.Split('.').ToList();
+
+            bool successfullyParsed = int.TryParse(strList[0], out dbNumber);
+            if (successfullyParsed)
+            {
+                // Find the signal in Datablocks list
+                for (int i = 0; i < datablocks.Count; i++)
+                {
+                    if (datablocks[i].Number == dbNumber)
+                    {
+                        for (int j = 0; j < datablocks[i].Signals.Count; j++)
+                        {
+                            if (datablocks[i].Signals[j].Address == address)
+                            {
+                                return (i, j);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return (-1, -1);
         }
 
+        public bool VerifyPlcAddressStr(string address, List<IDatablock> datablocks)
+        {
+            (int dbIndex, int signalIndex) = GetSignalIndexFromAddress(address, datablocks);
 
-        /*
-        db20
-        string Address { get; set; }
-        int Db { get; set; }
-        int Byte { get; set; }
-        int Bit { get; set; }
-        Enums.DataType DataType { get; set; }
-        string DataTypeStr { get; set; }
-        string Description { get; set; }
-        string Name { get; set; }
-        double Value { get; set; }
-
-        */
-
-
+            if (dbIndex >= 0 && signalIndex >= 0)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }
