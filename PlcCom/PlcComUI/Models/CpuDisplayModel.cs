@@ -32,6 +32,7 @@ namespace PlcComUI.Models
         {
             _plcService = plcService;
             _plcService.ComStateChanged += OnPlcComStateChanged;
+            Index = _plcService.Index;
             _events = events;
             S7CpuType = Enum.GetValues(typeof(S7CpuType)).Cast<S7CpuType>().ToList();
             PlcConnectionCmd = new AsyncCommand<object>(OnPlcConnectionCmd);
@@ -48,14 +49,14 @@ namespace PlcComUI.Models
 
             foreach (var db in _plcService.Datablocks)
             {
-                DatablockDisplayModel dbModel = new DatablockDisplayModel();
+                DatablockDisplayModel dbModel = new DatablockDisplayModel(db.Index);
                 dbModel.Name = db.Name;
                 dbModel.Number = db.Number;
                 List<SignalDisplayModel> signalDisplayModels = new List<SignalDisplayModel>();
                 foreach (var sig in db.Signals)
                 {
-                    // 
-                    SignalDisplayModel sdm = new SignalDisplayModel(_events);
+                    //
+                    SignalDisplayModel sdm = new SignalDisplayModel(sig.Index, _events);
                     sdm.Name = sig.Name;
                     sdm.Description = sig.Description;
                     sdm.Address = sig.Address;
@@ -74,7 +75,7 @@ namespace PlcComUI.Models
         }
 
         public List<DatablockDisplayModel> Datablocks { get; set; } = new List<DatablockDisplayModel>();
-
+        public int Index { get; set; }
         public string CpuName
         {
             get => _connectionName;
@@ -165,7 +166,7 @@ namespace PlcComUI.Models
                 _plcService.Config.Rack = Rack;
                 _plcService.Config.Slot = Slot;
 
-                await _plcService.Connect();
+                await _plcService.ConnectAsync();
             }
             else
             {
@@ -202,7 +203,7 @@ namespace PlcComUI.Models
                 }
                 else
                 {
-                    await _plcService.Connect();
+                    await _plcService.ConnectAsync();
                 }
             }
             //catch (S7Net.PlcException)

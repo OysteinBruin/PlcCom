@@ -31,5 +31,7 @@ namespace PlcComLibrary.Common
             (Enums.DataType.Real, "Real", 4),
             (Enums.DataType.Array, S7DbArrayKeyword, 0)
         };
+
+
     }
 }

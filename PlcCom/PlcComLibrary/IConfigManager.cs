@@ -12,7 +12,7 @@ namespace PlcComLibrary
 
         void LoadConfigs();
 
-        event EventHandler ConfigsLoaded;
-        event EventHandler ConfigsLoadingProgressChanged;
+        //event EventHandler ConfigsLoaded;
+        //event EventHandler ConfigsLoadingProgressChanged;
     }
 }

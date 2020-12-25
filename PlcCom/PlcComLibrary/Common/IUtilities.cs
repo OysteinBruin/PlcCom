@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using PlcComLibrary.Models;
+using System.Collections.Generic;
 
 namespace PlcComLibrary.Common
 {
@@ -6,7 +7,7 @@ namespace PlcComLibrary.Common
     {
         List<string> LoadAppConfigFiles();
         bool AddressIsBoolType(string address);
-        (int dbIndex, int signalIndex) GetSignalIndexFromAddress(string address, List<IDatablock> datablocks);
-        bool VerifyPlcAddressStr(string address, List<IDatablock> datablocks);
+        (int dbIndex, int signalIndex) GetSignalIndexFromAddress(string address, List<IDatablockModel> datablocks);
+        bool VerifyPlcAddressStr(string address, List<IDatablockModel> datablocks);
     }
 }

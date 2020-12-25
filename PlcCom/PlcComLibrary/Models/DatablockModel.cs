@@ -3,16 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PlcComLibrary
+namespace PlcComLibrary.Models
 {
-    public class Datablock : IDatablock
+    public class DatablockModel : IDatablockModel
     {
-        public Datablock()
+        public DatablockModel(int index)
         {
+            Index = index;
             //Config = new JsonFileConfig();
             Signals = new List<ISignalModel>();
         }
-
+        public int Index { get; set; }
         public string Name { get; set; }
         public int Number { get; set; }
         //public IJsonFileConfig Config { get; set; }
@@ -21,5 +22,6 @@ namespace PlcComLibrary
 
         public int FirstByte { get; set; }
         public int ByteCount { get; set; }
+        
     }
 }

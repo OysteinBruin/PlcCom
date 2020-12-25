@@ -1,11 +1,12 @@
 ﻿using PlcComLibrary.Config;
 using System.Collections.Generic;
 
-namespace PlcComLibrary
+namespace PlcComLibrary.Models
 {
-    public interface IDatablock
+    public interface IDatablockModel
     {
         string Name { get; set; }
+        int Index { get; set; }
         int Number { get; set; }
 
         int FirstByte { get; set; }

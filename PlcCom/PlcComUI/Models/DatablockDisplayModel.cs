@@ -9,8 +9,13 @@ namespace PlcComUI.Models
 {
     public class DatablockDisplayModel : INotifyPropertyChanged
     {
-        private string _name;
+        public DatablockDisplayModel(int index)
+        {
+            Index = index;
+        }
         public List<SignalDisplayModel> Signals { get; set; } = new List<SignalDisplayModel>();
+
+        public int Index { get; set; }
 
         public int Number { get; set; }
         public string NumberStr

@@ -16,8 +16,8 @@ namespace PlcComLibrary
         private IJsonConfigFileParser _configParser;
         private IDatablockParser _dbParser;
 
-        public event EventHandler ConfigsLoaded;
-        public event EventHandler ConfigsLoadingProgressChanged;
+        //public event EventHandler ConfigsLoaded;
+        //public event EventHandler ConfigsLoadingProgressChanged;
 
         public ConfigManager(IJsonConfigFileParser configParser, IDatablockParser dbParser)
         {
@@ -31,7 +31,7 @@ namespace PlcComLibrary
         public void LoadConfigs()
         {
             PlcServiceList.Clear();
-            List<IDatablock> datablocks = new List<IDatablock>();
+            List<IDatablockModel> datablocks = new List<IDatablockModel>();
             ConfigsProgressEventArgs configsProgressEventArgs = new ConfigsProgressEventArgs();
             //ConfigsLoadingProgressChanged?.Invoke(this, configsProgressEventArgs);
 
@@ -74,7 +74,8 @@ namespace PlcComLibrary
 
                     if (signals.Count > 0)
                     {
-                        IDatablock datablock = new Datablock();
+                        int dbIndex = datablocks.Count;
+                        IDatablockModel datablock = new DatablockModel(dbIndex);
                         datablock.Number = dbNumber;
                         datablock.Name = dbNumberDbName.Last();
                         datablock.Signals = signals;
@@ -105,7 +106,8 @@ namespace PlcComLibrary
                     }
                 }
 
-                PlcServiceList.Add(new S7PlcService(cpuConfig, datablocks));
+                int plcIndex = PlcServiceList.Count;
+                PlcServiceList.Add(new SimulatedPlcService(plcIndex, cpuConfig, datablocks));
 
                 //ConfigsLoaded?.Invoke(this, new EventArgs());
             }

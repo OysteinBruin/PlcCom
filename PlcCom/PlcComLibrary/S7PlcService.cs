@@ -1,9 +1,12 @@
 ﻿using PlcComLibrary.Common;
 using PlcComLibrary.Config;
+using PlcComLibrary.Models;
 using S7.Net;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static PlcComLibrary.Common.Enums;
 
@@ -13,32 +16,31 @@ namespace PlcComLibrary
     {
         private S7.Net.Plc _plc;
         private ComState _comState;
-        private IUtilities _utils;
 
-        public event EventHandler HasNewData;
-        public event EventHandler ComStateChanged;
-
-        public S7PlcService(ICpuConfig config, List<IDatablock> datablocks, IUtilities utils)
+        public S7PlcService(int index, CpuConfig config, List<IDatablockModel> datablocks)
         {
+            Index = index;
             Config = config;
             Datablocks = datablocks;
-            _utils = utils;
 
             S7.Net.CpuType S7NetCpuType = ConvertCpuType(Config.CpuType);
 
             _plc = new S7.Net.Plc(S7NetCpuType, config.Ip, (short)config.Rack, (short)config.Slot);
         }
+        public int Index { get; set; }
 
-        public async Task Connect(ICpuConfig config)
+        public event EventHandler HasNewData;
+        public event EventHandler ComStateChanged;
+
+        public async Task ConnectAsync(ICpuConfig config)
         {
             Config = config;
-            await Connect();
+            await ConnectAsync();
         }
 
-        public async Task Connect()
+        public async Task ConnectAsync()
         {
             ComState = ComState.Connecting;
-            
 
             await DelayAsync(1000);
 
@@ -75,29 +77,27 @@ namespace PlcComLibrary
             ComState = ComState.DisConnected;
         }
 
-        
-
-        public async Task Write(string address, object value)
+        public async Task WriteSingleAsync(string address, object value)
         {
             VerifyConnectedAndValidateAddress(address);
 
             await _plc.WriteAsync(address, value);
         }
 
-        public async Task ToggleBit(string address)
+        public async Task ToggleBitAsync(string address)
         {
             VerifyConnected();
 
-            if (!_utils.AddressIsBoolType(address))
+            if (!AddressIsBoolType(address))
             {
-                throw new Exception($"Plc Write Error - attempting to toggle a non boolean address: {address}");
+                throw new Exception($"Plc Write Error - Attempting to toggle a non boolean address: {address}");
             }
 
-            (int dbIndex, int signalIndex) = _utils.GetSignalIndexFromAddress(address, Datablocks);
+            (int dbIndex, int signalIndex) = GetSignalIndexFromAddress(address, Datablocks);
 
             if (dbIndex >= 0 && signalIndex >= 0)
             {
-                if (Datablocks[dbIndex].Signals[signalIndex].Value == (object)0)
+                if (Datablocks[dbIndex].Signals[signalIndex].Value == 0)
                 {
                     await _plc.WriteAsync(address, true);
                 }
@@ -112,21 +112,37 @@ namespace PlcComLibrary
             }
         }
 
-        public async Task PulseBit(string address)
+        public async Task PulseBitAsync(string address)
         {
-            VerifyConnectedAndValidateAddress(address);
+            VerifyConnected();
+
+            if (!AddressIsBoolType(address))
+            {
+                throw new Exception($"Plc Write Error - Attempting to pulse a non boolean address: {address}");
+            }
+
             await _plc.WriteAsync(address, true);
             await DelayAsync(100);
             await _plc.WriteAsync(address, false);
         }
 
-        public async Task<object> Read(string address)
+        public async Task ReadSingleAsync(string address)
         {
             VerifyConnectedAndValidateAddress(address);
-            return await _plc.ReadAsync(address);
+
+            (int dbIndex, int signalIndex) = GetSignalIndexFromAddress(address, Datablocks);
+
+            if (dbIndex >= 0 && signalIndex >= 0)
+            {
+               await _plc.ReadAsync(address);
+            }
+            else
+            {
+                throw new Exception($"Plc Read Error - Unknown error occured while attempting to read from: {address}");
+            }
         }
 
-        public async Task<IDatablock> ReadDb(IDatablock db)
+        public async Task ReadDbAsync(IDatablockModel db)
         {
             VerifyConnected();
             //byte[] bytes = new byte;
@@ -137,14 +153,13 @@ namespace PlcComLibrary
             {
 
             }
-            return db;
         }
 
         public string LastError { get; private set; }
 
         public ICpuConfig Config { get; private set; }
 
-        public List<IDatablock> Datablocks { get; private set; }
+        public List<IDatablockModel> Datablocks { get; private set; }
 
         public ComState ComState
         {
@@ -163,7 +178,7 @@ namespace PlcComLibrary
         private void VerifyConnectedAndValidateAddress(string address)
         {
             VerifyConnected();
-            if (!_utils.VerifyPlcAddressStr(address, Datablocks))
+            if (!VerifyPlcAddressStr(address, Datablocks))
             {
                 throw new Exception("");
             }
@@ -203,6 +218,66 @@ namespace PlcComLibrary
         private async Task DelayAsync(int ms)
         {
             await Task.Delay(ms);
+        }
+
+        private bool AddressIsBoolType(string address)
+        {
+            // Validate address with regular expression
+            var regex = new Regex(Constants.SignalAddressBoolRegExp, RegexOptions.IgnoreCase);
+
+            if (regex.IsMatch(address))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private (int dbIndex, int signalIndex) GetSignalIndexFromAddress(string address, List<IDatablockModel> datablocks)
+        {
+            // Validate address with regular expression
+            var regex = new Regex(Constants.SignalAddressRegExp, RegexOptions.IgnoreCase);
+
+            if (!regex.IsMatch(address))
+            {
+                return (-1, -1);
+            }
+
+            // Get db number from adddress
+            int dbNumber;
+            address = address.Remove(2); // Remove "db" 
+            List<string> strList = address.Split('.').ToList();
+
+            bool successfullyParsed = int.TryParse(strList[0], out dbNumber);
+            if (successfullyParsed)
+            {
+                // Find the signal in Datablocks list
+                for (int i = 0; i < datablocks.Count; i++)
+                {
+                    if (datablocks[i].Number == dbNumber)
+                    {
+                        for (int j = 0; j < datablocks[i].Signals.Count; j++)
+                        {
+                            if (datablocks[i].Signals[j].Address == address)
+                            {
+                                return (i, j);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return (-1, -1);
+        }
+
+        private bool VerifyPlcAddressStr(string address, List<IDatablockModel> datablocks)
+        {
+            (int dbIndex, int signalIndex) = GetSignalIndexFromAddress(address, datablocks);
+
+            if (dbIndex >= 0 && signalIndex >= 0)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

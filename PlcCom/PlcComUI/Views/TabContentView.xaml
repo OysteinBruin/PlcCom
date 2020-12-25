@@ -6,6 +6,8 @@
              xmlns:local="clr-namespace:PlcComUI"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:models="clr-namespace:PlcComUI.Models"
+             xmlns:converters="clr-namespace:PlcComUI.Converters"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d"
              TextElement.Foreground="{DynamicResource MaterialDesignBody}"
              TextElement.FontWeight="Regular"
@@ -21,6 +23,10 @@
                 <!-- note you only need bring in these extra resource dictionaries when using non-default styles, so only bring them into your controls where the default style is not what you want -->
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.CheckBox.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
+                <ResourceDictionary>
+                    <converters:PlcCmdParameterConverter x:Key="PlcCmdParameterConverter" />
+                </ResourceDictionary>
+                
             </ResourceDictionary.MergedDictionaries>
 
             <local:DataSignalModelTemplateSelector x:Key="DataSignalModelTemplateSelector"/>
@@ -41,6 +47,21 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="0" Margin="10 5 10 5"/>
                     <Slider  x:Name="slider" Value="50" Minimum="0" Maximum="100" MinWidth="150" VerticalAlignment="Center">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="ValueChanged">
+                                <i:InvokeCommandAction Command="{Binding SliderCommand}">
+                                    <i:InvokeCommandAction.CommandParameter>
+                                        <MultiBinding Converter="{StaticResource PlcCmdParameterConverter}">
+                                            <Binding Path="DataContext.Index" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
+                                            <Binding Path="DataContext.Address" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
+                                            <Binding ElementName="slider" Path="Value"/>
+                                        </MultiBinding>
+
+                                    </i:InvokeCommandAction.CommandParameter>
+                                </i:InvokeCommandAction>
+
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                     </Slider>
                     <TextBlock Text="100" Margin="10 5 10 5"/>
                 </StackPanel>

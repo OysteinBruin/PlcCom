@@ -16,18 +16,19 @@ namespace PlcComUI.Models
     {
         private IEventAggregator _events;
         private (int lower, int upper) _range;
-        private object _value;
+        private double _value;
         private bool _isBool;
 
-        public SignalDisplayModel(IEventAggregator events)
+        public SignalDisplayModel(int index, IEventAggregator events)
         {
+            Index = index;
             _events = events;
             PulseCommand = new RelayCommand<object>(OnPulseCommand);
             ToggleCommand = new RelayCommand<object>(OnToggleCommand);
             SliderCommand = new RelayCommand<object>(OnSliderCommand);
         }
 
-        public int CpuIndex { get; set; }
+        public int Index { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string DataTypeStr { get; set; }
@@ -83,7 +84,7 @@ namespace PlcComUI.Models
 
         public string Suffix { get; set; }
 
-        public object Value
+        public double Value
         {
             get => _value;
             set 

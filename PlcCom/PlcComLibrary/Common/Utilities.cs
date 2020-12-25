@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PlcComLibrary.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -37,7 +38,7 @@ namespace PlcComLibrary.Common
             return false;
         }
 
-        public (int dbIndex, int signalIndex) GetSignalIndexFromAddress(string address, List<IDatablock> datablocks)
+        public (int dbIndex, int signalIndex) GetSignalIndexFromAddress(string address, List<IDatablockModel> datablocks)
         {
             // Validate address with regular expression
             var regex = new Regex(Constants.SignalAddressRegExp, RegexOptions.IgnoreCase);
@@ -74,7 +75,7 @@ namespace PlcComLibrary.Common
             return (-1, -1);
         }
 
-        public bool VerifyPlcAddressStr(string address, List<IDatablock> datablocks)
+        public bool VerifyPlcAddressStr(string address, List<IDatablockModel> datablocks)
         {
             (int dbIndex, int signalIndex) = GetSignalIndexFromAddress(address, datablocks);
 

@@ -1,5 +1,6 @@
 ﻿using PlcComLibrary.Common;
 using PlcComLibrary.Config;
+using PlcComLibrary.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -70,7 +71,8 @@ namespace PlcComLibrary
                     {
                         if (!signalDiscarded)
                         {
-                            _signals.Add(CreateSignal(splittedLines, datatypeAndSize));
+                            int signalIndex = _signals.Count;
+                            _signals.Add(CreateSignal(signalIndex, splittedLines, datatypeAndSize));
                         }                        
                     }
 
@@ -331,9 +333,9 @@ namespace PlcComLibrary
             }
         }
 
-        ISignalModel CreateSignal(List<string> splittedLines, (Enums.DataType dataType, string dataTypeStr, int byteSize) datatypeAndSize)
+        ISignalModel CreateSignal(int index, List<string> splittedLines, (Enums.DataType dataType, string dataTypeStr, int byteSize) datatypeAndSize)
         {
-            ISignalModel s = new SignalModel();
+            ISignalModel s = new SignalModel(index);
             s.Name = splittedLines[0];
             s.DataType = datatypeAndSize.dataType;
             s.Address = CreateDbAdressString(_dbNumber, datatypeAndSize.dataType, _byteCounter, _bitCounter);

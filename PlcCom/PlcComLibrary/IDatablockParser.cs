@@ -1,4 +1,5 @@
 ﻿using PlcComLibrary.Config;
+using PlcComLibrary.Models;
 using System.Collections.Generic;
 
 namespace PlcComLibrary

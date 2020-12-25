@@ -1,9 +1,10 @@
 ﻿using PlcComLibrary.Common;
 
-namespace PlcComLibrary
+namespace PlcComLibrary.Models
 {
     public interface ISignalModel
     {
+        int Index { get; set; }
         string Address { get; set; }
         int Db { get; set; }
         int Byte { get; set; }
@@ -12,7 +13,7 @@ namespace PlcComLibrary
         string DataTypeStr { get; set; }
         string Description { get; set; }
         string Name { get; set; }
-        object Value { get; set; }
+        double Value { get; set; }
 
         bool IsValid { get; }
     }

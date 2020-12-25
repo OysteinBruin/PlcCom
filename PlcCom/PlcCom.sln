@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlcComLibrary", "PlcComLibr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppSettings", "AppSettings\AppSettings.csproj", "{92E09E0D-9F66-4E85-B5FD-484C5113B8C0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RealTimeGraphX", "RealTimeGraphX\RealTimeGraphX.csproj", "{7C62EE10-DD2C-4762-A876-10B918A8BDA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealTimeGraphX.WPF", "RealTimeGraphX.WPF\RealTimeGraphX.WPF.csproj", "{6B9774F7-960D-438E-AD81-C6B9BE328D50}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{92E09E0D-9F66-4E85-B5FD-484C5113B8C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92E09E0D-9F66-4E85-B5FD-484C5113B8C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92E09E0D-9F66-4E85-B5FD-484C5113B8C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C62EE10-DD2C-4762-A876-10B918A8BDA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C62EE10-DD2C-4762-A876-10B918A8BDA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C62EE10-DD2C-4762-A876-10B918A8BDA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C62EE10-DD2C-4762-A876-10B918A8BDA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B9774F7-960D-438E-AD81-C6B9BE328D50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B9774F7-960D-438E-AD81-C6B9BE328D50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B9774F7-960D-438E-AD81-C6B9BE328D50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B9774F7-960D-438E-AD81-C6B9BE328D50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

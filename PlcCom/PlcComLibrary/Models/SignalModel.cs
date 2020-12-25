@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 using static PlcComLibrary.Common.Enums;
 
-namespace PlcComLibrary
+namespace PlcComLibrary.Models
 {
     public class SignalModel : ISignalModel
     {
-        public SignalModel()
+        public SignalModel(int index )
         {
+            Index = index;
         }
+        public int Index { get; set; }
         public int Db { get; set; }
         public int Byte { get; set; }
         public int Bit { get; set; }
@@ -19,7 +21,7 @@ namespace PlcComLibrary
         public DataType DataType { get; set; }// ref Enums.DatatType
         public string Address { get; set; }
 
-        public object Value { get; set; }
+        public double Value { get; set; }
 
         public bool IsValid 
         { 
