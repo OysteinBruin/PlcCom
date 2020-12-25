@@ -5,13 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
+using log4net;
 
 namespace PlcComLibrary
 {
     public class DatablockParser : IDatablockParser
     {
+        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private string[] _separatingStrings = { "//", ";", ":" };
         private readonly IList<string> _endOfHeaderKeywords = new List<string> { "STRUCT", "VAR" };
         private readonly IList<string> _dbSectionKeywords = new List<string> { "STRUCT", "Struct", "VAR", "Var", "TYPE"};
@@ -48,6 +48,7 @@ namespace PlcComLibrary
 
             bool result = RemoveHeaderData(fileLines, _endOfHeaderKeywords);
             Console.WriteLine($"DatablockParser.ParseDb path {_path}");
+            log.Info("");
 
             // TODO: HANDLE
             if (!result)

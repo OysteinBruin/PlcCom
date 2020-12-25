@@ -3,6 +3,10 @@
                     xmlns:cal="http://www.caliburnproject.org"
                     xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
                     xmlns:dockablz="clr-namespace:Dragablz.Dockablz;assembly=Dragablz">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/Dragablz;component/Themes/materialdesign.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
     <Style TargetType="{x:Type dockablz:Layout}">
         <Setter Property="IsFloatDropZoneEnabled" Value="False"/>
         <Setter Property="FloatingItemHeaderMemberPath" Value="DisplayName"/>

@@ -53,3 +53,7 @@ using System.Windows;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+
+// https://medium.com/nerd-stuff/logger-for-wpf-application-570eb9cbe546
+// https://github.com/rishabhverma17/WPF-Logger
+[assembly: log4net.Config.XmlConfigurator(ConfigFile = "log4net.config", Watch = true)]
