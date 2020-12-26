@@ -87,9 +87,7 @@
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-        <dockablz:Layout>
-            <graph:WpfGraphControl Margin="10" Controller="{Binding Controller}" />
-        </dockablz:Layout>
-    </Grid>
+    <StackPanel>
+        <graph:WpfGraphControl Margin="10" Controller="{Binding Controller}" Height="400"/>
+    </StackPanel>
 </UserControl>

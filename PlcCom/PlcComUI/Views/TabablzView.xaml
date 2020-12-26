@@ -10,6 +10,7 @@
         xmlns:dragablz="clr-namespace:Dragablz;assembly=Dragablz"
         xmlns:dockablz="clr-namespace:Dragablz.Dockablz;assembly=Dragablz"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    
         mc:Ignorable="d" 
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
@@ -22,20 +23,16 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                
+                <ResourceDictionary Source="../Styles/Dragablz.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Card.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Flipper.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <!-- 
-    <ResourceDictionary Source="../Controls/CustomMDIXListView.xaml"/>
-    ....
-    
-    ... Style="{StaticResource CustomMDIXListView}">-->
+
     <DockPanel>
         <Grid DockPanel.Dock="Left" MaxWidth="450">
-            <TabControl>
+            <dragablz:TabablzControl Margin="8" Style="{StaticResource MaterialDesignTabablzControlStyle}">
                 <TabItem Header="Connect">
                     <ListView x:Name="PlcList" Margin="0 0 0 5" >
                         <ListView.ItemTemplate>
@@ -158,12 +155,12 @@
                 <TabItem Header="Datablocks">
 
                 </TabItem>
-            </TabControl>
+            </dragablz:TabablzControl>
 
         </Grid>
         <Grid VerticalAlignment="Stretch" HorizontalAlignment='Stretch' DockPanel.Dock="Top">
-            <dockablz:Layout>
-                <dragablz:TabablzControl>
+            <dockablz:Layout Style="{StaticResource CustomDockablzLayout}">
+                <dragablz:TabablzControl Style="{StaticResource CustomTabablzControl}">
                     <dragablz:TabablzControl.InterTabController>
                         <dragablz:InterTabController InterTabClient="{Binding InterTabClient}"/>
                     </dragablz:TabablzControl.InterTabController>

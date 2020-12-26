@@ -48,7 +48,7 @@ namespace PlcComLibrary
 
             bool result = RemoveHeaderData(fileLines, _endOfHeaderKeywords);
             Console.WriteLine($"DatablockParser.ParseDb path {_path}");
-            log.Info("");
+            log.Info($"DatablockParser.ParseDb path {_path}");
 
             // TODO: HANDLE
             if (!result)
@@ -95,7 +95,7 @@ namespace PlcComLibrary
         /// <returns></returns>
         private List<string> ReadS7DbFile(string path)
         {
-            Console.WriteLine($"S7DbParser.ReadS7DbFile: {path}");
+            // Console.WriteLine($"S7DbParser.ReadS7DbFile: {path}");
             
             List<string> fileLines = new List<string>();
             // TODO: Handle File exceptions instead of:

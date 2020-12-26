@@ -9,8 +9,15 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Title="TearedView" Height="450" Width="800">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Styles/Dragablz.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <dockablz:Layout>
-        <dragablz:TabablzControl x:Name="Tabs">
+        <dragablz:TabablzControl x:Name="Tabs" Style="{StaticResource CustomTabablzControl}">
             <dragablz:TabablzControl.InterTabController>
                 <dragablz:InterTabController InterTabClient="{Binding InterTabClient}"/>
             </dragablz:TabablzControl.InterTabController>

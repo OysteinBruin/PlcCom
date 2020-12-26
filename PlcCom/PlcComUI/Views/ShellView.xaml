@@ -1,4 +1,5 @@
-﻿<Window x:Class="PlcComUI.Views.ShellView"
+﻿<controls:MetroWindow  xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+                       x:Class="PlcComUI.Views.ShellView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -131,4 +132,4 @@
             </DockPanel>
         </materialDesign:DrawerHost>
     </materialDesign:DialogHost>
-</Window>
+</controls:MetroWindow>

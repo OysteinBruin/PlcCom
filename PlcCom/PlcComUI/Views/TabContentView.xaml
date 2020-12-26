@@ -70,20 +70,23 @@
         </ResourceDictionary>
         
     </UserControl.Resources>
-
-    <DataGrid
+    <ScrollViewer VerticalScrollBarVisibility="Visible">
+        <DataGrid
         ItemsSource="{Binding Signals}"
         CanUserSortColumns="True"
         CanUserResizeRows="False"
         CanUserAddRows="False"
         AutoGenerateColumns="False"
-        HeadersVisibility="All" >
-        <DataGrid.Columns>
-            <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True" />
-            <DataGridTextColumn Header="Address" Binding="{Binding Address}" IsReadOnly="True" />
-            <DataGridTextColumn CanUserSort="False" CanUserReorder="False" Header="Read" IsReadOnly="True" Binding="{Binding Value}"/>
-            <DataGridTemplateColumn Header="Write" MinWidth="250" CellTemplateSelector="{StaticResource DataSignalModelTemplateSelector}" />
-            <!-- Visibility="{Binding IsChecked, ElementName=cbWriteEnable, Converter={StaticResource BooleanToVisibilityConverter}}" -->
-        </DataGrid.Columns>
-    </DataGrid>
+        HeadersVisibility="All" 
+        VerticalScrollBarVisibility="Visible">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True" />
+                <DataGridTextColumn Header="Address" Binding="{Binding Address}" IsReadOnly="True" />
+                <DataGridTextColumn CanUserSort="False" CanUserReorder="False" Header="Read" IsReadOnly="True" Binding="{Binding Value}"/>
+                <DataGridTemplateColumn Header="Write" MinWidth="250" CellTemplateSelector="{StaticResource DataSignalModelTemplateSelector}" />
+                <!-- Visibility="{Binding IsChecked, ElementName=cbWriteEnable, Converter={StaticResource BooleanToVisibilityConverter}}" -->
+            </DataGrid.Columns>
+        </DataGrid>
+    </ScrollViewer>
+    
 </UserControl>

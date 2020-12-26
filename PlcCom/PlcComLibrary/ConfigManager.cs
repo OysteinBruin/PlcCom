@@ -65,12 +65,12 @@ namespace PlcComLibrary
                     string filePath = AppDomain.CurrentDomain.BaseDirectory + Constants.BaseDirectorySubDirs + dbNumberDbName.Last();
 
                     List<ISignalModel> signals = _dbParser.ParseDb(filePath, dbNumber, jsonConfig.DiscardKeywords);
-                    Console.WriteLine($"\n\nAfter _dbParser.ParseDb filePath {filePath} signals: {signals.Count}");
+                    //Console.WriteLine($"\n\nAfter _dbParser.ParseDb filePath {filePath} signals: {signals.Count}");
                         foreach (var signal in signals)
                         {
-                            Console.WriteLine($"\tsignal {signal.Name} address: {signal.Address}");
+                            //Console.WriteLine($"\tsignal {signal.Name} address: {signal.Address}");
                         }
-                    Console.WriteLine("\n\n");
+                    //Console.WriteLine("\n\n");
 
                     if (signals.Count > 0)
                     {
@@ -81,25 +81,25 @@ namespace PlcComLibrary
                         datablock.Signals = signals;
                         datablock.FirstByte = signals.First().Byte;
                         datablock.ByteCount = signals.Last().Byte - datablock.FirstByte;
-                        Console.WriteLine($"\n\nAfter assignment: datablock.Signals = signals;  datablock.Signals,Count = {datablock.Signals.Count}");
-                        foreach (var signal in datablock.Signals)
-                        {
-                            Console.WriteLine($"\tsignal {signal.Name} address: {signal.Address}");
-                        }
-                        Console.WriteLine("\n\n");
+                        //Console.WriteLine($"\n\nAfter assignment: datablock.Signals = signals;  datablock.Signals,Count = {datablock.Signals.Count}");
+                        //foreach (var signal in datablock.Signals)
+                        //{
+                        //    Console.WriteLine($"\tsignal {signal.Name} address: {signal.Address}");
+                        //}
+                        //Console.WriteLine("\n\n");
 
                         datablocks.Add(datablock);
 
-                        Console.WriteLine("\n\nAfter datablocks.Add(datablock);");
-                        foreach (var db in datablocks)
-                        {
-                            Console.WriteLine($"\n\n\t{db.Name} signals: {db.Signals.Count}");
-                            foreach (var signal in db.Signals)
-                            {
-                                Console.WriteLine($"\tsignal {signal.Name} address: {signal.Address}");
-                            }
-                        }
-                        Console.WriteLine("\n\n");
+                        //Console.WriteLine("\n\nAfter datablocks.Add(datablock);");
+                        //foreach (var db in datablocks)
+                        //{
+                        //    Console.WriteLine($"\n\n\t{db.Name} signals: {db.Signals.Count}");
+                        //    foreach (var signal in db.Signals)
+                        //    {
+                        //        Console.WriteLine($"\tsignal {signal.Name} address: {signal.Address}");
+                        //    }
+                        //}
+                        //Console.WriteLine("\n\n");
 
                         //configsProgressEventArgs.ProgressInput += 1;
                         //ConfigsLoadingProgressChanged?.Invoke(this, configsProgressEventArgs);
