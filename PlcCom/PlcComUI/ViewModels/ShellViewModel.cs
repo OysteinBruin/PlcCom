@@ -50,9 +50,15 @@ namespace PlcComUI.ViewModels
             ShowDrawer = false;
         }
 
+        public void ActivateSettingsView()
+        {
+            _paletteSelectorVM = IoC.Get<PaletteSelectorViewModel>();
+            ActivateItem(_paletteSelectorVM);
+        }
+
         public async void Handle(MessageEvent message)
         {
-            if (_modalViewIsActive)
+            if (!_modalViewIsActive)
             {
                 _modalViewIsActive = true;
                 await ShowMessageDialog(message);

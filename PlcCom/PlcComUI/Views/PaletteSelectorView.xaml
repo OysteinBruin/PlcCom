@@ -110,6 +110,8 @@
                 </ItemsControl>
             </ScrollViewer>
         </Grid>
+
+        <Button DockPanel.Dock="Top"  x:Name="Close" Content="Close"/>
     </DockPanel>
 
 </UserControl>

@@ -55,10 +55,11 @@ namespace PlcComLibrary
             await DelayAsync(10);
 
             (int dbIndex, int signalIndex) = GetSignalIndexFromAddress(address, Datablocks);
-            
+
             if (dbIndex >= 0 && signalIndex >= 0)
             {
                 Datablocks[dbIndex].Signals[signalIndex].Value = (double)value;
+                Console.WriteLine($"SimulatedPlcService.WriteSingleAsync - value: {value}");
                 PlcReadResultEventArgs args = new PlcReadResultEventArgs(this.Index, dbIndex, signalIndex);
                 HasNewData?.Invoke(this, args);
             }

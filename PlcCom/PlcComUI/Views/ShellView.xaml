@@ -4,6 +4,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wpf="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:PlcComUI.Views"
         xmlns:usersettings="clr-namespace:PlcComUI.UserSettings"
         xmlns:cal="http://www.caliburnproject.org"
@@ -34,6 +35,22 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
+
+    <controls:MetroWindow.WindowButtonCommands>
+        <controls:WindowButtonCommands Style="{DynamicResource MahApps.Styles.WindowButtonCommands.Win10}" />
+    </controls:MetroWindow.WindowButtonCommands>
+    
+    <controls:MetroWindow.LeftWindowCommands>
+        <controls:WindowCommands>
+            <wpf:PopupBox Style="{StaticResource WindowCommandsPopupBoxStyle}">
+                <StackPanel>
+                    <Button cal:Message.Attach="ActivateHomeView" Content="Home"/>
+                    <Button cal:Message.Attach="ActivateSettingsView" Content="Settings"/>
+                    
+                </StackPanel>
+            </wpf:PopupBox>
+        </controls:WindowCommands>
+    </controls:MetroWindow.LeftWindowCommands>
     
     <materialDesign:DialogHost Identifier="MainDialogHost" CloseOnClickAway="True" 
                                SnackbarMessageQueue="{Binding ElementName=MainSnackbar, Path=MessageQueue}" >
@@ -61,40 +78,7 @@
                 </DockPanel>
             </materialDesign:DrawerHost.LeftDrawerContent>
             <DockPanel>
-                <materialDesign:ColorZone Padding="16 4 16 4"
-                materialDesign:ShadowAssist.ShadowDepth="Depth0" 
-                Background="{DynamicResource PrimaryHueMidBrush}"
-                Foreground="WhiteSmoke"
-                DockPanel.Dock="Top" >
-                    <DockPanel>
-                        <ToggleButton
-                            x:Name="ShowDrawer"
-                            Style="{StaticResource MaterialDesignHamburgerToggleButton}"
-                            IsChecked="False"/>
-                        <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="False">
-                            <StackPanel>
-                                <StackPanel Orientation="Horizontal"
-                                                HorizontalAlignment="Center"
-                                                Margin="10">
-                                    <TextBlock Text="Light"
-                                                   Margin="0 0 10 0"/>
-                                    <ToggleButton x:Name="LightDarkToggle" 
-                                                  IsChecked="{usersettings:SettingBinding MainWindow.DarkMode}" 
-                                                  cal:Message.Attach="[Event Click] = [Action SetDarkOrLightTheme(LightDarkToggle.IsChecked)]" 
-                                                  cal:Bind.Model=""/>
-
-                                    <TextBlock Text="Dark" Margin="10 0 0 0"/>
-                                </StackPanel>
-                                <Separator/>
-                                <Button cal:Message.Attach="ActivatePaletteSelectorView" Content="Home" />
-                                <Button cal:Message.Attach="ActivatePaletteSelectorView" Content="Palette"/>
-                                <Button cal:Message.Attach="Quit" Content="Quit" HorizontalContentAlignment="Stretch"/>
-                            </StackPanel>
-                        </materialDesign:PopupBox>
-                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22">Plc <Bold>COM</Bold></TextBlock>
-                    </DockPanel>
-                </materialDesign:ColorZone>
-
+               
                 <materialDesign:ColorZone 
                 Background="LightGray"
                 Padding="3"
@@ -123,9 +107,8 @@
                     <ScrollViewer Grid.Row="1" 
                                   materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
 
-                        <ContentControl x:Name="ActiveItem" Margin="5" />
+                        <ContentControl x:Name="ActiveItem" Margin="0" />
                     </ScrollViewer>
-
                     <materialDesign:Snackbar MessageQueue="{materialDesign:MessageQueue}" x:Name="MainSnackbar"
                                             Grid.Row="1" />
                 </Grid>

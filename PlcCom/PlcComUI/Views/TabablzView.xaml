@@ -30,42 +30,47 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <DockPanel>
-        <Grid DockPanel.Dock="Left" MaxWidth="450">
-            <dragablz:TabablzControl Margin="8" Style="{StaticResource MaterialDesignTabablzControlStyle}">
-                <TabItem Header="Connect">
-                    <ListView x:Name="PlcList" Margin="0 0 0 5" >
-                        <ListView.ItemTemplate>
-                            <DataTemplate DataType="{x:Type models:CpuDisplayModel}">
-                                <materialDesign:Flipper HorizontalAlignment="Center" MaxWidth="200" MaxHeight="350"
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <dragablz:TabablzControl Margin="0" Style="{StaticResource MaterialDesignTabablzControlStyle}">
+            <TabItem Header="Connect">
+                <ListView x:Name="PlcList" Margin="0 0 0 5" >
+                    <ListView.ItemTemplate>
+                        <DataTemplate DataType="{x:Type models:CpuDisplayModel}">
+                            <materialDesign:Flipper HorizontalAlignment="Center" MaxWidth="200" MaxHeight="350"
                                     Style="{StaticResource MaterialDesignCardFlipper}" VerticalAlignment="Top" Margin="0 0 0 5">
-                                    <materialDesign:Flipper.FrontContent >
-                                        <materialDesign:ColorZone Mode="PrimaryLight" Padding="10">
+                                <materialDesign:Flipper.FrontContent >
+                                    <materialDesign:ColorZone Mode="PrimaryLight" Padding="10">
 
-                                            <Grid  Grid.Row="1" Grid.Column="1" Margin="0" >
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="0.7*" />
-                                                    <ColumnDefinition Width="0.3*" />
+                                        <Grid  Grid.Row="1" Grid.Column="1" Margin="0" >
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="0.7*" />
+                                                <ColumnDefinition Width="0.3*" />
 
-                                                </Grid.ColumnDefinitions>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="auto" />
-                                                    <RowDefinition Height="auto" />
-                                                    <RowDefinition Height="auto" />
-                                                    <RowDefinition Height="auto" />
-                                                </Grid.RowDefinitions>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="auto" />
+                                                <RowDefinition Height="auto" />
+                                                <RowDefinition Height="auto" />
+                                                <RowDefinition Height="auto" />
+                                            </Grid.RowDefinitions>
 
-                                                <!-- Input line 0 -->
-                                                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-                                                    <Button
+                                            <!-- Input line 0 -->
+                                            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+                                                <Button
                                         Style="{StaticResource MaterialDesignToolForegroundButton}"
                                         Command="{x:Static materialDesign:Flipper.FlipCommand}"
                                         HorizontalAlignment="Left">
-                                                        <materialDesign:PackIcon
+                                                    <materialDesign:PackIcon
                                             Kind="ArrowLeft"
                                             HorizontalAlignment="Right" />
-                                                    </Button>
-                                                    <TextBox 
+                                                </Button>
+                                                <TextBox 
                                         Text="{Binding CpuName}" 
                                         materialDesign:HintAssist.Hint="Name"
                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
@@ -73,11 +78,11 @@
                                         VerticalAlignment="Center" 
                                         MinWidth="300"
                                         Margin='5' />
-                                                </StackPanel>
+                                            </StackPanel>
 
 
-                                                <!-- Input line 1 -->
-                                                <TextBox x:Name="IpAddress" Grid.Row="1" Grid.Column="0" 
+                                            <!-- Input line 1 -->
+                                            <TextBox x:Name="IpAddress" Grid.Row="1" Grid.Column="0" 
                                     materialDesign:HintAssist.Hint="Ip Adddress"
                                     Text="{Binding Path=IpAddress}" 
                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
@@ -85,15 +90,15 @@
                                     MinWidth="30"
                                     Margin='5' />
 
-                                                <TextBox x:Name="Rack" Grid.Row="1" Grid.Column="1" 
+                                            <TextBox x:Name="Rack" Grid.Row="1" Grid.Column="1" 
                                     materialDesign:HintAssist.Hint="Rack"
                                                  Text="{Binding Rack}" 
                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                     VerticalAlignment="Center" 
                                     Margin='5' />
 
-                                                <!-- Input line 2 -->
-                                                <ComboBox x:Name="S7CpuType" Grid.Row="2" Grid.Column="0" SelectedItem="{Binding Path=SelectedCpuType}"
+                                            <!-- Input line 2 -->
+                                            <ComboBox x:Name="S7CpuType" Grid.Row="2" Grid.Column="0" SelectedItem="{Binding Path=SelectedCpuType}"
                                                   ItemsSource="{Binding S7CpuType}"
                                     Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                                     materialDesign:HintAssist.Hint="CPU Type"
@@ -101,15 +106,15 @@
                                                   IsSynchronizedWithCurrentItem="True"
                                     Margin='5' />
 
-                                                <TextBox x:Name="Slot" Grid.Row="2" Grid.Column="1" 
+                                            <TextBox x:Name="Slot" Grid.Row="2" Grid.Column="1" 
                                     materialDesign:HintAssist.Hint="Slot"
                                                  Text="{Binding Slot}" 
                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                     VerticalAlignment="Center" 
                                     Margin='5' />
 
-                                                <!-- Input line 3 -->
-                                                <Button x:Name="Connect" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
+                                            <!-- Input line 3 -->
+                                            <Button x:Name="Connect" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
                                     Style="{StaticResource MaterialDesignRaisedButton}"
                                     materialDesign:ButtonProgressAssist.Value="-1"
                                     materialDesign:ButtonProgressAssist.IsIndicatorVisible="True"
@@ -117,55 +122,55 @@
                                     Content="{Binding ConnectButtonText}"
                                     MaxHeight="50"
                                     Margin="5" >
-                                                    <i:Interaction.Triggers>
-                                                        <i:EventTrigger EventName="Click">
-                                                            <i:InvokeCommandAction Command="{Binding PlcConnectionCmd}"/>
-                                                        </i:EventTrigger>
-                                                    </i:Interaction.Triggers>
-                                                </Button>
+                                                <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="Click">
+                                                        <i:InvokeCommandAction Command="{Binding PlcConnectionCmd}"/>
+                                                    </i:EventTrigger>
+                                                </i:Interaction.Triggers>
+                                            </Button>
 
-                                            </Grid>
-                                        </materialDesign:ColorZone >
-                                    </materialDesign:Flipper.FrontContent >
-                                    <materialDesign:Flipper.BackContent>
-                                        <ScrollViewer HorizontalScrollBarVisibility="Hidden">
-                                            <StackPanel Orientation="Vertical">
-                                                <Button
+                                        </Grid>
+                                    </materialDesign:ColorZone >
+                                </materialDesign:Flipper.FrontContent >
+                                <materialDesign:Flipper.BackContent>
+                                    <ScrollViewer HorizontalScrollBarVisibility="Hidden">
+                                        <StackPanel Orientation="Vertical">
+                                            <Button
                                         Style="{StaticResource MaterialDesignFlatButton}"
                                         Command="{x:Static materialDesign:Flipper.FlipCommand}"
                                         Margin="8"
                                         Width="192">
-                                                    Back
-                                                </Button>
-                                                <ListView x:Name="Datablocks" Margin="5" ItemsSource="{Binding Datablocks}" ScrollViewer.CanContentScroll="True">
-                                                    <ListView.ItemTemplate>
-                                                        <DataTemplate DataType="{x:Type models:DatablockDisplayModel}">
-                                                            <TextBlock Text="{Binding Path=Name}"></TextBlock>
-                                                        </DataTemplate>
-                                                    </ListView.ItemTemplate>
-                                                </ListView>
-                                            </StackPanel>
-                                        </ScrollViewer>
-                                    </materialDesign:Flipper.BackContent>
-                                </materialDesign:Flipper>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </TabItem>
-                <TabItem Header="Datablocks">
+                                                Back
+                                            </Button>
+                                            <ListView x:Name="Datablocks" Margin="5" ItemsSource="{Binding Datablocks}" ScrollViewer.CanContentScroll="True">
+                                                <ListView.ItemTemplate>
+                                                    <DataTemplate DataType="{x:Type models:DatablockDisplayModel}">
+                                                        <TextBlock Text="{Binding Path=Name}"></TextBlock>
+                                                    </DataTemplate>
+                                                </ListView.ItemTemplate>
+                                            </ListView>
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                </materialDesign:Flipper.BackContent>
+                            </materialDesign:Flipper>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </TabItem>
+            <TabItem Header="Datablocks">
 
-                </TabItem>
+            </TabItem>
+        </dragablz:TabablzControl>
+
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+
+        <dockablz:Layout Grid.Column="2" Style="{StaticResource CustomDockablzLayout}" Margin="0">
+            <dragablz:TabablzControl Style="{StaticResource CustomTabablzControl}">
+                <dragablz:TabablzControl.InterTabController>
+                    <dragablz:InterTabController InterTabClient="{Binding InterTabClient}"/>
+                </dragablz:TabablzControl.InterTabController>
             </dragablz:TabablzControl>
-
-        </Grid>
-        <Grid VerticalAlignment="Stretch" HorizontalAlignment='Stretch' DockPanel.Dock="Top">
-            <dockablz:Layout Style="{StaticResource CustomDockablzLayout}">
-                <dragablz:TabablzControl Style="{StaticResource CustomTabablzControl}">
-                    <dragablz:TabablzControl.InterTabController>
-                        <dragablz:InterTabController InterTabClient="{Binding InterTabClient}"/>
-                    </dragablz:TabablzControl.InterTabController>
-                </dragablz:TabablzControl>
-            </dockablz:Layout>
-        </Grid>
-    </DockPanel>
+        </dockablz:Layout>
+        
+    </Grid>
 </UserControl>

@@ -8,6 +8,7 @@
     </ResourceDictionary.MergedDictionaries>
 
     <Style x:Key="CustomDockablzLayout" TargetType="{x:Type dockablz:Layout}">
+        <Setter Property="Margin" Value="0" />
         <Setter Property="IsFloatDropZoneEnabled" Value="False"/>
         <Setter Property="FloatingItemHeaderMemberPath" Value="DisplayName"/>
         <Setter Property="InterLayoutClient" Value="{Binding InterLayoutClient}"/>

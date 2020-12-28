@@ -141,7 +141,7 @@ namespace PlcComUI.Models
             var cpuIndex = (int)values[0];
             var address = (string)values[1];
             var value = (object)values[2];
-            Console.WriteLine($"SignalDisplayModel.OnSliderCommand plc index {cpuIndex} address {address} value {value}");
+            //Console.WriteLine($"SignalDisplayModel.OnSliderCommand plc index {cpuIndex} address {address} value {value}");
             _events.PublishOnUIThread(new PlcUiCmdEvent(PlcUiCmdEvent.CmdType.Slider, cpuIndex, address, value));
         }
 
