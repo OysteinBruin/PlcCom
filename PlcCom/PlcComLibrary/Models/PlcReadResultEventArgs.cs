@@ -6,20 +6,6 @@ using System.Threading.Tasks;
 
 namespace PlcComLibrary.Models
 {
-    public class PlcSignalIndex
-    {
-        public PlcSignalIndex()
-        {}
-        public PlcSignalIndex(int plcIndex, int dbIndex, int signalIndex)
-        {
-            PlcIndex = plcIndex;
-            DatablockIndex = dbIndex;
-            SignalIndex = signalIndex;
-        }
-        public int PlcIndex { get; set; }
-        public int DatablockIndex { get; set; }
-        public int SignalIndex { get; set; }
-    }
 
     public class PlcReadResultEventArgs : EventArgs
     {
@@ -30,9 +16,9 @@ namespace PlcComLibrary.Models
             _plcSignalIndexList = plcSignalIndexList;
         }
 
-        public PlcReadResultEventArgs(int plcIndex, int dbIndex, int signalIndex)
+        public PlcReadResultEventArgs(int plcIndex, int dbIndex, int signalIndex, double value)
         {
-            var psi = new PlcSignalIndex(plcIndex, dbIndex, signalIndex);
+            var psi = new PlcSignalIndex(plcIndex, dbIndex, signalIndex, value);
             _plcSignalIndexList = new List<PlcSignalIndex>();
             _plcSignalIndexList.Add(psi);
         }

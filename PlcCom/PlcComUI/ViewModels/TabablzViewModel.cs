@@ -12,25 +12,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static PlcComLibrary.Common.Enums;
+using log4net;
 
 namespace PlcComUI.ViewModels
 {
     class TabablzViewModel : Conductor<IScreen>.Collection.OneActive, IHandle<PlcUiCmdEvent>
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(TabablzViewModel));
         private IEventAggregator _events;
         private IConfigManager _configManager;
         private List<CpuDisplayModel> _cpuList;
 
         public TabablzViewModel(
-            IEventAggregator events, 
+            IEventAggregator events,
             IConfigManager configManager,
             IInterTabClient interTabClient,
-			IInterLayoutClient interLayoutClient)
-		{
+            IInterLayoutClient interLayoutClient)
+        {
             _events = events;
             _configManager = configManager;
             InterTabClient = interTabClient;
-			InterLayoutClient = interLayoutClient;
+            InterLayoutClient = interLayoutClient;
             PlcList = new List<CpuDisplayModel>();
 
 
@@ -43,7 +45,7 @@ namespace PlcComUI.ViewModels
                 foreach (var datablock in plc.Datablocks)
                 {
                     TabContentViewModel dbModel = new TabContentViewModel(datablock.Name + "[" + datablock.Number + "]");
-                    RealTimeGraphViewModel realTimeModel = new RealTimeGraphViewModel($"RealTimeGraph View {count+1}");
+                    RealTimeGraphViewModel realTimeModel = new RealTimeGraphViewModel($"RealTimeGraph View {count + 1}");
 
                     List<SignalDisplayModel> signalDisplayModels = new List<SignalDisplayModel>();
                     foreach (var signal in datablock.Signals)
@@ -57,7 +59,7 @@ namespace PlcComUI.ViewModels
                     }
                     dbModel.Signals = signalDisplayModels;
 
-                    if (count%2 == 0)
+                    if (count % 2 == 0)
                     {
                         Items.Add(dbModel);
                     }
@@ -79,7 +81,7 @@ namespace PlcComUI.ViewModels
             {
                 ActivateItem(Items[0]);
             }
-            
+
         }
 
         public List<CpuDisplayModel> PlcList
@@ -93,7 +95,7 @@ namespace PlcComUI.ViewModels
         }
 
         public IInterTabClient InterTabClient { get; }
-		public IInterLayoutClient InterLayoutClient { get; }
+        public IInterLayoutClient InterLayoutClient { get; }
 
         private void OnPlcHasNewData(object sender, EventArgs args)
         {
@@ -101,58 +103,48 @@ namespace PlcComUI.ViewModels
             int plcIndex = eventArgs.PlcSignalIndexList[0].PlcIndex;
             int dbIndex = eventArgs.PlcSignalIndexList[0].DatablockIndex;
             int signalIndex = eventArgs.PlcSignalIndexList[0].DatablockIndex;
-            Console.WriteLine($"TabablzViewModel.OnPlcHasNewData plc {plcIndex} db {dbIndex} " +
-                $"sig {signalIndex} value {(double)_configManager.PlcServiceList[plcIndex].Datablocks[dbIndex].Signals[signalIndex].Value}");
-            //var e = (CmdArgs)args;
-            //switch (e.Cmd)
-            //{
-            //    case CmdArgs.CmdEnum.Retrieve:
-            //        HandleTestDataRetrieved();
-            //        break;
-            //    case CmdArgs.CmdEnum.TestRunning:
-            //        HandleTestRunning();
-            //        break;
-            //    case CmdArgs.CmdEnum.Cancel:
-            //        UnitTestControlsViewModel.IsRunnningTest = false;
-            //        updateTestSets(_s7PlcService.TestSets);
-            //        break;
-            //    default:
-            //        break;
-            //}
+
+            _con
+            double value = eventArgs.PlcSignalIndexList[0].Value;
+            Console.WriteLine($"read value: {value}");
+            log.Debug($"plc index: {plcIndex} datablock index {dbIndex} signal index {signalIndex} value {value}");
         }
 
 
-        public void Handle(PlcUiCmdEvent message)
+        public async void Handle(PlcUiCmdEvent message)
         {
             //Debug.Assert(message.CpuIndex < _configManager.PlcServiceList.Count);
 
             //if (_configManager.PlcServiceList[0].ComState != PlcComLibrary.Common.Enums.ComState.Connected)
-              //  return;
+            //  return;
 
             try
             {
                 switch (message.CommandType)
                 {
                     case PlcUiCmdEvent.CmdType.ButtonPulse:
-                        _configManager.PlcServiceList[message.CpuIndex].WriteSingleAsync(message.Address, true);
+                        await _configManager.PlcServiceList[message.CpuIndex].WriteSingleAsync(message.Address, true);
                         break;
                     case PlcUiCmdEvent.CmdType.ButtonToggle:
                         break;
                     case PlcUiCmdEvent.CmdType.Slider:
                         Debug.Assert(message.Value != null);
-                        _configManager.PlcServiceList[0].WriteSingleAsync(message.Address, message.Value);
+                        await _configManager.PlcServiceList[0].WriteSingleAsync(message.Address, message.Value);
                         break;
                     default:
                         break;
                 }
             }
-            //catch (S7Net.PlcException)
-            //{
-
-            //    throw;
-            //}
+            catch (ArgumentOutOfRangeException ex)
+            {
+                log.Error(ex);
+                _events.PublishOnUIThread(new MessageEvent($"Failed to write to Plc - " +
+                    $"Cpu {_configManager.PlcServiceList[message.CpuIndex].Config.Name} ip: {_configManager.PlcServiceList[message.CpuIndex].Config.Ip}",
+                    ex.Message, MessageEvent.Level.Warn));
+            }
             catch (Exception ex)
             {
+                log.Error(ex);
                 _events.PublishOnUIThread(new MessageEvent($"Failed to write to Plc - " +
                     $"Cpu {_configManager.PlcServiceList[message.CpuIndex].Config.Name} ip: {_configManager.PlcServiceList[message.CpuIndex].Config.Ip}",
                     ex.Message, MessageEvent.Level.Warn));
@@ -160,6 +152,4 @@ namespace PlcComUI.ViewModels
 
         }
     }
-
-
 }

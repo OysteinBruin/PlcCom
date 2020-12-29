@@ -8,11 +8,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static PlcComLibrary.Common.Enums;
+using log4net;
 
 namespace PlcComLibrary
 {
     public class SimulatedPlcService : IPlcService
     {
+        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private ComState _comState;
 
         public SimulatedPlcService(int index, ICpuConfig config, List<IDatablockModel> datablocks)
@@ -59,8 +61,9 @@ namespace PlcComLibrary
             if (dbIndex >= 0 && signalIndex >= 0)
             {
                 Datablocks[dbIndex].Signals[signalIndex].Value = (double)value;
-                Console.WriteLine($"SimulatedPlcService.WriteSingleAsync - value: {value}");
-                PlcReadResultEventArgs args = new PlcReadResultEventArgs(this.Index, dbIndex, signalIndex);
+                Console.WriteLine($"write value: {Datablocks[dbIndex].Signals[signalIndex].Value}");
+                log.Debug($"write value: {value}");
+                PlcReadResultEventArgs args = new PlcReadResultEventArgs(this.Index, dbIndex, signalIndex, (double)value);
                 HasNewData?.Invoke(this, args);
             }
             else
@@ -85,11 +88,12 @@ namespace PlcComLibrary
             if (dbIndex >= 0 && signalIndex >= 0)
             {
                 
-                PlcReadResultEventArgs args = new PlcReadResultEventArgs(this.Index, dbIndex, signalIndex);
+                PlcReadResultEventArgs args = new PlcReadResultEventArgs(this.Index, dbIndex, signalIndex, 1.0f);
                 await DelayAsync(100);
                 Datablocks[dbIndex].Signals[signalIndex].Value = 1.0f;
                 HasNewData?.Invoke(this, args);
                 await DelayAsync(500);
+                args.PlcSignalIndexList[0].Value = 0.0f;
                 Datablocks[dbIndex].Signals[signalIndex].Value = 0;
                 HasNewData?.Invoke(this, args);
             }
@@ -111,7 +115,7 @@ namespace PlcComLibrary
             if (dbIndex >= 0 && signalIndex >= 0)
             {
                 Datablocks[dbIndex].Signals[signalIndex].Value = 0;
-                PlcReadResultEventArgs args = new PlcReadResultEventArgs(this.Index, dbIndex, signalIndex);
+                PlcReadResultEventArgs args = new PlcReadResultEventArgs(this.Index, dbIndex, signalIndex, 0.0f);
                 HasNewData?.Invoke(this, args);
             }
             else
@@ -159,7 +163,7 @@ namespace PlcComLibrary
         {
             if (ComState != ComState.Connected)
             {
-                throw new Exception("Com Error - Connect to CPU before attempting to read or write data.");
+                throw new InvalidOperationException("Com Error - Connect to CPU before attempting to read or write data.");
             }
         }
         private async Task DelayAsync(int ms)

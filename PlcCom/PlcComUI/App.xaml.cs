@@ -18,7 +18,9 @@ namespace PlcComUI
         protected override void OnStartup(StartupEventArgs e)
         {
             log4net.Config.XmlConfigurator.Configure();
+            log.Info("        =============================================        ");
             log.Info("        =============  Started Logging  =============        ");
+            log.Info("        =============================================        ");
             base.OnStartup(e);
         }
     }

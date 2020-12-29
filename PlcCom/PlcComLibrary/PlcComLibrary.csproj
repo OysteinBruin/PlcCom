@@ -58,7 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigManager.cs" />
+    <Compile Include="Config\ConfigManager.cs" />
     <Compile Include="Common\Constants.cs" />
     <Compile Include="Common\Enums.cs" />
     <Compile Include="Common\IUtilities.cs" />
@@ -74,6 +74,7 @@
     <Compile Include="Models\PlcReadResultEventArgs.cs" />
     <Compile Include="Models\DatablockModel.cs" />
     <Compile Include="DatablockParser.cs" />
+    <Compile Include="Models\PlcSignalIndex.cs" />
     <Compile Include="SimulatedPlcService.cs" />
     <Compile Include="IConfigManager.cs" />
     <Compile Include="Models\IDatablockModel.cs" />
