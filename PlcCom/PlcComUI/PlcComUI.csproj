@@ -145,6 +145,7 @@
     <Compile Include="Domain\SettingBindingExtension.cs" />
     <Compile Include="EventModels\MessageEvent.cs" />
     <Compile Include="EventModels\PlcConnectionCmdEvent.cs" />
+    <Compile Include="EventModels\PlcReadEvent.cs" />
     <Compile Include="EventModels\PlcUiCmdEvent.cs" />
     <Compile Include="Models\CpuDisplayModel.cs" />
     <Compile Include="Models\DatablockDisplayModel.cs" />
@@ -195,7 +196,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="log4net.config" />
+    <None Include="log4net.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

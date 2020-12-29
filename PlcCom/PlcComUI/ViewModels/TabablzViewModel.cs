@@ -6,13 +6,7 @@ using PlcComUI.EventModels;
 using PlcComUI.Models;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static PlcComLibrary.Common.Enums;
-using log4net;
 
 namespace PlcComUI.ViewModels
 {
@@ -34,6 +28,7 @@ namespace PlcComUI.ViewModels
             InterTabClient = interTabClient;
             InterLayoutClient = interLayoutClient;
             PlcList = new List<CpuDisplayModel>();
+            _events.Subscribe(this);
 
 
             foreach (var plc in _configManager.PlcServiceList)
@@ -44,7 +39,7 @@ namespace PlcComUI.ViewModels
                 int count = 0;
                 foreach (var datablock in plc.Datablocks)
                 {
-                    TabContentViewModel dbModel = new TabContentViewModel(datablock.Name + "[" + datablock.Number + "]");
+                    TabContentViewModel dbModel = new TabContentViewModel(_events, plc.Index, datablock.Index, datablock.Name + "[" + datablock.Number + "]");
                     RealTimeGraphViewModel realTimeModel = new RealTimeGraphViewModel($"RealTimeGraph View {count + 1}");
 
                     List<SignalDisplayModel> signalDisplayModels = new List<SignalDisplayModel>();
@@ -69,7 +64,6 @@ namespace PlcComUI.ViewModels
                     }
                     count++;
                 }
-                _events.Subscribe(this);
                 plc.HasNewData += OnPlcHasNewData;
             }
         }
@@ -81,7 +75,6 @@ namespace PlcComUI.ViewModels
             {
                 ActivateItem(Items[0]);
             }
-
         }
 
         public List<CpuDisplayModel> PlcList
@@ -100,14 +93,7 @@ namespace PlcComUI.ViewModels
         private void OnPlcHasNewData(object sender, EventArgs args)
         {
             var eventArgs = (PlcReadResultEventArgs)args;
-            int plcIndex = eventArgs.PlcSignalIndexList[0].PlcIndex;
-            int dbIndex = eventArgs.PlcSignalIndexList[0].DatablockIndex;
-            int signalIndex = eventArgs.PlcSignalIndexList[0].DatablockIndex;
-
-            _con
-            double value = eventArgs.PlcSignalIndexList[0].Value;
-            Console.WriteLine($"read value: {value}");
-            log.Debug($"plc index: {plcIndex} datablock index {dbIndex} signal index {signalIndex} value {value}");
+            _events.PublishOnUIThread(new PlcReadEvent(eventArgs));
         }
 
 
@@ -138,6 +124,14 @@ namespace PlcComUI.ViewModels
             catch (ArgumentOutOfRangeException ex)
             {
                 log.Error(ex);
+                _events.PublishOnUIThread(new MessageEvent($"Failed to write to Plc - " +
+                    $"Cpu {_configManager.PlcServiceList[message.CpuIndex].Config.Name} ip: {_configManager.PlcServiceList[message.CpuIndex].Config.Ip}",
+                    ex.Message, MessageEvent.Level.Warn));
+            }
+            catch (InvalidOperationException ex)
+            {
+                log.Error($"Failed to write to Plc - " +
+                    $"Cpu index {message.CpuIndex} ", ex);
                 _events.PublishOnUIThread(new MessageEvent($"Failed to write to Plc - " +
                     $"Cpu {_configManager.PlcServiceList[message.CpuIndex].Config.Name} ip: {_configManager.PlcServiceList[message.CpuIndex].Config.Ip}",
                     ex.Message, MessageEvent.Level.Warn));

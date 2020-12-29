@@ -105,8 +105,6 @@ namespace PlcComUI.ViewModels
             callback(true);
         }
 
-
-
         // TODO: add Squirrel installer
         //private async Task CheckForUpdates()
         //{
