@@ -149,6 +149,7 @@
     <Compile Include="EventModels\PlcUiCmdEvent.cs" />
     <Compile Include="Models\CpuDisplayModel.cs" />
     <Compile Include="Models\DatablockDisplayModel.cs" />
+    <Compile Include="TmpMain.cs" />
     <Compile Include="UserSettings\Palette\PaletteHelperExtensions.cs" />
     <Compile Include="UserSettings\SettingBindingExtension.cs" />
     <Compile Include="ViewModels\ErrorDialogViewModel.cs" />

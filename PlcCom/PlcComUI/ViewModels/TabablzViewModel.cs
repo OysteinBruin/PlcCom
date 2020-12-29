@@ -60,7 +60,8 @@ namespace PlcComUI.ViewModels
                     }
                     else
                     {
-                        Items.Add(realTimeModel);
+                        Items.Add(dbModel);
+                        //Items.Add(realTimeModel);
                     }
                     count++;
                 }
