@@ -6,121 +6,70 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
-    public interface ISignalModel
-    {
-        int Index { get; set; }
-        string Address { get; set; }
-        int Db { get; set; }
-        int Byte { get; set; }
-        int Bit { get; set; }
-        string DataTypeStr { get; set; }
-        string Description { get; set; }
-        string Name { get; set; }
-        double Value { get; set; }
+    //public interface ISignalModel
+    //{
+    //    int Index { get; set; }
+    //    string Address { get; set; }
+    //    int Db { get; set; }
+    //    int Byte { get; set; }
+    //    int Bit { get; set; }
+    //    string DataTypeStr { get; set; }
+    //    string Description { get; set; }
+    //    string Name { get; set; }
+    //    double Value { get; set; }
 
-        bool IsValid { get; }
-    }
+    //    bool IsValid { get; }
+    //}
 
-    public class SignalModel : ISignalModel
+    public class SignalModel //: ISignalModel
     {
-        public SignalModel()
-        {
-        }
-        public int Index { get; set; }
-        public int Db { get; set; }
-        public int Byte { get; set; }
-        public int Bit { get; set; }
+
         public string Name { get; set; }
-        public string Description { get; set; }
-        public string DataTypeStr { get; set; }
-        public string Address { get; set; }
-
-        public double Value { get; set; }
-
-        public bool IsValid
-        {
-            get
-            {
-                return (Db > 0 && Db < 10000 && Name.Length > 0 && Address.Length > 7);
-            }
-        }
     }
 
-    public interface IDatablockModel
-    {
-        string Name { get; set; }
-        int Index { get; set; }
-        int Number { get; set; }
+    //public interface IDatablockModel
+    //{
+    //    string Name { get; set; }
+    //    int Index { get; set; }
+    //    int Number { get; set; }
 
-        int FirstByte { get; set; }
-        int ByteCount { get; set; }
+    //    int FirstByte { get; set; }
+    //    int ByteCount { get; set; }
 
-        List<ISignalModel> Signals { get; set; }
-    }
+    //    List<ISignalModel> Signals { get; set; }
+    //}
 
     public class DatablockModel //: IDatablockModel
     {
-        public DatablockModel()
+        public DatablockModel(string name)
         {
-            Index = -1;
-            Signals = new List<SignalModel>();
-            Name = String.Empty;
-            Number = -1;
-        }
-        public DatablockModel(int index, List<SignalModel> signals, string name = "", int number = -1)
-        {
-            Index = index;
-            Signals = signals;
             Name = name;
-            Number = number;
         }
-        public int Index { get; set; }
+
         public string Name { get; set; }
-        public int Number { get; set; }
-        //public IJsonFileConfig Config { get; set; }
-
-        //public List<ISignalModel> Signals { get; set; }
         public List<SignalModel> Signals { get; set; }
-
-        public bool IsValid
-        {
-            get
-            {
-                return Index >= 0 && Signals.Count > 0 &&
-                    Name.Length > 0 && Number > 0;
-            }
-
-        }
-        public int FirstByte { get; set; }
-        public int ByteCount { get; set; }
 
     }
 
     public class SignalGenerator
     {
-        //private List<ISignalModel> _signals1 = new List<ISignalModel> {
-        //     new SignalModel{ Index = 0}
-        //};
-
-
-        // public static List<ISignalModel> Signals(int index)
-        public static IList<SignalModel> Signals(int index)
+        public static List<SignalModel> Signals(int index)
         {
             //List<ISignalModel> signals = new List<ISignalModel>();
-            IList<SignalModel> signals = new List<SignalModel>();
+            List<SignalModel> signals = new List<SignalModel>();
 
             if (index == 0)
             {
                 for (int i = 50; i < 70; i++)
                 {
-                    signals.Add(new SignalModel { Index = i, Address = $"DB{i + 1}", Name = $"Signal {i}" });
+                    signals.Add(new SignalModel {Name = $"Signal {i}" });
                 }
             }
             else
             {
                 for (int i = 1000; i < 1010; i++)
                 {
-                    signals.Add(new SignalModel { Index = i, Address = $"DB{i + 1}", Name = $"Signal {i}" });
+                    signals.Add(new SignalModel { Name = $"Signal {i}" });
                 }
             }
 
@@ -147,7 +96,7 @@ namespace ConsoleApp1
                 for (int j = 0; j < 2; j++)
                 {
                     //IDatablockModel datablock = new DatablockModel();
-                    DatablockModel datablock = new DatablockModel();
+                    DatablockModel datablock = new DatablockModel($"Datablock {j}");
                     signals.Clear();
 
 
@@ -160,17 +109,12 @@ namespace ConsoleApp1
                     //}
                     //Console.WriteLine("\n\n");
 
-
-                    datablock.Index = signals.Count;
-                    datablock.Signals = signals;
-                    datablock.Name = $"Datablock {j}";
-                    datablock.Number = j + 3050;
                     datablocks.Add(datablock);
                 }
 
                 foreach (var db in datablocks)
                 {
-                    Console.WriteLine($"\n\n\n-----Cpu {i}------------Datablock {db.Index} [{db.Name}]------------------------------");
+                    Console.WriteLine($"\n\n\n-----Cpu {i}------------Datablock {db.Name}------------------------------");
                     foreach (var signal in db.Signals)
                     {
                         Console.WriteLine($"\tSignal {signal.Name}");
@@ -178,11 +122,11 @@ namespace ConsoleApp1
                 }
             }
         }
-        static void Main(string[] args)
-        {
-            Program.LoadConfigs();
-            Console.ReadLine();
-        }
+        ////static void Main(string[] args)
+        //{
+        //    Program.LoadConfigs();
+        //    Console.ReadLine();
+        //}
     }
 }
 

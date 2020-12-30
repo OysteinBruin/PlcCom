@@ -17,7 +17,7 @@ namespace PlcComLibrary
         private S7.Net.Plc _plc;
         private ComState _comState;
 
-        public S7PlcService(int index, CpuConfig config, List<IDatablockModel> datablocks)
+        public S7PlcService(int index, ICpuConfig config, List<IDatablockModel> datablocks)
         {
             Index = index;
             Config = config;

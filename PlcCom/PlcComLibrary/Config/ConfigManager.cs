@@ -11,6 +11,33 @@ using System.Threading.Tasks;
 
 namespace PlcComLibrary
 {
+    public class SignalGenerator
+    {
+        public static List<ISignalModel> Signals(int index)
+        {
+            List<ISignalModel> signals = new List<ISignalModel>();
+
+            if (index == 0)
+            {
+                for (int i = 50; i < 70; i++)
+                {
+                    signals.Add(new SignalModel { Name = $"Signal {i}" });
+                }
+            }
+            else
+            {
+                for (int i = 1000; i < 1010; i++)
+                {
+                    signals.Add(new SignalModel { Name = $"Signal {i}" });
+                }
+            }
+
+
+            return signals;
+        }
+    }
+
+
     public class ConfigManager : IConfigManager
     {
         private IJsonConfigFileParser _configParser;
@@ -28,26 +55,23 @@ namespace PlcComLibrary
 
         }
 
-        //public List<IDatablockModel> CreateDatablocks(List<string> )
-        //{
-
-        //}
 
         public void LoadConfigs()
         {
             List<ISignalModel> signals = new List<ISignalModel>();
-            PlcServiceList.Clear();
+            List<IDatablockModel> datablocks = new List<IDatablockModel>();
+            //PlcServiceList.Clear();
             List<IJsonFileConfig> jsonConfigs = _configParser.LoadConfigFiles();
 
             foreach (var jsonConfig in jsonConfigs)
+            //for (int i = 0; i < 2; i++)
             {
                 ICpuConfig cpuConfig = new CpuConfig(jsonConfig);
-                List<IDatablockModel> datablocks = new List<IDatablockModel>();
+                datablocks.Clear();
 
                 foreach (var dbNumberDbNameString in jsonConfig.SignalLists)
                 {
                     IDatablockModel datablock = new DatablockModel();
-                    signals.Clear();
 
                     // signal should contain db number and db name, format : "number:name" e.g "3201:DbName"
                     List<string> dbNumberDbName = dbNumberDbNameString.Split(':').ToList();
@@ -67,101 +91,33 @@ namespace PlcComLibrary
                     string filePath = AppDomain.CurrentDomain.BaseDirectory + Constants.BaseDirectorySubDirs + dbNumberDbName.Last();
 
                     signals = _dbParser.ParseDb(filePath, dbNumber, jsonConfig.DiscardKeywords);
-                    Console.WriteLine($"\n\nAfter _dbParser.ParseDb filePath {filePath} signals: {signals.Count}");
-                    foreach (var signal in signals)
-                    {
-                        Console.WriteLine($"\tsignal {signal.Name} address: {signal.Address}");
-                    }
-                    Console.WriteLine("\n\n");
 
-
-                    datablock.Index = signals.Count;
+                    datablock.Index = datablocks.Count;
                     datablock.Signals = signals;
                     datablock.Name =  dbNumberDbName.Last();
                     datablock.Number = dbNumber;
+                    datablock.FirstByte = signals.First().Byte;
+                    datablock.ByteCount = signals.Last().Byte - datablock.FirstByte;
                     datablocks.Add(datablock);
                 }
 
-                foreach (var db in datablocks)
-                {
-                    Console.WriteLine($"\n\n\n-----------------Cpu {cpuConfig.Name} Datablock {db.Index} ------------------------------");
-                    foreach (var signal in db.Signals)
-                    {
-                        Console.WriteLine($"\tSignal {signal.Name}");
-                    }
-                }
-            }
-            //foreach (var jsonConfig in jsonConfigs)
-            //{
-            //    ICpuConfig cpuConfig = new CpuConfig(jsonConfig);
+                int plcIndex = PlcServiceList.Count;
+                PlcServiceList.Add(new S7PlcService(plcIndex, cpuConfig, datablocks));
 
-                //    foreach (var signalList in jsonConfig.SignalLists)
+
+                //foreach (var plc in PlcServiceList)
+                //{
+                //    Console.WriteLine($"\n\n-----------------| Plc Index {plc.Index} Name {plc.Config.Name} Ip {plc.Config.Ip} |-------------------\n");
+                //    foreach (var db in plc.Datablocks)
                 //    {
-
-                //        // signal should contain db number and db name, format : "number:name" e.g "3201:DbName"
-                //        List<string> dbNumberDbName = signalList.Split(':').ToList();
-                //        int dbNumber = 0;
-                //        bool isParsable = false;
-
-                //        if (dbNumberDbName.Count > 0)
+                //        Console.WriteLine($"\n\tDatablock Index {db.Index} Name {db.Name} Numer {db.Number} FirstByte {db.FirstByte} ByteCount {db.ByteCount} Signal Count {db.Signals.Count} \n");
+                //        foreach (var sig in db.Signals)
                 //        {
-                //            isParsable = Int32.TryParse(dbNumberDbName.First(), out dbNumber);
+                //            Console.WriteLine($"\n\t\tSignal Index {sig.Index} Name {sig.Name} Address {sig.Address} Byte {sig.Byte} Bit {sig.Bit} DB {sig.Db} DataType {sig.DataType} DataTypeStr {sig.DataTypeStr}");
                 //        }
-
-                //        if (dbNumberDbName.Count != 2 || !isParsable)
-                //        {
-                //            throw new FormatException("Invalid file format in Json config! SignalsList must use : as separator between db number and name.");
-                //        }
-
-                //        string filePath = AppDomain.CurrentDomain.BaseDirectory + Constants.BaseDirectorySubDirs + dbNumberDbName.Last();
-
-                //        List<ISignalModel> signals = _dbParser.ParseDb(filePath, dbNumber, jsonConfig.DiscardKeywords);
-                //        Console.WriteLine($"\n\nAfter _dbParser.ParseDb filePath {filePath} signals: {signals.Count}");
-                //            foreach (var signal in signals)
-                //            {
-                //                Console.WriteLine($"\tsignal {signal.Name} address: {signal.Address}");
-                //            }
-                //        Console.WriteLine("\n\n");
-
-                //        if (signals.Count > 0)
-                //        {
-                //            int dbIndex = datablocks.Count;
-                //            IDatablockModel datablock = new DatablockModel(dbIndex);
-                //            datablock.Number = dbNumber;
-                //            datablock.Name = dbNumberDbName.Last();
-                //            datablock.Signals = signals;
-                //            datablock.FirstByte = signals.First().Byte;
-                //            datablock.ByteCount = signals.Last().Byte - datablock.FirstByte;
-                //            //Console.WriteLine($"\n\nAfter assignment: datablock.Signals = signals;  datablock.Signals,Count = {datablock.Signals.Count}");
-                //            //foreach (var signal in datablock.Signals)
-                //            //{
-                //            //    Console.WriteLine($"\tsignal {signal.Name} address: {signal.Address}");
-                //            //}
-                //            //Console.WriteLine("\n\n");
-
-                //            datablocks.Add(datablock);
-
-                //            Console.WriteLine("\n\nAfter datablocks.Add(datablock);");
-                //            foreach (var db in datablocks)
-                //            {
-                //                Console.WriteLine($"\n\n\t{db.Name} signals: {db.Signals.Count}");
-                //                foreach (var signal in db.Signals)
-                //                {
-                //                    Console.WriteLine($"\tsignal {signal.Name} address: {signal.Address}");
-                //                }
-                //            }
-                //            Console.WriteLine("\n\n");
-
-                //            //configsProgressEventArgs.ProgressInput += 1;
-                //            //ConfigsLoadingProgressChanged?.Invoke(this, configsProgressEventArgs);
-                //        }
-                //    }
-
-                //   int plcIndex = PlcServiceList.Count;
-                // PlcServiceList.Add(new SimulatedPlcService(plcIndex, cpuConfig, datablocks));
-
-                //ConfigsLoaded?.Invoke(this, new EventArgs());
-                // }
+                //    }               
+                //}
+            }
         }
 
         public List<IPlcService> PlcServiceList { get; set; }

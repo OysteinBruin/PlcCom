@@ -15,32 +15,35 @@ namespace PlcComLibrary
         private string[] _separatingStrings = { "//", ";", ":" };
         private readonly IList<string> _endOfHeaderKeywords = new List<string> { "STRUCT", "VAR" };
         private readonly IList<string> _dbSectionKeywords = new List<string> { "STRUCT", "Struct", "VAR", "Var", "TYPE"};
-        private List<ISignalModel> _signals = new List<ISignalModel>();
+        
         private string _path;
         private int _dbNumber;
         private List<string> _discardKeywords;
         private int _bitCounter = 0;
         private int _byteCounter = 0;
 
-        public int FirstByte { get; } = 0;
-        public int ByteCount { get; } = 0;
+       
 
         public DatablockParser()
         {
         }
-         
+
+        public int FirstByte { get; } = 0;
+        public int ByteCount { get; } = 0;
+
         public List<ISignalModel> ParseDb(string path, int dbNumber, List<string> discardKeywords)
         {
+
             _path = path;
             _dbNumber = dbNumber;
             _discardKeywords = discardKeywords;
-            _signals.Clear();
+            List<ISignalModel> signals = new List<ISignalModel>();
             List<string> fileLines = ReadS7DbFile(_path);
 
             // Return if no data from db file
             if (fileLines.Count == 0)
             {
-                return _signals;
+                return signals;
             }
 
             _bitCounter = 0;
@@ -60,7 +63,7 @@ namespace PlcComLibrary
             {
                 (List<string> splittedLines, bool signalDiscarded) = SplitAndValidateLine(line, _discardKeywords);
 
-                _signals.AddRange(CheckforUDT(splittedLines));
+                signals.AddRange(CheckforUDT(splittedLines));
 
                 splittedLines = FilterOnKeywords(splittedLines);
 
@@ -72,17 +75,17 @@ namespace PlcComLibrary
                     {
                         if (!signalDiscarded)
                         {
-                            int signalIndex = _signals.Count;
-                            _signals.Add(CreateSignal(signalIndex, splittedLines, datatypeAndSize));
+                            int signalIndex = signals.Count;
+                            signals.Add(CreateSignal(signalIndex, splittedLines, datatypeAndSize));
                         }                        
                     }
 
-                    UpdateByteAndBitIndex(datatypeAndSize);
+                    UpdateByteAndBitIndex(datatypeAndSize, signals);
 
                 }
             }
 
-            return _signals;
+            return signals;
         }
 
 
@@ -305,14 +308,15 @@ namespace PlcComLibrary
             return dbAddress;
         }
 
-        private void UpdateByteAndBitIndex((Enums.DataType dataType, string dataTypeStr, int byteSize) datatypeAndSize)
+        private void UpdateByteAndBitIndex((Enums.DataType dataType, string dataTypeStr, int byteSize) datatypeAndSize,
+                                            List<ISignalModel> signals)
         {
             if (datatypeAndSize.dataType != Enums.DataType.Array)
             {
 
                 if (datatypeAndSize.dataType == Enums.DataType.Bit)
                 {
-                    if (_signals.Any())
+                    if (signals.Any())
                     {
                         _bitCounter++;
                     }
@@ -341,7 +345,7 @@ namespace PlcComLibrary
             s.DataType = datatypeAndSize.dataType;
             s.Address = CreateDbAdressString(_dbNumber, datatypeAndSize.dataType, _byteCounter, _bitCounter);
             s.Db = _dbNumber;
-            s.Byte = ByteCount;
+            s.Byte = _byteCounter;
             if (s.DataType == Enums.DataType.Bit)
             {
                 s.Bit = _bitCounter;
