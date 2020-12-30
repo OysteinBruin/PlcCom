@@ -27,13 +27,13 @@ namespace PlcComLibrary.Config
         }
 
 
-        public List<IPlcService> LoadConfigs()
+        public List<IPlcService> LoadConfigs(string path = "")
         {
             List<IPlcService> plcServiceList = new List<IPlcService>();
             List<ISignalModel> signals = new List<ISignalModel>();
             List<IDatablockModel> datablocks = new List<IDatablockModel>();
             //PlcServiceList.Clear();
-            List<IJsonFileConfig> jsonConfigs = _configParser.LoadConfigFiles();
+            List<IJsonFileConfig> jsonConfigs = _configParser.LoadConfigFiles(path);
 
             foreach (var jsonConfig in jsonConfigs)
             //for (int i = 0; i < 2; i++)
@@ -64,13 +64,16 @@ namespace PlcComLibrary.Config
 
                     signals = _dbParser.ParseDb(filePath, dbNumber, jsonConfig.DiscardKeywords);
 
-                    datablock.Index = datablocks.Count;
-                    datablock.Signals = signals;
-                    datablock.Name =  dbNumberDbName.Last();
-                    datablock.Number = dbNumber;
-                    datablock.FirstByte = signals.First().Byte;
-                    datablock.ByteCount = signals.Last().Byte - datablock.FirstByte;
-                    datablocks.Add(datablock);
+                    if (signals?.Count > 0)
+                    {
+                        datablock.Index = datablocks.Count;
+                        datablock.Signals = signals;
+                        datablock.Name = dbNumberDbName.Last();
+                        datablock.Number = dbNumber;
+                        datablock.FirstByte = signals.First().Byte;
+                        datablock.ByteCount = signals.Last().Byte - datablock.FirstByte;
+                        datablocks.Add(datablock);
+                    }
                 }
 
                 int plcIndex = plcServiceList.Count;

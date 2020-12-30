@@ -14,10 +14,10 @@ namespace PlcComLibrary.Config
         {
             _utils = utils;
         }
-        public List<IJsonFileConfig> LoadConfigFiles()
+        public List<IJsonFileConfig> LoadConfigFiles(string path)
         {
             List<IJsonFileConfig> jsonConfigDataList = new List<IJsonFileConfig>();
-            foreach (string fileName in _utils.LoadAppConfigFiles())
+            foreach (string fileName in _utils.LoadAppConfigFiles(path))
             {
                 if (fileName.EndsWith(Constants.JsonExtension))
                 {

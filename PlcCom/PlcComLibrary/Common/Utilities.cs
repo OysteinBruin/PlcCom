@@ -10,9 +10,13 @@ namespace PlcComLibrary.Common
 {
     public class Utilities : IUtilities
     {
-        public List<string> LoadAppConfigFiles()
+        public List<string> LoadAppConfigFiles(string path = "")
         {
-            string path = AppDomain.CurrentDomain.BaseDirectory + Constants.BaseDirectorySubDirs;
+            if (String.IsNullOrEmpty(path))
+            {
+                path = AppDomain.CurrentDomain.BaseDirectory + Constants.BaseDirectorySubDirs;
+            }
+            
             /// TODOTODOTODOTODOTODOTODOTODO   TODO: Handle File exceptions
             FileInfo fi = new FileInfo(path);
             List<string> appFiles = new List<string>();

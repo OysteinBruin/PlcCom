@@ -4,6 +4,6 @@ namespace PlcComLibrary.Config
 {
     public interface IJsonConfigFileParser
     {
-        List<IJsonFileConfig> LoadConfigFiles();
+        List<IJsonFileConfig> LoadConfigFiles(string path = "");
     }
 }
