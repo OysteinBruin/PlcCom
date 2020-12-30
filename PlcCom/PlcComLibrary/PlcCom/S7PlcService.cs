@@ -1,37 +1,36 @@
 ﻿using PlcComLibrary.Common;
 using PlcComLibrary.Config;
 using PlcComLibrary.Models;
+using S7.Net;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static PlcComLibrary.Common.Enums;
-using log4net;
 
-namespace PlcComLibrary
+namespace PlcComLibrary.PlcCom
 {
-    public class SimulatedPlcService : IPlcService
+    public class S7PlcService : IPlcService
     {
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private S7.Net.Plc _plc;
         private ComState _comState;
 
-        public SimulatedPlcService(int index, ICpuConfig config, List<IDatablockModel> datablocks)
+        public S7PlcService(int index, ICpuConfig config, List<IDatablockModel> datablocks)
         {
             Index = index;
             Config = config;
             Datablocks = datablocks;
+
+            S7.Net.CpuType S7NetCpuType = ConvertCpuType(Config.CpuType);
+
+            _plc = new S7.Net.Plc(S7NetCpuType, config.Ip, (short)config.Rack, (short)config.Slot);
         }
-
-        public event EventHandler ComStateChanged;
-        public event EventHandler HasNewData;
         public int Index { get; set; }
-        public string LastError { get; private set; }
 
-        public ICpuConfig Config { get; private set; }
-
-        public List<IDatablockModel> Datablocks { get; private set; }
+        public event EventHandler HasNewData;
+        public event EventHandler ComStateChanged;
 
         public async Task ConnectAsync(ICpuConfig config)
         {
@@ -42,37 +41,76 @@ namespace PlcComLibrary
         public async Task ConnectAsync()
         {
             ComState = ComState.Connecting;
+
             await DelayAsync(1000);
-            ComState = ComState.Connected;
+
+            S7.Net.CpuType S7NetCpuType = ConvertCpuType(Config.CpuType);
+
+            try
+            {
+                _plc = new Plc(S7NetCpuType, Config.Ip, (short)Config.Rack, (short)Config.Slot);
+                await _plc.OpenAsync();
+
+                if (_plc.IsConnected)
+                {
+                    ComState = ComState.Connected;
+                }
+                else
+                {
+                    ComState = ComState.ConnectFailed;
+                }
+            }
+            catch (Exception ex)
+            {
+                LastError = ex.Message;
+                ComState = ComState.ConnectFailed;
+            }
         }
 
         public void DisConnect()
         {
+            if (_plc != null && _comState != ComState.Connected)
+            {
+                _plc.Close();
+                // _plcReadTimer.Stop();
+            }
             ComState = ComState.DisConnected;
         }
 
         public async Task WriteSingleAsync(string address, object value)
         {
+            VerifyConnectedAndValidateAddress(address);
+
+            await _plc.WriteAsync(address, value);
+        }
+
+        public async Task ToggleBitAsync(string address)
+        {
             VerifyConnected();
-            await DelayAsync(10);
+
+            if (!AddressIsBoolType(address))
+            {
+                throw new Exception($"Plc Write Error - Attempting to toggle a non boolean address: {address}");
+            }
 
             (int dbIndex, int signalIndex) = GetSignalIndexFromAddress(address, Datablocks);
 
             if (dbIndex >= 0 && signalIndex >= 0)
             {
-                Datablocks[dbIndex].Signals[signalIndex].Value = (double)value;
-                Console.WriteLine($"write value: {Datablocks[dbIndex].Signals[signalIndex].Value}");
-                log.Debug($"write value: {value}");
-                PlcReadResultEventArgs args = new PlcReadResultEventArgs(this.Index, dbIndex, signalIndex, (double)value);
-                HasNewData?.Invoke(this, args);
+                if (Datablocks[dbIndex].Signals[signalIndex].Value == 0)
+                {
+                    await _plc.WriteAsync(address, true);
+                }
+                else
+                {
+                    await _plc.WriteAsync(address, true);
+                }
             }
             else
             {
-                throw new ArgumentOutOfRangeException();
+                throw new Exception($"Plc Write Error - Unknown error occured while attempting to toggle: {address}");
             }
         }
-
-        
 
         public async Task PulseBitAsync(string address)
         {
@@ -83,40 +121,20 @@ namespace PlcComLibrary
                 throw new Exception($"Plc Write Error - Attempting to pulse a non boolean address: {address}");
             }
 
-            (int dbIndex, int signalIndex) = GetSignalIndexFromAddress(address, Datablocks);
-
-            if (dbIndex >= 0 && signalIndex >= 0)
-            {
-                
-                PlcReadResultEventArgs args = new PlcReadResultEventArgs(this.Index, dbIndex, signalIndex, 1.0f);
-                await DelayAsync(100);
-                Datablocks[dbIndex].Signals[signalIndex].Value = 1.0f;
-                HasNewData?.Invoke(this, args);
-                await DelayAsync(500);
-                args.PlcSignalIndexList[0].Value = 0.0f;
-                Datablocks[dbIndex].Signals[signalIndex].Value = 0;
-                HasNewData?.Invoke(this, args);
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-            
-
+            await _plc.WriteAsync(address, true);
+            await DelayAsync(100);
+            await _plc.WriteAsync(address, false);
         }
 
         public async Task ReadSingleAsync(string address)
         {
-            await DelayAsync(500);
             VerifyConnectedAndValidateAddress(address);
 
             (int dbIndex, int signalIndex) = GetSignalIndexFromAddress(address, Datablocks);
 
             if (dbIndex >= 0 && signalIndex >= 0)
             {
-                Datablocks[dbIndex].Signals[signalIndex].Value = 0;
-                PlcReadResultEventArgs args = new PlcReadResultEventArgs(this.Index, dbIndex, signalIndex, 0.0f);
-                HasNewData?.Invoke(this, args);
+               await _plc.ReadAsync(address);
             }
             else
             {
@@ -124,19 +142,24 @@ namespace PlcComLibrary
             }
         }
 
-        public Task ReadDbAsync(IDatablockModel db)
+        public async Task ReadDbAsync(IDatablockModel db)
         {
             VerifyConnected();
-            throw new NotImplementedException();
+            //byte[] bytes = new byte;
+            byte[] bytes = await _plc.ReadBytesAsync(S7.Net.DataType.DataBlock, db.Number, db.FirstByte, db.ByteCount);
+
+            Debug.Assert(bytes.Length == db.ByteCount - db.FirstByte);
+            for (int i = 0; i < db.Signals.Count; i++)
+            {
+
+            }
         }
 
-        public Task ToggleBitAsync(string address)
-        {
-            VerifyConnected();
-            throw new NotImplementedException();
-        }
+        public string LastError { get; private set; }
 
-        
+        public ICpuConfig Config { get; private set; }
+
+        public List<IDatablockModel> Datablocks { get; private set; }
 
         public ComState ComState
         {
@@ -150,6 +173,8 @@ namespace PlcComLibrary
                 ComStateChanged?.Invoke(this, new EventArgs());
             }
         }
+
+
         private void VerifyConnectedAndValidateAddress(string address)
         {
             VerifyConnected();
@@ -163,9 +188,33 @@ namespace PlcComLibrary
         {
             if (ComState != ComState.Connected)
             {
-                throw new InvalidOperationException("Com Error - Connect to CPU before attempting to read or write data.");
+                throw new Exception("Com Error - Connect to CPU before attempting to read or write data.");
             }
         }
+
+
+        private async Task DelayRandomAsync(int minMs, int maxMs)
+        {
+            Random rnd = new Random();
+            int delayMs = rnd.Next(minMs, maxMs);
+            await Task.Delay(delayMs);
+        }
+
+        private S7.Net.CpuType ConvertCpuType(S7CpuType s7CpuType)
+        {
+            // Convert UnitTestLibrary.DataAccess.S7CpuType (data.S7CpuType) to S7.Net.CpuType to use
+            // as input parameter for Plc instance
+            bool result = false;
+            result = Enum.TryParse(Enum.GetName(typeof(S7CpuType), s7CpuType), out S7.Net.CpuType S7NetCpuType);
+
+            if (!result)
+            {
+                throw new Exception($"Plc Connect Error - Invalid Cpu Type: {Enum.GetName(typeof(S7CpuType), s7CpuType)}");
+            }
+
+            return S7NetCpuType;
+        }
+
         private async Task DelayAsync(int ms)
         {
             await Task.Delay(ms);
@@ -195,8 +244,8 @@ namespace PlcComLibrary
 
             // Get db number from adddress
             int dbNumber;
-            string modifiedAddress = address.Remove(0,2); // Remove "db" 
-            List<string> strList = modifiedAddress.Split('.').ToList();
+            address = address.Remove(2); // Remove "db" 
+            List<string> strList = address.Split('.').ToList();
 
             bool successfullyParsed = int.TryParse(strList[0], out dbNumber);
             if (successfullyParsed)

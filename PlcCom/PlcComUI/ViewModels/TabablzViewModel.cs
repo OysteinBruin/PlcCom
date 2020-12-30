@@ -1,6 +1,6 @@
 ﻿using Caliburn.Micro;
 using Dragablz;
-using PlcComLibrary;
+using PlcComLibrary.Config;
 using PlcComLibrary.Models;
 using PlcComUI.EventModels;
 using PlcComUI.Models;

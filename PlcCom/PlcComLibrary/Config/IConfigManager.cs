@@ -1,10 +1,7 @@
-﻿using PlcComLibrary.Config;
-using PlcComLibrary.Models;
-using System;
+﻿using PlcComLibrary.PlcCom;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace PlcComLibrary
+namespace PlcComLibrary.Config
 {
     public interface IConfigManager
     {

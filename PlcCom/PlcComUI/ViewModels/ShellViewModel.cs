@@ -1,7 +1,7 @@
 ﻿using Caliburn.Micro;
 using MaterialDesignThemes.Wpf;
 using Dragablz;
-using PlcComLibrary;
+using PlcComLibrary.Config;
 using System;
 using System.Threading.Tasks;
 using PlcComUI.EventModels;

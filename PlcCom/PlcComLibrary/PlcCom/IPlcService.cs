@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PlcComLibrary
+namespace PlcComLibrary.PlcCom
 {
     public interface IPlcService
     {

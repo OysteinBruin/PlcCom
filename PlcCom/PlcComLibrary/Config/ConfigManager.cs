@@ -1,5 +1,5 @@
 ﻿using PlcComLibrary.Common;
-using PlcComLibrary.Config;
+using PlcComLibrary.PlcCom;
 using PlcComLibrary.Models;
 using System;
 using System.Collections.Generic;
@@ -9,34 +9,8 @@ using System.IO;
 using static PlcComLibrary.Common.Enums;
 using System.Threading.Tasks;
 
-namespace PlcComLibrary
+namespace PlcComLibrary.Config
 {
-    public class SignalGenerator
-    {
-        public static List<ISignalModel> Signals(int index)
-        {
-            List<ISignalModel> signals = new List<ISignalModel>();
-
-            if (index == 0)
-            {
-                for (int i = 50; i < 70; i++)
-                {
-                    signals.Add(new SignalModel { Name = $"Signal {i}" });
-                }
-            }
-            else
-            {
-                for (int i = 1000; i < 1010; i++)
-                {
-                    signals.Add(new SignalModel { Name = $"Signal {i}" });
-                }
-            }
-
-
-            return signals;
-        }
-    }
-
 
     public class ConfigManager : IConfigManager
     {

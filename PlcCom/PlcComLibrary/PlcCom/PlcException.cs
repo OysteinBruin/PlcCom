@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 https://docs.microsoft.com/en-us/dotnet/api/system.exception?view=netcore-3.0#implementing-custom-exceptions
 */
 
-namespace PlcComLibrary
+namespace PlcComLibrary.PlcCom
 {
     [Serializable()]
     public class PlcException : Exception
