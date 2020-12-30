@@ -138,6 +138,14 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Controls\RealTimeGraph\WpfGraphControl.cs" />
     <Compile Include="Converters\BooleanGreenGrayColorConverter.cs" />
+    <Compile Include="Converters\BooleanGreenRedColorConverter.cs" />
+    <Compile Include="Converters\BrushRoundConverter.cs" />
+    <Compile Include="Converters\ExpanderDirectionConverter.cs" />
+    <Compile Include="Converters\HorizontalThicknessConverter.cs" />
+    <Compile Include="Converters\InvertBooleanConverter.cs" />
+    <Compile Include="Converters\InvertBooleanToVisibilityConverter.cs" />
+    <Compile Include="Converters\ListViewGridViewConverter.cs" />
+    <Compile Include="Converters\MathMlpMultipleConverter.cs" />
     <Compile Include="Converters\PlcCmdParameterConverter.cs" />
     <Compile Include="DataSignalModelTemplateSelector.cs" />
     <Compile Include="Domain\AsyncRelayCommnd.cs" />
@@ -149,6 +157,7 @@
     <Compile Include="EventModels\PlcUiCmdEvent.cs" />
     <Compile Include="Models\CpuDisplayModel.cs" />
     <Compile Include="Models\DatablockDisplayModel.cs" />
+    <Compile Include="Styles\ScaleHost.cs" />
     <Compile Include="TmpMain.cs" />
     <Compile Include="UserSettings\Palette\PaletteHelperExtensions.cs" />
     <Compile Include="UserSettings\SettingBindingExtension.cs" />
@@ -213,6 +222,18 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Styles\CustomMDIXExpander.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\CustomMDIXListView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\CustomMDIXTreeview.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Styles\Dragablz.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
