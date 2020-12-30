@@ -1,5 +1,5 @@
 ﻿using Caliburn.Micro;
-using PlcComLibrary;
+using PlcComLibrary.PlcCom;
 using PlcComUI.Domain;
 using PlcComUI.EventModels;
 using System;

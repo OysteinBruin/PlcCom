@@ -58,6 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyEnvironment.cs" />
     <Compile Include="Config\ConfigManager.cs" />
     <Compile Include="Common\Constants.cs" />
     <Compile Include="Common\Enums.cs" />
@@ -75,6 +76,9 @@
     <Compile Include="Models\DatablockModel.cs" />
     <Compile Include="DatablockParser.cs" />
     <Compile Include="Models\PlcSignalIndex.cs" />
+    <Compile Include="PlcCom\IPlcComManager.cs" />
+    <Compile Include="PlcCom\PlcComManager.cs" />
+    <Compile Include="PlcCom\PlcServiceFactory.cs" />
     <Compile Include="PlcCom\SimulatedPlcService.cs" />
     <Compile Include="Config\IConfigManager.cs" />
     <Compile Include="Models\IDatablockModel.cs" />

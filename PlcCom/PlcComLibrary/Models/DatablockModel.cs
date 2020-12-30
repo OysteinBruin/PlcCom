@@ -33,7 +33,7 @@ namespace PlcComLibrary.Models
             get
             {
                 return Index >= 0 && Signals.Count > 0 && 
-                    Name.Length > 0 && Number > 0;
+                    Name.Length > 0 && Number > 0 && Number < 60000;
             }
             
         }

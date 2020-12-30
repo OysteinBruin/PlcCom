@@ -24,14 +24,12 @@ namespace PlcComLibrary.Config
         {
             _configParser = configParser;
             _dbParser = dbParser;
-            PlcServiceList = new List<IPlcService>();
-            
-
         }
 
 
-        public void LoadConfigs()
+        public List<IPlcService> LoadConfigs()
         {
+            List<IPlcService> plcServiceList = new List<IPlcService>();
             List<ISignalModel> signals = new List<ISignalModel>();
             List<IDatablockModel> datablocks = new List<IDatablockModel>();
             //PlcServiceList.Clear();
@@ -75,8 +73,9 @@ namespace PlcComLibrary.Config
                     datablocks.Add(datablock);
                 }
 
-                int plcIndex = PlcServiceList.Count;
-                PlcServiceList.Add(new S7PlcService(plcIndex, cpuConfig, datablocks));
+                int plcIndex = plcServiceList.Count;
+                IPlcService plcService = PlcServiceFactory.Create(plcIndex, cpuConfig, datablocks);
+                plcServiceList.Add(plcService);
 
 
                 //foreach (var plc in PlcServiceList)
@@ -92,8 +91,7 @@ namespace PlcComLibrary.Config
                 //    }               
                 //}
             }
+            return plcServiceList;
         }
-
-        public List<IPlcService> PlcServiceList { get; set; }
     }
 }

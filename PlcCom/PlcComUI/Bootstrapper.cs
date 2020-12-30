@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using PlcComLibrary.PlcCom;
 
 namespace PlcComUI
 {
@@ -37,6 +38,7 @@ namespace PlcComUI
                       .Singleton<IDatablockParser, DatablockParser>()
                       .Singleton<IJsonConfigFileParser, JsonConfigFileParser>()
                       .Singleton<IConfigManager, ConfigManager>()
+                      .Singleton<IPlcComManager, PlcComManager>()
                       .Singleton<IInterTabClient, InterTabClient>()
                       .Singleton<IInterLayoutClient, InterLayoutClient>();
             // .Singleton<IDataAccess, SqliteDataAccess>()

@@ -1,6 +1,6 @@
 ﻿using Caliburn.Micro;
 using Dragablz;
-using PlcComLibrary.Config;
+using PlcComLibrary.PlcCom;
 using PlcComLibrary.Models;
 using PlcComUI.EventModels;
 using PlcComUI.Models;
@@ -14,24 +14,25 @@ namespace PlcComUI.ViewModels
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(TabablzViewModel));
         private IEventAggregator _events;
-        private IConfigManager _configManager;
+        private IPlcComManager _plcComManager;
         private List<CpuDisplayModel> _cpuList;
 
         public TabablzViewModel(
             IEventAggregator events,
-            IConfigManager configManager,
+            IPlcComManager plcComManager,
             IInterTabClient interTabClient,
             IInterLayoutClient interLayoutClient)
         {
             _events = events;
-            _configManager = configManager;
+            _plcComManager = plcComManager;
             InterTabClient = interTabClient;
             InterLayoutClient = interLayoutClient;
             PlcList = new List<CpuDisplayModel>();
             _events.Subscribe(this);
 
+            _plcComManager.LoadConfigs();
 
-            foreach (var plc in _configManager.PlcServiceList)
+            foreach (var plc in _plcComManager.PlcServiceList)
             {
                 CpuDisplayModel cpuDisplayModel = new CpuDisplayModel(plc, _events);
                 PlcList.Add(cpuDisplayModel);
@@ -110,13 +111,13 @@ namespace PlcComUI.ViewModels
                 switch (message.CommandType)
                 {
                     case PlcUiCmdEvent.CmdType.ButtonPulse:
-                        await _configManager.PlcServiceList[message.CpuIndex].WriteSingleAsync(message.Address, true);
+                        await _plcComManager.PlcServiceList[message.CpuIndex].WriteSingleAsync(message.Address, true);
                         break;
                     case PlcUiCmdEvent.CmdType.ButtonToggle:
                         break;
                     case PlcUiCmdEvent.CmdType.Slider:
                         Debug.Assert(message.Value != null);
-                        await _configManager.PlcServiceList[0].WriteSingleAsync(message.Address, message.Value);
+                        await _plcComManager.PlcServiceList[0].WriteSingleAsync(message.Address, message.Value);
                         break;
                     default:
                         break;
@@ -126,7 +127,7 @@ namespace PlcComUI.ViewModels
             {
                 log.Error(ex);
                 _events.PublishOnUIThread(new MessageEvent($"Failed to write to Plc - " +
-                    $"Cpu {_configManager.PlcServiceList[message.CpuIndex].Config.Name} ip: {_configManager.PlcServiceList[message.CpuIndex].Config.Ip}",
+                    $"Cpu {_plcComManager.PlcServiceList[message.CpuIndex].Config.Name} ip: {_plcComManager.PlcServiceList[message.CpuIndex].Config.Ip}",
                     ex.Message, MessageEvent.Level.Warn));
             }
             catch (InvalidOperationException ex)
@@ -134,14 +135,14 @@ namespace PlcComUI.ViewModels
                 log.Error($"Failed to write to Plc - " +
                     $"Cpu index {message.CpuIndex} ", ex);
                 _events.PublishOnUIThread(new MessageEvent($"Failed to write to Plc - " +
-                    $"Cpu {_configManager.PlcServiceList[message.CpuIndex].Config.Name} ip: {_configManager.PlcServiceList[message.CpuIndex].Config.Ip}",
+                    $"Cpu {_plcComManager.PlcServiceList[message.CpuIndex].Config.Name} ip: {_plcComManager.PlcServiceList[message.CpuIndex].Config.Ip}",
                     ex.Message, MessageEvent.Level.Warn));
             }
             catch (Exception ex)
             {
                 log.Error(ex);
                 _events.PublishOnUIThread(new MessageEvent($"Failed to write to Plc - " +
-                    $"Cpu {_configManager.PlcServiceList[message.CpuIndex].Config.Name} ip: {_configManager.PlcServiceList[message.CpuIndex].Config.Ip}",
+                    $"Cpu {_plcComManager.PlcServiceList[message.CpuIndex].Config.Name} ip: {_plcComManager.PlcServiceList[message.CpuIndex].Config.Ip}",
                     ex.Message, MessageEvent.Level.Warn));
             }
 
