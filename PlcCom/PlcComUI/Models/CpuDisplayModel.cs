@@ -14,7 +14,7 @@ using static PlcComLibrary.Common.Enums;
 
 namespace PlcComUI.Models
 {
-    class CpuDisplayModel : INotifyPropertyChanged
+    public class CpuDisplayModel : INotifyPropertyChanged
     {
         private string _name;
         IPlcService _plcService;

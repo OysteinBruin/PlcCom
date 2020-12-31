@@ -161,13 +161,19 @@
     <Compile Include="TmpMain.cs" />
     <Compile Include="UserSettings\Palette\PaletteHelperExtensions.cs" />
     <Compile Include="UserSettings\SettingBindingExtension.cs" />
+    <Compile Include="ViewModels\ConnectionsViewModel.cs" />
     <Compile Include="ViewModels\ErrorDialogViewModel.cs" />
     <Compile Include="ViewModels\PaletteSelectorViewModel.cs" />
+    <Compile Include="ViewModels\PlcComViewModel.cs" />
     <Compile Include="ViewModels\RealTimeGraphViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
+    <Compile Include="ViewModels\SignalSelectionViewModel.cs" />
     <Compile Include="ViewModels\TabablzViewModel.cs" />
     <Compile Include="ViewModels\TabContentViewModel.cs" />
     <Compile Include="ViewModels\TearedViewModel.cs" />
+    <Compile Include="Views\ConnectionsView.xaml.cs">
+      <DependentUpon>ConnectionsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ErrorMessageView.xaml.cs">
       <DependentUpon>ErrorMessageView.xaml</DependentUpon>
     </Compile>
@@ -176,6 +182,9 @@
     </Compile>
     <Compile Include="Views\PaletteSelectorView.xaml.cs">
       <DependentUpon>PaletteSelectorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PlcComView.xaml.cs">
+      <DependentUpon>PlcComView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RealTimeGraphView.xaml.cs">
       <DependentUpon>RealTimeGraphView.xaml</DependentUpon>
@@ -238,6 +247,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\ConnectionsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ErrorMessageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -247,6 +260,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\PaletteSelectorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PlcComView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
