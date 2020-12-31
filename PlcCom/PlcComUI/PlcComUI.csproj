@@ -169,7 +169,7 @@
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\SignalSelectionViewModel.cs" />
     <Compile Include="ViewModels\TabablzViewModel.cs" />
-    <Compile Include="ViewModels\TabContentViewModel.cs" />
+    <Compile Include="ViewModels\DatablockTabViewModel.cs" />
     <Compile Include="ViewModels\TearedViewModel.cs" />
     <Compile Include="Views\ConnectionsView.xaml.cs">
       <DependentUpon>ConnectionsView.xaml</DependentUpon>
@@ -190,8 +190,11 @@
       <DependentUpon>RealTimeGraphView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellView.xaml.cs" />
+    <Compile Include="Views\SignalSelectionView.xaml.cs">
+      <DependentUpon>SignalSelectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TabablzView.xaml.cs" />
-    <Compile Include="Views\TabContentView.xaml.cs" />
+    <Compile Include="Views\DatablockTabView.xaml.cs" />
     <Compile Include="Views\TearedView.xaml.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -275,11 +278,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\SignalSelectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\TabablzView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\TabContentView.xaml">
+    <Page Include="Views\DatablockTabView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

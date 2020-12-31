@@ -40,7 +40,7 @@ namespace PlcComUI.ViewModels
                 int count = 0;
                 foreach (var datablock in plc.Datablocks)
                 {
-                    TabContentViewModel dbModel = new TabContentViewModel(_events, plc.Index, datablock.Index, datablock.Name + "[" + datablock.Number + "]");
+                    DatablockTabViewModel dbModel = new DatablockTabViewModel(_events, plc.Index, datablock.Index, datablock.Name + "[" + datablock.Number + "]");
                     RealTimeGraphViewModel realTimeModel = new RealTimeGraphViewModel($"RealTimeGraph View {count + 1}");
 
                     List<SignalDisplayModel> signalDisplayModels = new List<SignalDisplayModel>();

@@ -10,7 +10,7 @@ using System.Media;
 
 namespace PlcComUI.ViewModels
 {
-	public class ShellViewModel : Conductor<IScreen>.Collection.OneActive, IHandle<MessageEvent>
+	public class ShellViewModel : Conductor<IScreen>.Collection.AllActive, IHandle<MessageEvent>
     {
 		private TabablzViewModel _tabablzViewModel;
 		private PaletteSelectorViewModel _paletteSelectorVM;
@@ -18,12 +18,25 @@ namespace PlcComUI.ViewModels
 		private IConfigManager _configManager;
         private bool _modalViewIsActive = false;
         private bool _showDrawer = false;
-
+        /*
+         * 
+         *public ShellViewModel()
+    {
+        Items.Add(new ChildViewModel());
+        Items.Add(new ChildViewModel());
+        Items.Add(new ChildViewModel());
+    }
+	
+	
+	
+	<ItemsControl x:Name="Items"></ItemsControl>
+         */
         public ShellViewModel(IEventAggregator events, IConfigManager configManager)
 		{
 			_events = events;
 			_configManager = configManager;
-
+            Items.Add(IoC.Get<PaletteSelectorViewModel>());
+            Items.Add(IoC.Get<TabablzViewModel>());
             _events.Subscribe(this);
 			_configManager.LoadConfigs();
 		}
@@ -38,22 +51,25 @@ namespace PlcComUI.ViewModels
 
         public void ActivateHomeView()
         {
-            _tabablzViewModel = IoC.Get<TabablzViewModel>();
-            ActivateItem(_tabablzViewModel);
-            ShowDrawer = false;
+            //_tabablzViewModel = IoC.Get<TabablzViewModel>();
+            //ActivateItem(_tabablzViewModel);
+            //ShowDrawer = false;
+            ActivateItem(Items[0]);
         }
 
         public void ActivatePaletteSelectorView()
         {
-            _paletteSelectorVM = IoC.Get<PaletteSelectorViewModel>();
-            ActivateItem(_paletteSelectorVM);
-            ShowDrawer = false;
+            //_paletteSelectorVM = IoC.Get<PaletteSelectorViewModel>();
+            //ActivateItem(_paletteSelectorVM);
+            //ShowDrawer = false;
+            ActivateItem(Items[1]);
         }
 
         public void ActivateSettingsView()
         {
-            _paletteSelectorVM = IoC.Get<PaletteSelectorViewModel>();
-            ActivateItem(_paletteSelectorVM);
+            //_paletteSelectorVM = IoC.Get<PaletteSelectorViewModel>();
+            //ActivateItem(_paletteSelectorVM);
+            ActivateItem(Items[1]);
         }
 
         public async void Handle(MessageEvent message)

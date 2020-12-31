@@ -6,6 +6,7 @@ using PlcComUI.EventModels;
 using PlcComUI.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,7 +42,7 @@ namespace PlcComUI.ViewModels
                 int count = 0;
                 foreach (var datablock in plc.Datablocks)
                 {
-                    TabContentViewModel dbModel = new TabContentViewModel(_events, plc.Index, datablock.Index, datablock.Name + "[" + datablock.Number + "]");
+                    DatablockTabViewModel dbModel = new DatablockTabViewModel(_events, plc.Index, datablock.Index, datablock.Name + "[" + datablock.Number + "]");
                     RealTimeGraphViewModel realTimeModel = new RealTimeGraphViewModel($"RealTimeGraph View {count + 1}");
 
                     List<SignalDisplayModel> signalDisplayModels = new List<SignalDisplayModel>();
@@ -72,7 +73,7 @@ namespace PlcComUI.ViewModels
 
 
 
-            this.ConnectionsViewModel = new ConnectionsViewModel(events);
+            this.ConnectionsViewModel = new ConnectionsViewModel(events, cpuList);
             this.SignalSelectionViewModel = new SignalSelectionViewModel(events);
         }
 
@@ -97,9 +98,53 @@ namespace PlcComUI.ViewModels
             _events.PublishOnUIThread(new PlcReadEvent(eventArgs));
         }
 
-        public void Handle(PlcUiCmdEvent message)
+        public async void Handle(PlcUiCmdEvent message)
         {
-            throw new NotImplementedException();
+            //Debug.Assert(message.CpuIndex < _configManager.PlcServiceList.Count);
+
+            //if (_configManager.PlcServiceList[0].ComState != PlcComLibrary.Common.Enums.ComState.Connected)
+            //  return;
+
+            try
+            {
+                switch (message.CommandType)
+                {
+                    case PlcUiCmdEvent.CmdType.ButtonPulse:
+                        await _plcComManager.PlcServiceList[message.CpuIndex].WriteSingleAsync(message.Address, true);
+                        break;
+                    case PlcUiCmdEvent.CmdType.ButtonToggle:
+                        break;
+                    case PlcUiCmdEvent.CmdType.Slider:
+                        Debug.Assert(message.Value != null);
+                        await _plcComManager.PlcServiceList[0].WriteSingleAsync(message.Address, message.Value);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                log.Error(ex);
+                _events.PublishOnUIThread(new MessageEvent($"Failed to write to Plc - " +
+                    $"Cpu {_plcComManager.PlcServiceList[message.CpuIndex].Config.Name} ip: {_plcComManager.PlcServiceList[message.CpuIndex].Config.Ip}",
+                    ex.Message, MessageEvent.Level.Warn));
+            }
+            catch (InvalidOperationException ex)
+            {
+                log.Error($"Failed to write to Plc - " +
+                    $"Cpu index {message.CpuIndex} ", ex);
+                _events.PublishOnUIThread(new MessageEvent($"Failed to write to Plc - " +
+                    $"Cpu {_plcComManager.PlcServiceList[message.CpuIndex].Config.Name} ip: {_plcComManager.PlcServiceList[message.CpuIndex].Config.Ip}",
+                    ex.Message, MessageEvent.Level.Warn));
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+                _events.PublishOnUIThread(new MessageEvent($"Failed to write to Plc - " +
+                    $"Cpu {_plcComManager.PlcServiceList[message.CpuIndex].Config.Name} ip: {_plcComManager.PlcServiceList[message.CpuIndex].Config.Ip}",
+                    ex.Message, MessageEvent.Level.Warn));
+            }
+
         }
     }
 }

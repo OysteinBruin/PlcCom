@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PlcComUI.Views"
+             xmlns:models="clr-namespace:PlcComUI.Models"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
@@ -20,12 +21,11 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Styles/Dragablz.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Card.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Flipper.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <ListView x:Name="PlcList" Margin="0 0 0 5" >
+        <ListView x:Name="CpuList" Margin="0" >
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:CpuDisplayModel}">
 
@@ -35,7 +35,6 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="0.7*" />
                                 <ColumnDefinition Width="0.3*" />
-
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto" />

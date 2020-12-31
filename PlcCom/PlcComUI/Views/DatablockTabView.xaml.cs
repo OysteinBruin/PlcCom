@@ -18,9 +18,9 @@ namespace PlcComUI.Views
 	/// <summary>
 	/// Interaction logic for TabContentView.xaml
 	/// </summary>
-	public partial class TabContentView : UserControl
+	public partial class DatablockTabView : UserControl
 	{
-		public TabContentView()
+		public DatablockTabView()
 		{
 			InitializeComponent();
 		}

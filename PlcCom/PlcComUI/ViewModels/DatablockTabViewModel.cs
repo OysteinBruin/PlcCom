@@ -10,13 +10,13 @@ using log4net;
 
 namespace PlcComUI.ViewModels
 {
-	public class TabContentViewModel : Screen, IHandle<PlcReadEvent>
+	public class DatablockTabViewModel : Screen, IHandle<PlcReadEvent>
 	{
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private IEventAggregator _events;
         private readonly int _plcIndex;
         private readonly int _dbIndex;
-        public TabContentViewModel(IEventAggregator events, int plcIndex, int dbIndex, string header)
+        public DatablockTabViewModel(IEventAggregator events, int plcIndex, int dbIndex, string header)
 		{
             _events = events;
             _plcIndex = plcIndex;
