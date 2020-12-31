@@ -10,33 +10,19 @@ using System.Media;
 
 namespace PlcComUI.ViewModels
 {
-	public class ShellViewModel : Conductor<IScreen>.Collection.AllActive, IHandle<MessageEvent>
+	public class ShellViewModel : Conductor<IScreen>.Collection.OneActive, IHandle<MessageEvent>
     {
-		private TabablzViewModel _tabablzViewModel;
-		private PaletteSelectorViewModel _paletteSelectorVM;
 		private IEventAggregator _events;
 		private IConfigManager _configManager;
         private bool _modalViewIsActive = false;
         private bool _showDrawer = false;
-        /*
-         * 
-         *public ShellViewModel()
-    {
-        Items.Add(new ChildViewModel());
-        Items.Add(new ChildViewModel());
-        Items.Add(new ChildViewModel());
-    }
-	
-	
-	
-	<ItemsControl x:Name="Items"></ItemsControl>
-         */
+
         public ShellViewModel(IEventAggregator events, IConfigManager configManager)
 		{
 			_events = events;
-			_configManager = configManager;
-            Items.Add(IoC.Get<PaletteSelectorViewModel>());
+			_configManager = configManager;           
             Items.Add(IoC.Get<TabablzViewModel>());
+            Items.Add(IoC.Get<PaletteSelectorViewModel>());
             _events.Subscribe(this);
 			_configManager.LoadConfigs();
 		}
@@ -44,9 +30,7 @@ namespace PlcComUI.ViewModels
 		protected override void OnInitialize()
 		{
 			base.OnInitialize();
-
-			_tabablzViewModel = IoC.Get<TabablzViewModel>();
-			ActivateItem(_tabablzViewModel);
+            ActivateHomeView();
 		}
 
         public void ActivateHomeView()

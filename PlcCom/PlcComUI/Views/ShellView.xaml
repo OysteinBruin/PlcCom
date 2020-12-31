@@ -107,8 +107,7 @@
                     <ScrollViewer Grid.Row="1" 
                                   materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
 
-                        <!--<ContentControl x:Name="ActiveItem" Margin="0" />-->
-                        <ItemsControl x:Name="Items"></ItemsControl>
+                        <ContentControl x:Name="ActiveItem" Margin="0" />
                     </ScrollViewer>
                     <materialDesign:Snackbar MessageQueue="{materialDesign:MessageQueue}" x:Name="MainSnackbar"
                                             Grid.Row="1" />
