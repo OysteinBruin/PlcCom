@@ -151,10 +151,12 @@
     <Compile Include="Domain\AsyncRelayCommnd.cs" />
     <Compile Include="Domain\RelayCommand.cs" />
     <Compile Include="Domain\SettingBindingExtension.cs" />
+    <Compile Include="EventModels\DatablockSelectedEvent.cs" />
     <Compile Include="EventModels\MessageEvent.cs" />
     <Compile Include="EventModels\PlcConnectionCmdEvent.cs" />
     <Compile Include="EventModels\PlcReadEvent.cs" />
     <Compile Include="EventModels\PlcUiCmdEvent.cs" />
+    <Compile Include="EventModels\SignalSelectedEvent.cs" />
     <Compile Include="Models\CpuDisplayModel.cs" />
     <Compile Include="Models\DatablockDisplayModel.cs" />
     <Compile Include="Styles\ScaleHost.cs" />

@@ -14,21 +14,28 @@ namespace PlcComUI.ViewModels
 	{
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private IEventAggregator _events;
+        private List<SignalDisplayModel> _signals;
         private readonly int _plcIndex;
         private readonly int _dbIndex;
-        public DatablockTabViewModel(IEventAggregator events, int plcIndex, int dbIndex, string header)
+        public DatablockTabViewModel(IEventAggregator events, List<SignalDisplayModel> signals, int plcIndex, int dbIndex, string header)
 		{
             _events = events;
+            Signals = signals;
             _plcIndex = plcIndex;
             _dbIndex = dbIndex;
 			DisplayName = header;
-			ContentText = $"Datablock: {header}";
             _events.Subscribe(this);
 		}
 
-		public string ContentText { get; }
-
-        public List<SignalDisplayModel> Signals { get; set; } = new List<SignalDisplayModel>();
+        public List<SignalDisplayModel> Signals
+        {
+            get => _signals;
+            set 
+            {
+                _signals = value;
+                NotifyOfPropertyChange(()=> Signals);
+            }
+        }
 
         public int Number { get; set; }
         public string NumberStr

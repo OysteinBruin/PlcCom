@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:cal="http://www.caliburnproject.org"
              xmlns:local="clr-namespace:PlcComUI.Views"
              xmlns:models="clr-namespace:PlcComUI.Models"
              mc:Ignorable="d" 
@@ -10,10 +11,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!--<ResourceDictionary Source="../Controls/CustomMDIXTreeView2.xaml"/>-->
-                <!--<ResourceDictionary Source="../Controls/MDIXTreeView/MDIXTreeView.xaml"/>-->
                 <ResourceDictionary Source="../Styles/CustomMDIXTreeView.xaml"/>
-                
             </ResourceDictionary.MergedDictionaries>
 
 
@@ -33,11 +31,10 @@
     <StackPanel>
 
         <TreeView Style="{StaticResource CustomMDIXTreeView}" VerticalAlignment="Stretch" ItemsSource="{Binding CpuList}">
-            <!--<TreeView x:Name="MainTreeView" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" ItemsSource="{Binding TestSets}"> -->
-
             <TreeView.ItemContainerStyle>
                 <Style TargetType="TreeViewItem" BasedOn="{StaticResource CustomMDIXTreeViewItem}">
                     <Setter Property="IsExpanded" Value="True" />
+                    <Setter Property="cal:Message.Attach" Value="[MouseDoubleClick] = [Action TreeViewItemDoubleClicked($dataContext)]"/>
                 </Style>
             </TreeView.ItemContainerStyle>
 

@@ -40,42 +40,18 @@ namespace PlcComUI.ViewModels
                 CpuDisplayModel cpuDisplayModel = new CpuDisplayModel(plc, _events);
                 cpuList.Add(cpuDisplayModel);
 
-                int count = 0;
-                foreach (var datablock in plc.Datablocks)
-                {
-                    DatablockTabViewModel dbModel = new DatablockTabViewModel(_events, plc.Index, datablock.Index, datablock.Name + "[" + datablock.Number + "]");
-                    RealTimeGraphViewModel realTimeModel = new RealTimeGraphViewModel($"RealTimeGraph View {count + 1}");
 
-                    List<SignalDisplayModel> signalDisplayModels = new List<SignalDisplayModel>();
-                    foreach (var signal in datablock.Signals)
-                    {
-                        SignalDisplayModel sdm = new SignalDisplayModel(signal.Index, _events);
-                        sdm.Name = signal.Name;
-                        sdm.Address = signal.Address;
-                        sdm.DataType = signal.DataType;
-                        sdm.Value = signal.Value;
-                        signalDisplayModels.Add(sdm);
-                    }
-                    dbModel.Signals = signalDisplayModels;
-
-                    if (count % 2 == 0)
-                    {
-                        Items.Add(dbModel);
-                    }
-                    else
-                    {
-                        Items.Add(dbModel);
-                        //Items.Add(realTimeModel);
-                    }
-                    count++;
-                }
                 plc.HasNewData += OnPlcHasNewData;
             }
 
-
-
             this.ConnectionsViewModel = new ConnectionsViewModel(events, cpuList);
             this.SignalSelectionViewModel = new SignalSelectionViewModel(events, cpuList);
+
+            this.SignalSelectionViewModel.SignalSelected += OnSignalSelected;
+            this.SignalSelectionViewModel.DatablockSelected += OnDatablockSelected;
+
+            RealTimeGraphViewModel realTimeModel = new RealTimeGraphViewModel("Graph View");
+            Items.Add(realTimeModel);
         }
 
         public ConnectionsViewModel ConnectionsViewModel { get; set; }
@@ -92,6 +68,23 @@ namespace PlcComUI.ViewModels
 
         public IInterTabClient InterTabClient { get; }
         public IInterLayoutClient InterLayoutClient { get; }
+
+        private void OnDatablockSelected(object sender, EventArgs args)
+        {
+            var eventArgs = (DatablockSelectedEvent)args;
+            DatablockDisplayModel dbModel = eventArgs.DatablockSelected;
+
+            DatablockTabViewModel vm = new DatablockTabViewModel(_events, eventArgs.DatablockSelected.Signals, 0, dbModel.Index, dbModel.Name);
+
+            Items.Add(vm);
+        }
+
+        private void OnSignalSelected(object sender, EventArgs args)
+        {
+            var eventArgs = (SignalSelectedEvent)args;
+
+
+        }
 
         private void OnPlcHasNewData(object sender, EventArgs args)
         {

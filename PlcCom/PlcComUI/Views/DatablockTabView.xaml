@@ -46,7 +46,7 @@
             <DataTemplate x:Key="DataSignalModelNumericTemplate" DataType="{x:Type models:SignalDisplayModel}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="0" Margin="10 5 10 5"/>
-                    <Slider  x:Name="slider" Value="50" Minimum="0" Maximum="100" MinWidth="150" VerticalAlignment="Center">
+                    <Slider  x:Name="slider" Value="50" Minimum="0" Maximum="200" MinWidth="150" VerticalAlignment="Center">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="ValueChanged">
                                 <i:InvokeCommandAction Command="{Binding SliderCommand}">
@@ -82,7 +82,7 @@
         <DataGrid.Columns>
             <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True" />
             <DataGridTextColumn Header="Address" Binding="{Binding Address}" IsReadOnly="True" />
-            <DataGridTextColumn CanUserSort="False" CanUserReorder="False" Header="Read" IsReadOnly="True" Binding="{Binding Value}"/>
+            <DataGridTextColumn CanUserSort="False" CanUserReorder="False" Header="Read" IsReadOnly="True" Binding="{Binding ValueStr}"/>
             <DataGridTemplateColumn Header="Write" MinWidth="250" CellTemplateSelector="{StaticResource DataSignalModelTemplateSelector}" />
             <!-- Visibility="{Binding IsChecked, ElementName=cbWriteEnable, Converter={StaticResource BooleanToVisibilityConverter}}" -->
         </DataGrid.Columns>

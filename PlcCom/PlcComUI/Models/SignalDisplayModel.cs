@@ -89,14 +89,32 @@ namespace PlcComUI.Models
             get => _value;
             set 
             {
+                
                 if (value != _value)
                 {
                     _value = value;
+                    ValueStr = String.Format("{0:0.00}", _value);
                     OnPropertyChanged(nameof(Value));
                 }
             }
         }
-        
+
+        private string _valueStr;
+
+        public string ValueStr
+        {
+            get => _valueStr;
+            set
+            {
+                if (value != _valueStr)
+                {
+                    _valueStr = value;
+                    OnPropertyChanged(nameof(ValueStr));
+                }
+            }
+        }
+
+
         public bool IsBoolType
         {
             get => _isBool;
