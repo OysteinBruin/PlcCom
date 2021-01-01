@@ -28,6 +28,11 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
         <dragablz:TabablzControl Margin="0" Style="{StaticResource MaterialDesignTabablzControlStyle}">
             <TabItem Header="Connections">
                 <ContentControl x:Name="ConnectionsViewModel"/>

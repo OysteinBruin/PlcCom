@@ -29,9 +29,9 @@
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:CpuDisplayModel}">
 
-                    <materialDesign:ColorZone Mode="PrimaryLight" Padding="10">
+                    <materialDesign:ColorZone Mode="Dark" Padding="10" MinWidth="300">
 
-                        <Grid  Grid.Row="1" Grid.Column="1" Margin="0" >
+                        <Grid  Grid.Row="1" Grid.Column="1" Margin="0"  >
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="0.7*" />
                                 <ColumnDefinition Width="0.3*" />
@@ -50,10 +50,11 @@
                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                 FontSize="13"
                                 VerticalAlignment="Center" 
-                                MinWidth="300"
-                                Margin='5' />
                                 
-                                <!-- Input line 1 -->
+                                Margin='5' />
+                            <!-- MinWidth="300" -->
+
+                            <!-- Input line 1 -->
                             <TextBox x:Name="IpAddress" Grid.Row="1" Grid.Column="0" 
                                 materialDesign:HintAssist.Hint="Ip Adddress"
                                 Text="{Binding Path=IpAddress}" 

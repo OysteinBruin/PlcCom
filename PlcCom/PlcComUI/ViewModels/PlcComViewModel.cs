@@ -6,6 +6,7 @@ using PlcComUI.EventModels;
 using PlcComUI.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -74,7 +75,7 @@ namespace PlcComUI.ViewModels
 
 
             this.ConnectionsViewModel = new ConnectionsViewModel(events, cpuList);
-            this.SignalSelectionViewModel = new SignalSelectionViewModel(events);
+            this.SignalSelectionViewModel = new SignalSelectionViewModel(events, cpuList);
         }
 
         public ConnectionsViewModel ConnectionsViewModel { get; set; }

@@ -25,6 +25,7 @@ namespace PlcComUI.Models
         private S7CpuType _selectedCpuType;
         private IEventAggregator _events;
         private bool _isConnecting;
+        private bool _isConnected;
         private System.Timers.Timer _connectButtonStateTimer;
         private string _connectButtonText = "CONNECT";
 
@@ -41,7 +42,7 @@ namespace PlcComUI.Models
             _connectButtonStateTimer.Elapsed += onConnectButtonStateTimerElapsed;
             _connectButtonStateTimer.Interval = 50;
 
-            CpuName = _plcService.Config.Name;
+            Name = _plcService.Config.Name;
             IpAddress = _plcService.Config.Ip;
             Rack = _plcService.Config.Rack;
             Slot = _plcService.Config.Slot;
@@ -76,13 +77,13 @@ namespace PlcComUI.Models
 
         public List<DatablockDisplayModel> Datablocks { get; set; } = new List<DatablockDisplayModel>();
         public int Index { get; set; }
-        public string CpuName
+        public string Name
         {
             get => _connectionName;
             set
             {
                 _connectionName = value;
-                EmitPropertyChanged(nameof(CpuName));
+                EmitPropertyChanged(nameof(Name));
             }
         }
 
@@ -150,6 +151,16 @@ namespace PlcComUI.Models
                 _isConnecting = value;
                 EmitPropertyChanged(nameof(IsConnecting));
                 EmitPropertyChanged(nameof(ConnectButtonText));
+            }
+        }
+
+        public bool IsConnected
+        {
+            get { return _isConnected; }
+            set
+            {
+                _isConnected = value;
+                EmitPropertyChanged(nameof(IsConnected));
             }
         }
 

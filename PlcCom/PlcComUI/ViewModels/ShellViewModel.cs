@@ -21,7 +21,7 @@ namespace PlcComUI.ViewModels
 		{
 			_events = events;
 			_configManager = configManager;           
-            Items.Add(IoC.Get<TabablzViewModel>());
+            Items.Add(IoC.Get<PlcComViewModel>());
             Items.Add(IoC.Get<PaletteSelectorViewModel>());
             _events.Subscribe(this);
 			_configManager.LoadConfigs();

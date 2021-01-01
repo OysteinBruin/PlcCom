@@ -4,9 +4,69 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PlcComUI.Views"
+             xmlns:models="clr-namespace:PlcComUI.Models"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <TextBlock Text="Nothing here"/>
-    </Grid>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!--<ResourceDictionary Source="../Controls/CustomMDIXTreeView2.xaml"/>-->
+                <!--<ResourceDictionary Source="../Controls/MDIXTreeView/MDIXTreeView.xaml"/>-->
+                <ResourceDictionary Source="../Styles/CustomMDIXTreeView.xaml"/>
+                
+            </ResourceDictionary.MergedDictionaries>
+
+
+
+            <Style x:Key="TreeItemsStyle" TargetType="{x:Type TreeViewItem}" >
+                <Setter Property="IsExpanded" Value="True" />
+                <!--<Style.Triggers>
+                    <Trigger Property="IsSelected" Value="True">
+                        <Setter Property="Background" Value="Transparent" />
+                    </Trigger>
+                </Style.Triggers>-->
+            </Style>
+
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <StackPanel>
+
+        <TreeView Style="{StaticResource CustomMDIXTreeView}" VerticalAlignment="Stretch" ItemsSource="{Binding CpuList}">
+            <!--<TreeView x:Name="MainTreeView" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" ItemsSource="{Binding TestSets}"> -->
+
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="TreeViewItem" BasedOn="{StaticResource CustomMDIXTreeViewItem}">
+                    <Setter Property="IsExpanded" Value="True" />
+                </Style>
+            </TreeView.ItemContainerStyle>
+
+            <TreeView.Resources>
+
+                <DataTemplate DataType="{x:Type models:SignalDisplayModel}" >
+                    <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+
+                <HierarchicalDataTemplate DataType="{x:Type models:DatablockDisplayModel}" ItemsSource="{Binding Signals}" >
+                    <TextBlock  
+                        Text="{Binding Path=Name}" 
+                        Foreground="CornflowerBlue" 
+                        VerticalAlignment="Center" 
+                        Margin="5 0 5 0" />
+                    
+                </HierarchicalDataTemplate>
+
+                <HierarchicalDataTemplate DataType="{x:Type models:CpuDisplayModel}" ItemsSource="{Binding Datablocks}" >
+                    <TextBlock  
+                        Text="{Binding Path=Name}" 
+                        FontWeight="Bold" 
+                        Margin="5 10 5 5"/>
+                    
+                </HierarchicalDataTemplate>
+
+            </TreeView.Resources>
+
+        </TreeView>
+        
+    </StackPanel>
 </UserControl>
