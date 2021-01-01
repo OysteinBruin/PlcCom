@@ -35,11 +35,14 @@
         </Grid.ColumnDefinitions>
         <dragablz:TabablzControl Style="{StaticResource MaterialDesignTabablzControlStyle}" Margin="0 0 5 0">
             <TabItem Header="Connections">
-
-                <ItemsControl x:Name="ConnectionsViewModel"/>
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <ContentControl x:Name="ConnectionsViewModel"/>
+                </ScrollViewer>
             </TabItem>
             <TabItem Header="Signals">
-                <ItemsControl x:Name="SignalSelectionViewModel"/>
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <ContentControl x:Name="SignalSelectionViewModel"/>
+                </ScrollViewer>
             </TabItem>
         </dragablz:TabablzControl>
 
