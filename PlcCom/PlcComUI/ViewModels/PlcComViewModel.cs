@@ -77,6 +77,7 @@ namespace PlcComUI.ViewModels
             DatablockTabViewModel vm = new DatablockTabViewModel(_events, eventArgs.DatablockSelected.Signals, 0, dbModel.Index, dbModel.Name);
 
             Items.Add(vm);
+            ActivateItem(Items.Last());
         }
 
         private void OnSignalSelected(object sender, EventArgs args)
