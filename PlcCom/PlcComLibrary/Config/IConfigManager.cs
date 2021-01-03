@@ -5,7 +5,7 @@ namespace PlcComLibrary.Config
 {
     public interface IConfigManager
     {
-        List<IPlcService> LoadConfigs(string path = "");
+        List<PlcService> LoadConfigs(string path = "");
 
         //event EventHandler ConfigsLoaded;
         //event EventHandler ConfigsLoadingProgressChanged;

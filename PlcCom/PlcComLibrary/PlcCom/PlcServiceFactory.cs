@@ -10,7 +10,7 @@ namespace PlcComLibrary.PlcCom
 {
     public static class PlcServiceFactory
     {
-        public static IPlcService Create(int index, ICpuConfig config, List<IDatablockModel> datablocks)
+        public static PlcService Create(int index, ICpuConfig config, List<IDatablockModel> datablocks)
         {
             if (AssemblyEnvironment.IsDevelopment())
             {

@@ -62,7 +62,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConstantsTests.cs" />
+    <Compile Include="Common\ConstantsTests.cs" />
+    <Compile Include="PlcCom\PlcServiceTests.cs" />
+    <Compile Include="PlcCom\TestableCpuConfig.cs" />
+    <Compile Include="PlcCom\TestablePlcService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

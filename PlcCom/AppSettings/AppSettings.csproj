@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigSettings.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="MainWindowSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

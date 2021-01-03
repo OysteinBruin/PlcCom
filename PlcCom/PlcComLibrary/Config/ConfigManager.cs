@@ -27,9 +27,9 @@ namespace PlcComLibrary.Config
         }
 
 
-        public List<IPlcService> LoadConfigs(string path = "")
+        public List<PlcService> LoadConfigs(string path = "")
         {
-            List<IPlcService> plcServiceList = new List<IPlcService>();
+            List<PlcService> plcServiceList = new List<PlcService>();
             List<ISignalModel> signals = new List<ISignalModel>();
             List<IDatablockModel> datablocks = new List<IDatablockModel>();
             //PlcServiceList.Clear();
@@ -77,7 +77,7 @@ namespace PlcComLibrary.Config
                 }
 
                 int plcIndex = plcServiceList.Count;
-                IPlcService plcService = PlcServiceFactory.Create(plcIndex, cpuConfig, datablocks);
+                PlcService plcService = PlcServiceFactory.Create(plcIndex, cpuConfig, datablocks);
                 plcServiceList.Add(plcService);
 
 

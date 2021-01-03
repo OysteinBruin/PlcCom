@@ -79,6 +79,7 @@
     <Compile Include="DatablockParser.cs" />
     <Compile Include="PlcCom\IPlcComManager.cs" />
     <Compile Include="PlcCom\PlcComManager.cs" />
+    <Compile Include="PlcCom\PlcService.cs" />
     <Compile Include="PlcCom\PlcServiceFactory.cs" />
     <Compile Include="PlcCom\SimulatedPlcService.cs" />
     <Compile Include="Config\IConfigManager.cs" />

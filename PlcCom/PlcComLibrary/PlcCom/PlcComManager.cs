@@ -21,6 +21,6 @@ namespace PlcComLibrary.PlcCom
             PlcServiceList = _configManager.LoadConfigs();
         }
 
-        public List<IPlcService> PlcServiceList { get; set; } = new List<IPlcService>();
+        public List<PlcService> PlcServiceList { get; set; } = new List<PlcService>();
     }
 }

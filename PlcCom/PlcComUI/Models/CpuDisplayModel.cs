@@ -18,7 +18,7 @@ namespace PlcComUI.Models
     public class CpuDisplayModel : INotifyPropertyChanged
     {
         private string _name;
-        IPlcService _plcService;
+        PlcService _plcService;
         private string _connectionName;
         private string _ipAddress;
         private int _rack;
@@ -30,7 +30,7 @@ namespace PlcComUI.Models
         private System.Timers.Timer _connectButtonStateTimer;
         private string _connectButtonText = "CONNECT";
 
-        public CpuDisplayModel(IPlcService plcService, IEventAggregator events)
+        public CpuDisplayModel(PlcService plcService, IEventAggregator events)
         {
             _plcService = plcService;
             _plcService.ComStateChanged += OnPlcComStateChanged;
