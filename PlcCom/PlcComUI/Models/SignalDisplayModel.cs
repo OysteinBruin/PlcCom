@@ -1,10 +1,12 @@
 ﻿//using PlcComUI.EventModels;
 using Caliburn.Micro;
+using PlcComLibrary.Models;
 using PlcComUI.Domain;
 using PlcComUI.EventModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,16 +21,16 @@ namespace PlcComUI.Models
         private double _value;
         private bool _isBool;
 
-        public SignalDisplayModel(int index, IEventAggregator events)
+        public SignalDisplayModel(PlcComIndexModel indexModel, IEventAggregator events)
         {
-            Index = index;
+            IndexModel = indexModel;
             _events = events;
             PulseCommand = new RelayCommand<object>(OnPulseCommand);
             ToggleCommand = new RelayCommand<object>(OnToggleCommand);
             SliderCommand = new RelayCommand<object>(OnSliderCommand);
         }
 
-        public int Index { get; set; }
+        public PlcComIndexModel IndexModel { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string DataTypeStr { get; set; }
@@ -139,28 +141,30 @@ namespace PlcComUI.Models
 
         private void OnPulseCommand(object parameter)
         {
-            var values = (object[])parameter;
-            var cpuIndex = (int)values[0];
-            var address = (string)values[1];
-            _events.PublishOnUIThread(new PlcUiCmdEvent(PlcUiCmdEvent.CmdType.ButtonPulse, cpuIndex, address));
+            var paramArray = (object[])parameter;
+            Debug.Assert(paramArray.Length == 2);
+            var indexModel = (PlcComIndexModel)paramArray[0];
+            var address = (string)paramArray[1];
+            _events.PublishOnUIThread(new PlcUiCmdEvent(PlcUiCmdEvent.CmdType.ButtonPulse, indexModel.CpuIndex, address));
         }
 
         private void OnToggleCommand(object parameter)
         {
-            var values = (object[])parameter;
-            var cpuIndex = (int)values[0];
-            var address = (string)values[1];
-            _events.PublishOnUIThread(new PlcUiCmdEvent(PlcUiCmdEvent.CmdType.ButtonToggle, cpuIndex, address));
+            var paramArray = (object[])parameter;
+            Debug.Assert(paramArray.Length == 2);
+            var indexModel = (PlcComIndexModel)paramArray[0];
+            var address = (string)paramArray[1];
+            _events.PublishOnUIThread(new PlcUiCmdEvent(PlcUiCmdEvent.CmdType.ButtonToggle, indexModel.CpuIndex, address));
         }
 
         private void OnSliderCommand(object parameter)
         {
-            var values = (object[])parameter;
-            var cpuIndex = (int)values[0];
-            var address = (string)values[1];
-            var value = (object)values[2];
-            //Console.WriteLine($"SignalDisplayModel.OnSliderCommand plc index {cpuIndex} address {address} value {value}");
-            _events.PublishOnUIThread(new PlcUiCmdEvent(PlcUiCmdEvent.CmdType.Slider, cpuIndex, address, value));
+            var paramArray = (object[])parameter;
+            Debug.Assert(paramArray.Length == 3);
+            var indexModel = (PlcComIndexModel)paramArray[0];
+            var address = (string)paramArray[1];
+            var value = (object)paramArray[2];
+            _events.PublishOnUIThread(new PlcUiCmdEvent(PlcUiCmdEvent.CmdType.Slider, indexModel.CpuIndex, address, value));
         }
 
     }

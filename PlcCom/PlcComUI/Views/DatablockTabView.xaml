@@ -7,6 +7,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:models="clr-namespace:PlcComUI.Models"
              xmlns:converters="clr-namespace:PlcComUI.Converters"
+             xmlns:eventmodels="clr-namespace:PlcComUI.EventModels"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d"
              TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -32,14 +33,34 @@
             <local:DataSignalModelTemplateSelector x:Key="DataSignalModelTemplateSelector"/>
 
             <DataTemplate x:Key="DataSignalModelBoolTemplate" DataType="{x:Type models:SignalDisplayModel}">
-                <StackPanel Orientation="Horizontal" Margin="5">
-                    <CheckBox 
-                        Name="cbToggle"
-                        
-                        Content="Toggle"
-                        Margin="5 0 5 0"/>
-                    <Button Content="Click Me" FontSize="10" Height="18">
-
+                <StackPanel Orientation="Horizontal" Margin="0 0 20 0">
+                    <Button x:Name="pulseBtn" Content="Pulse" FontSize="10" Height="20" Margin="0 0 20 0">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Click">
+                                <i:InvokeCommandAction Command="{Binding PulseCommand}">
+                                    <i:InvokeCommandAction.CommandParameter>
+                                        <MultiBinding Converter="{StaticResource PlcCmdParameterConverter}">
+                                            <Binding Path="DataContext.IndexModel" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
+                                            <Binding Path="DataContext.Address" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
+                                        </MultiBinding>
+                                    </i:InvokeCommandAction.CommandParameter>
+                                </i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </Button>
+                    <Button x:Name="toggleBtn" Content="Toggle" FontSize="10" Height="20" Margin="0 0 20 0">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Click">
+                                <i:InvokeCommandAction Command="{Binding ToggleCommand}">
+                                    <i:InvokeCommandAction.CommandParameter>
+                                        <MultiBinding Converter="{StaticResource PlcCmdParameterConverter}">
+                                            <Binding Path="DataContext.IndexModel" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
+                                            <Binding Path="DataContext.Address" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
+                                        </MultiBinding>
+                                    </i:InvokeCommandAction.CommandParameter>
+                                </i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                     </Button>
                 </StackPanel>
             </DataTemplate>
@@ -52,7 +73,7 @@
                                 <i:InvokeCommandAction Command="{Binding SliderCommand}">
                                     <i:InvokeCommandAction.CommandParameter>
                                         <MultiBinding Converter="{StaticResource PlcCmdParameterConverter}">
-                                            <Binding Path="DataContext.Index" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
+                                            <Binding Path="DataContext.IndexModel" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
                                             <Binding Path="DataContext.Address" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
                                             <Binding ElementName="slider" Path="Value"/>
                                         </MultiBinding>
@@ -83,7 +104,7 @@
             <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True" />
             <DataGridTextColumn Header="Address" Binding="{Binding Address}" IsReadOnly="True" />
             <DataGridTextColumn CanUserSort="False" CanUserReorder="False" Header="Read" IsReadOnly="True" Binding="{Binding ValueStr}"/>
-            <DataGridTemplateColumn Header="Write" MinWidth="250" CellTemplateSelector="{StaticResource DataSignalModelTemplateSelector}" />
+            <DataGridTemplateColumn Header="Write" MinWidth="250" CellTemplateSelector="{StaticResource DataSignalModelTemplateSelector}"/>
             <!-- Visibility="{Binding IsChecked, ElementName=cbWriteEnable, Converter={StaticResource BooleanToVisibilityConverter}}" -->
         </DataGrid.Columns>
     </DataGrid>

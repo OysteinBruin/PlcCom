@@ -72,10 +72,11 @@
     <Compile Include="Config\IJsonConfigFileParser.cs" />
     <Compile Include="Config\ICpuConfig.cs" />
     <Compile Include="Config\CpuConfig.cs" />
+    <Compile Include="Models\PlcComIndexModel.cs" />
+    <Compile Include="Models\PlcComIndexValueModel.cs" />
     <Compile Include="Models\PlcReadResultEventArgs.cs" />
     <Compile Include="Models\DatablockModel.cs" />
     <Compile Include="DatablockParser.cs" />
-    <Compile Include="Models\PlcSignalIndex.cs" />
     <Compile Include="PlcCom\IPlcComManager.cs" />
     <Compile Include="PlcCom\PlcComManager.cs" />
     <Compile Include="PlcCom\PlcServiceFactory.cs" />

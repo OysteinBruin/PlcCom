@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PlcComLibrary.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -9,13 +10,13 @@ namespace PlcComUI.Models
 {
     public class DatablockDisplayModel : INotifyPropertyChanged
     {
-        public DatablockDisplayModel(int index)
+        public DatablockDisplayModel(PlcComIndexModel indexModel)
         {
-            Index = index;
+            IndexModel = indexModel;
         }
         public List<SignalDisplayModel> Signals { get; set; } = new List<SignalDisplayModel>();
 
-        public int Index { get; set; }
+        public PlcComIndexModel IndexModel { get; set; }
 
         public int Number { get; set; }
         public string NumberStr

@@ -70,7 +70,7 @@
 
                         <Separator/>
                         <Button cal:Message.Attach="ActivateHomeView" Content="Home" Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Left"/>
-                        <Button cal:Message.Attach="ActivatePaletteSelectorView" Content="Color Theme" IsEnabled="True" Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Left"/>
+                        <Button cal:Message.Attach="ActivatePaletteSelectorView" Content="Color Theme"  Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Left"/>
                         <Separator/>
                         <Button Content="Quit" Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Left"/>
                     </StackPanel>

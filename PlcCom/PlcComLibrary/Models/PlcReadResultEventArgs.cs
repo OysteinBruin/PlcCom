@@ -9,26 +9,24 @@ namespace PlcComLibrary.Models
 
     public class PlcReadResultEventArgs : EventArgs
     {
-        private readonly IList<PlcSignalIndex> _plcSignalIndexList;
-        
-        public PlcReadResultEventArgs(int plcIndex,  IList<PlcSignalIndex> plcSignalIndexList)
+        public PlcReadResultEventArgs(PlcComIndexModel indexModel, double value)
         {
-            PlcIndex = plcIndex;
-            _plcSignalIndexList = plcSignalIndexList;
+            PlcIndexModel = indexModel;
+            Value = value;
+
+            IndexValueList.Clear();
+            IndexValueList.Add(new PlcComIndexValueModel(indexModel.CpuIndex, indexModel.DbIndex, indexModel.SignalIndex, value));
         }
 
-        public PlcReadResultEventArgs(int plcIndex, int dbIndex, int signalIndex, double value)
+        public PlcReadResultEventArgs(List<PlcComIndexValueModel> models)
         {
-            PlcIndex = plcIndex;
-            var psi = new PlcSignalIndex(dbIndex, signalIndex, value);
-            _plcSignalIndexList = new List<PlcSignalIndex>();
-            _plcSignalIndexList.Add(psi);
+            IndexValueList = models;
         }
 
-        public int PlcIndex { get; }
-        public IList<PlcSignalIndex> PlcSignalIndexList
-        {
-            get { return _plcSignalIndexList; }
-        }
+        public PlcComIndexModel PlcIndexModel { get; private set; }
+
+        public double Value  { get; set; }
+
+        public List<PlcComIndexValueModel> IndexValueList { get; set; } = new List<PlcComIndexValueModel>();
     }
 }

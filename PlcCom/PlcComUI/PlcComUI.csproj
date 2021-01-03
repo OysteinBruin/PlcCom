@@ -152,6 +152,7 @@
     <Compile Include="Domain\RelayCommand.cs" />
     <Compile Include="Domain\SettingBindingExtension.cs" />
     <Compile Include="EventModels\DatablockSelectedEvent.cs" />
+    <Compile Include="EventModels\HandlingEventTrigger.cs" />
     <Compile Include="EventModels\MessageEvent.cs" />
     <Compile Include="EventModels\PlcConnectionCmdEvent.cs" />
     <Compile Include="EventModels\PlcReadEvent.cs" />

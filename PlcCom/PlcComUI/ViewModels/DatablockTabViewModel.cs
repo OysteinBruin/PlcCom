@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using log4net;
+using PlcComLibrary.Models;
 
 namespace PlcComUI.ViewModels
 {
@@ -15,15 +16,13 @@ namespace PlcComUI.ViewModels
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private IEventAggregator _events;
         private List<SignalDisplayModel> _signals;
-        private readonly int _plcIndex;
-        private readonly int _dbIndex;
-        public DatablockTabViewModel(IEventAggregator events, List<SignalDisplayModel> signals, int plcIndex, int dbIndex, string header)
+        private readonly PlcComIndexModel _indexModel;
+        public DatablockTabViewModel(IEventAggregator events, List<SignalDisplayModel> signals, PlcComIndexModel indexModel, string header)
 		{
             _events = events;
             Signals = signals;
-            _plcIndex = plcIndex;
-            _dbIndex = dbIndex;
-			DisplayName = header;
+            _indexModel = indexModel;
+            DisplayName = header;
             _events.Subscribe(this);
 		}
 
@@ -45,20 +44,14 @@ namespace PlcComUI.ViewModels
 
         public void Handle(PlcReadEvent message)
         {
-           
-            Console.WriteLine($"message plc index {message.Data.PlcIndex} instance plc index {_plcIndex}loop:");
-            if (message.Data.PlcIndex == _plcIndex)
-            {
-                foreach (var item in message.Data.PlcSignalIndexList)
+
+                foreach (var item in message.Data.IndexValueList)
                 {
-                    item.DatablockIndex = 0;
-                    Console.WriteLine($"db index {item.DatablockIndex} signal index {item.SignalIndex} - instance db index {_dbIndex}");
-                    if (item.DatablockIndex == _dbIndex)
+                    if (item.CpuIndex == _indexModel.CpuIndex && item.DbIndex == _indexModel.DbIndex)
                     {
                         Signals[item.SignalIndex].Value = item.Value;
                     }
                 }
-            }
         }
     }
 }

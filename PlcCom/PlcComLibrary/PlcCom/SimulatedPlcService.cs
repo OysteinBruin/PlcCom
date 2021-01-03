@@ -63,7 +63,8 @@ namespace PlcComLibrary.PlcCom
                 Datablocks[dbIndex].Signals[signalIndex].Value = (double)value;
                 Console.WriteLine($"write value: {Datablocks[dbIndex].Signals[signalIndex].Value}");
                 log.Debug($"write value: {value}");
-                PlcReadResultEventArgs args = new PlcReadResultEventArgs(this.Index, dbIndex, signalIndex, (double)value);
+
+                PlcReadResultEventArgs args = new PlcReadResultEventArgs(new PlcComIndexModel(this.Index, dbIndex, signalIndex), (double)value);
                 HasNewData?.Invoke(this, args);
             }
             else
@@ -72,15 +73,13 @@ namespace PlcComLibrary.PlcCom
             }
         }
 
-        
-
         public async Task PulseBitAsync(string address)
         {
             VerifyConnected();
 
             if (!AddressIsBoolType(address))
             {
-                throw new Exception($"Plc Write Error - Attempting to pulse a non boolean address: {address}");
+                throw new Exception($"Plc Write Error - Attempting to pulse a non boolean signal: {address}");
             }
 
             (int dbIndex, int signalIndex) = GetSignalIndexFromAddress(address, Datablocks);
@@ -88,21 +87,53 @@ namespace PlcComLibrary.PlcCom
             if (dbIndex >= 0 && signalIndex >= 0)
             {
                 
-                PlcReadResultEventArgs args = new PlcReadResultEventArgs(this.Index, dbIndex, signalIndex, 1.0f);
+                var writeHighArgs = new PlcReadResultEventArgs(new PlcComIndexModel(this.Index, dbIndex, signalIndex), 1.0f);
                 await DelayAsync(100);
                 Datablocks[dbIndex].Signals[signalIndex].Value = 1.0f;
-                HasNewData?.Invoke(this, args);
+                HasNewData?.Invoke(this, writeHighArgs);
                 await DelayAsync(500);
-                args.PlcSignalIndexList[0].Value = 0.0f;
+                //args.Value = 0.0f;
+
+                var writeLowArgs = new PlcReadResultEventArgs(new PlcComIndexModel(this.Index, dbIndex, signalIndex), 0.0f);
                 Datablocks[dbIndex].Signals[signalIndex].Value = 0;
-                HasNewData?.Invoke(this, args);
+                HasNewData?.Invoke(this, writeLowArgs);
             }
             else
             {
                 throw new ArgumentOutOfRangeException();
             }
-            
+        }
 
+        public async Task ToggleBitAsync(string address)
+        {
+            VerifyConnected();
+            if (!AddressIsBoolType(address))
+            {
+                throw new Exception($"Plc Write Error - Attempting to pulse a non boolean signal: {address}");
+            }
+
+            (int dbIndex, int signalIndex) = GetSignalIndexFromAddress(address, Datablocks);
+
+            if (dbIndex >= 0 && signalIndex >= 0)
+            {
+                await DelayAsync(100);
+                if (Datablocks[dbIndex].Signals[signalIndex].Value > 0.0f)
+                {
+                    var args = new PlcReadResultEventArgs(new PlcComIndexModel(this.Index, dbIndex, signalIndex), 0.0f);
+                    Datablocks[dbIndex].Signals[signalIndex].Value = 0.0f;
+                    HasNewData?.Invoke(this, args);
+                }
+                else
+                {
+                    var args = new PlcReadResultEventArgs(new PlcComIndexModel(this.Index, dbIndex, signalIndex), 1.0f);
+                    Datablocks[dbIndex].Signals[signalIndex].Value = 1.0f;
+                    HasNewData?.Invoke(this, args);
+                }
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException();
+            }
         }
 
         public async Task ReadSingleAsync(string address)
@@ -115,7 +146,7 @@ namespace PlcComLibrary.PlcCom
             if (dbIndex >= 0 && signalIndex >= 0)
             {
                 Datablocks[dbIndex].Signals[signalIndex].Value = 0;
-                PlcReadResultEventArgs args = new PlcReadResultEventArgs(this.Index, dbIndex, signalIndex, 0.0f);
+                PlcReadResultEventArgs args = new PlcReadResultEventArgs(new PlcComIndexModel(this.Index, dbIndex, signalIndex), 0.0f);
                 HasNewData?.Invoke(this, args);
             }
             else
@@ -129,14 +160,6 @@ namespace PlcComLibrary.PlcCom
             VerifyConnected();
             throw new NotImplementedException();
         }
-
-        public Task ToggleBitAsync(string address)
-        {
-            VerifyConnected();
-            throw new NotImplementedException();
-        }
-
-        
 
         public ComState ComState
         {

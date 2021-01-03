@@ -74,7 +74,7 @@ namespace PlcComUI.ViewModels
             var eventArgs = (DatablockSelectedEvent)args;
             DatablockDisplayModel dbModel = eventArgs.DatablockSelected;
 
-            DatablockTabViewModel vm = new DatablockTabViewModel(_events, eventArgs.DatablockSelected.Signals, 0, dbModel.Index, dbModel.Name);
+            DatablockTabViewModel vm = new DatablockTabViewModel(_events, eventArgs.DatablockSelected.Signals, dbModel.IndexModel, dbModel.Name);
 
             Items.Add(vm);
             ActivateItem(Items.Last());
@@ -105,9 +105,10 @@ namespace PlcComUI.ViewModels
                 switch (message.CommandType)
                 {
                     case PlcUiCmdEvent.CmdType.ButtonPulse:
-                        await _plcComManager.PlcServiceList[message.CpuIndex].WriteSingleAsync(message.Address, true);
+                        await _plcComManager.PlcServiceList[message.CpuIndex].PulseBitAsync(message.Address);
                         break;
                     case PlcUiCmdEvent.CmdType.ButtonToggle:
+                        await _plcComManager.PlcServiceList[message.CpuIndex].ToggleBitAsync(message.Address);
                         break;
                     case PlcUiCmdEvent.CmdType.Slider:
                         Debug.Assert(message.Value != null);

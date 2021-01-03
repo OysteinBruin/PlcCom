@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using PlcComLibrary.Models;
 using PlcComLibrary.PlcCom;
 using PlcComUI.Domain;
 using PlcComUI.EventModels;
@@ -50,14 +51,14 @@ namespace PlcComUI.Models
 
             foreach (var db in _plcService.Datablocks)
             {
-                DatablockDisplayModel dbModel = new DatablockDisplayModel(db.Index);
+                DatablockDisplayModel dbModel = new DatablockDisplayModel(new PlcComIndexModel(_plcService.Index,db.Index, -1));
                 dbModel.Name = db.Name;
                 dbModel.Number = db.Number;
                 List<SignalDisplayModel> signalDisplayModels = new List<SignalDisplayModel>();
                 foreach (var sig in db.Signals)
                 {
                     //
-                    SignalDisplayModel sdm = new SignalDisplayModel(sig.Index, _events);
+                    SignalDisplayModel sdm = new SignalDisplayModel(new PlcComIndexModel(_plcService.Index, db.Index, sig.Index), _events);
                     sdm.Name = sig.Name;
                     sdm.Description = sig.Description;
                     sdm.Address = sig.Address;
