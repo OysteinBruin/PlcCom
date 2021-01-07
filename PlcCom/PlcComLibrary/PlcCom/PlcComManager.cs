@@ -13,8 +13,9 @@ namespace PlcComLibrary.PlcCom
         public PlcComManager(IConfigManager configManager)
         {
             _configManager = configManager;
-
         }
+
+        public IConfigManager ConfigManager  { get { return _configManager; } }
 
         public void LoadConfigs()
         {

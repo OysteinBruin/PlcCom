@@ -14,10 +14,9 @@ namespace PlcComUI.ViewModels
         private IEventAggregator _events;
         private List<CpuDisplayModel> _cpuList;
 
-        public SignalSelectionViewModel(IEventAggregator events, List<CpuDisplayModel> cpuList)
+        public SignalSelectionViewModel(IEventAggregator events)
         {
             _events = events;
-            CpuList = cpuList;
         }
 
         public event EventHandler DatablockSelected;

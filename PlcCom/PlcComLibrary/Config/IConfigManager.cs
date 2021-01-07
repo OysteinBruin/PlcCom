@@ -1,4 +1,5 @@
 ﻿using PlcComLibrary.PlcCom;
+using System;
 using System.Collections.Generic;
 
 namespace PlcComLibrary.Config
@@ -7,7 +8,7 @@ namespace PlcComLibrary.Config
     {
         List<PlcService> LoadConfigs(string path = "");
 
-        //event EventHandler ConfigsLoaded;
-        //event EventHandler ConfigsLoadingProgressChanged;
+        event EventHandler ConfigsLoaded;
+        event EventHandler ConfigsLoadingProgressChanged;
     }
 }

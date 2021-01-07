@@ -30,9 +30,18 @@ namespace PlcComUI.ViewModels
             InterTabClient = interTabClient;
             InterLayoutClient = interLayoutClient;
 
-            _events.Subscribe(this);
-            _plcComManager.LoadConfigs();
+            this.ConnectionsViewModel = new ConnectionsViewModel(_events);
+            this.SignalSelectionViewModel = new SignalSelectionViewModel(_events);
 
+            this.SignalSelectionViewModel.SignalSelected += OnSignalSelected;
+            this.SignalSelectionViewModel.DatablockSelected += OnDatablockSelected;
+
+            _events.Subscribe(this);
+        }
+
+        protected override void OnInitialize()
+        {
+            base.OnInitialize();
             List<CpuDisplayModel> cpuList = new List<CpuDisplayModel>();
 
             foreach (var plc in _plcComManager.PlcServiceList)
@@ -40,15 +49,14 @@ namespace PlcComUI.ViewModels
                 CpuDisplayModel cpuDisplayModel = new CpuDisplayModel(plc, _events);
                 cpuList.Add(cpuDisplayModel);
 
-
+                plc.ComStateChanged += OnPlcComStateChanged;
                 plc.HasNewData += OnPlcHasNewData;
             }
 
-            this.ConnectionsViewModel = new ConnectionsViewModel(events, cpuList);
-            this.SignalSelectionViewModel = new SignalSelectionViewModel(events, cpuList);
+           
 
-            this.SignalSelectionViewModel.SignalSelected += OnSignalSelected;
-            this.SignalSelectionViewModel.DatablockSelected += OnDatablockSelected;
+            this.ConnectionsViewModel.CpuList = cpuList;
+            this.SignalSelectionViewModel.CpuList = cpuList;
 
             RealTimeGraphViewModel realTimeModel = new RealTimeGraphViewModel("Graph View");
             Items.Add(realTimeModel);
@@ -74,7 +82,7 @@ namespace PlcComUI.ViewModels
             var eventArgs = (DatablockSelectedEvent)args;
             DatablockDisplayModel dbModel = eventArgs.DatablockSelected;
 
-            DatablockTabViewModel vm = new DatablockTabViewModel(_events, eventArgs.DatablockSelected.Signals, dbModel.IndexModel, dbModel.Name);
+            DatablockTabViewModel vm = new DatablockTabViewModel(_events, dbModel);
 
             Items.Add(vm);
             ActivateItem(Items.Last());
@@ -85,6 +93,14 @@ namespace PlcComUI.ViewModels
             var eventArgs = (SignalSelectedEvent)args;
 
 
+        }
+
+        private void OnPlcComStateChanged(object sender, EventArgs args)
+        {
+            Debug.Assert(sender is PlcService);
+            PlcService plcService = (PlcService)sender;
+
+           _events.PublishOnUIThread(new ComStateChangedEvent(plcService.Index, plcService.ComState));
         }
 
         private void OnPlcHasNewData(object sender, EventArgs args)

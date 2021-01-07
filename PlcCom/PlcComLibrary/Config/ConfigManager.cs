@@ -8,6 +8,7 @@ using System.Text;
 using System.IO;
 using static PlcComLibrary.Common.Enums;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace PlcComLibrary.Config
 {
@@ -17,8 +18,8 @@ namespace PlcComLibrary.Config
         private IJsonConfigFileParser _configParser;
         private IDatablockParser _dbParser;
 
-        //public event EventHandler ConfigsLoaded;
-        //public event EventHandler ConfigsLoadingProgressChanged;
+        public event EventHandler ConfigsLoaded;
+        public event EventHandler ConfigsLoadingProgressChanged;
 
         public ConfigManager(IJsonConfigFileParser configParser, IDatablockParser dbParser)
         {
@@ -32,11 +33,20 @@ namespace PlcComLibrary.Config
             List<PlcService> plcServiceList = new List<PlcService>();
             List<ISignalModel> signals = new List<ISignalModel>();
             List<IDatablockModel> datablocks = new List<IDatablockModel>();
-            //PlcServiceList.Clear();
+
+            int totalFilesToLoadCount = 0;
             List<IJsonFileConfig> jsonConfigs = _configParser.LoadConfigFiles(path);
 
             foreach (var jsonConfig in jsonConfigs)
-            //for (int i = 0; i < 2; i++)
+            {
+                totalFilesToLoadCount += jsonConfig.SignalLists.Count;
+            }
+
+                ConfigsProgressEventArgs configsProgressEventArgs = new ConfigsProgressEventArgs();
+            configsProgressEventArgs.ProgressTotal = totalFilesToLoadCount;
+            ConfigsLoadingProgressChanged?.Invoke(this, configsProgressEventArgs);
+
+            foreach (var jsonConfig in jsonConfigs)
             {
                 ICpuConfig cpuConfig = new CpuConfig(jsonConfig);
                 datablocks.Clear();
@@ -74,6 +84,9 @@ namespace PlcComLibrary.Config
                         datablock.ByteCount = signals.Last().Byte - datablock.FirstByte;
                         datablocks.Add(datablock);
                     }
+                    configsProgressEventArgs.ProgressInput += 1;
+                    ConfigsLoadingProgressChanged?.Invoke(this, configsProgressEventArgs);
+                    Thread.Sleep(150);
                 }
 
                 int plcIndex = plcServiceList.Count;
@@ -94,6 +107,7 @@ namespace PlcComLibrary.Config
                 //    }               
                 //}
             }
+            ConfigsLoaded?.Invoke(this, new EventArgs());
             return plcServiceList;
         }
     }

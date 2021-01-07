@@ -15,10 +15,9 @@ namespace PlcComUI.ViewModels
         private List<CpuDisplayModel> _cpuList;
 
 
-        public ConnectionsViewModel(IEventAggregator events, List<CpuDisplayModel> cpuList)
+        public ConnectionsViewModel(IEventAggregator events)
         {
             _events = events;
-            CpuList = cpuList;
         }
 
         public List<CpuDisplayModel> CpuList

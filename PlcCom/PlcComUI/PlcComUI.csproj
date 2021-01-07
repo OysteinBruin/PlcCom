@@ -140,6 +140,7 @@
     <Compile Include="Converters\BooleanGreenGrayColorConverter.cs" />
     <Compile Include="Converters\BooleanGreenRedColorConverter.cs" />
     <Compile Include="Converters\BrushRoundConverter.cs" />
+    <Compile Include="Converters\DatabindingDebugConverter.cs" />
     <Compile Include="Converters\ExpanderDirectionConverter.cs" />
     <Compile Include="Converters\HorizontalThicknessConverter.cs" />
     <Compile Include="Converters\InvertBooleanConverter.cs" />
@@ -154,12 +155,18 @@
     <Compile Include="EventModels\DatablockSelectedEvent.cs" />
     <Compile Include="EventModels\HandlingEventTrigger.cs" />
     <Compile Include="EventModels\MessageEvent.cs" />
+    <Compile Include="EventModels\ComStateChangedEvent.cs" />
     <Compile Include="EventModels\PlcConnectionCmdEvent.cs" />
     <Compile Include="EventModels\PlcReadEvent.cs" />
     <Compile Include="EventModels\PlcUiCmdEvent.cs" />
     <Compile Include="EventModels\SignalSelectedEvent.cs" />
+    <Compile Include="EventModels\SplashStatusChangedEvent.cs" />
     <Compile Include="Models\CpuDisplayModel.cs" />
     <Compile Include="Models\DatablockDisplayModel.cs" />
+    <Compile Include="ViewModels\EditSignalViewModel.cs" />
+    <Compile Include="Views\EditSignalView.xaml.cs">
+      <DependentUpon>EditSignalView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Styles\ScaleHost.cs" />
     <Compile Include="TmpMain.cs" />
     <Compile Include="UserSettings\Palette\PaletteHelperExtensions.cs" />
@@ -171,6 +178,7 @@
     <Compile Include="ViewModels\RealTimeGraphViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\SignalSelectionViewModel.cs" />
+    <Compile Include="ViewModels\SplashViewModel.cs" />
     <Compile Include="ViewModels\TabablzViewModel.cs" />
     <Compile Include="ViewModels\DatablockTabViewModel.cs" />
     <Compile Include="ViewModels\TearedViewModel.cs" />
@@ -195,6 +203,9 @@
     <Compile Include="Views\ShellView.xaml.cs" />
     <Compile Include="Views\SignalSelectionView.xaml.cs">
       <DependentUpon>SignalSelectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SplashView.xaml.cs">
+      <DependentUpon>SplashView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TabablzView.xaml.cs" />
     <Compile Include="Views\DatablockTabView.xaml.cs" />
@@ -237,6 +248,10 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\EditSignalView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Styles\CustomMDIXExpander.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -282,6 +297,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\SignalSelectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SplashView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

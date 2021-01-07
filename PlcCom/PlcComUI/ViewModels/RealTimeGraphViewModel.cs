@@ -22,7 +22,7 @@ namespace PlcComUI.ViewModels
             Controller = new WpfGraphController<TimeSpanDataPoint, DoubleDataPoint>();
             Controller.Range.MinimumY = 0;
             Controller.Range.MaximumY = 1080;
-            Controller.Range.MaximumX = TimeSpan.FromSeconds(10);
+            Controller.Range.MaximumX = TimeSpan.FromSeconds(60);
             Controller.Range.AutoY = true;
 
             Controller.DataSeriesCollection.Add(new WpfGraphDataSeries()

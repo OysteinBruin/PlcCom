@@ -14,6 +14,7 @@ namespace PlcComUI.Models
         {
             IndexModel = indexModel;
         }
+
         public List<SignalDisplayModel> Signals { get; set; } = new List<SignalDisplayModel>();
 
         public PlcComIndexModel IndexModel { get; set; }

@@ -14,9 +14,23 @@ namespace PlcComLibrary.Config
         {
             _utils = utils;
         }
+
+        public int GetConfigFilesCount(string path)
+        {
+            int output = 0;
+            foreach (string fileName in _utils.LoadAppConfigFiles(path))
+            {
+                if (fileName.EndsWith(Constants.JsonExtension))
+                {
+                    output++;
+                }
+            }
+            return output;
+        }
+
         public List<IJsonFileConfig> LoadConfigFiles(string path)
         {
-            List<IJsonFileConfig> jsonConfigDataList = new List<IJsonFileConfig>();
+            List<IJsonFileConfig> output = new List<IJsonFileConfig>();
             foreach (string fileName in _utils.LoadAppConfigFiles(path))
             {
                 if (fileName.EndsWith(Constants.JsonExtension))
@@ -24,11 +38,11 @@ namespace PlcComLibrary.Config
                     using (StreamReader reader = new StreamReader(fileName))
                     {
                         string json = reader.ReadToEnd();
-                        jsonConfigDataList.Add(JsonConvert.DeserializeObject<JsonFileConfig>(json));
+                        output.Add(JsonConvert.DeserializeObject<JsonFileConfig>(json));
                     }
                 }
             }
-            return jsonConfigDataList;
+            return output;
         }
     }
 }

@@ -15,7 +15,6 @@ namespace PlcComLibrary.PlcCom
     public class S7PlcService : PlcService
     {
         private S7.Net.Plc _plc;
-        private ComState _comState;
 
         public S7PlcService(int index, ICpuConfig config, List<IDatablockModel> datablocks)
             : base(index, config, datablocks)
@@ -58,7 +57,7 @@ namespace PlcComLibrary.PlcCom
 
         public override void DisConnect()
         {
-            if (_plc != null && _comState != ComState.Connected)
+            if (_plc != null && ComState != ComState.Connected)
             {
                 _plc.Close();
                 // _plcReadTimer.Stop();
