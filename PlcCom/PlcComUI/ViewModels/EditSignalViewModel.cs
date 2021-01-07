@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PlcComUI.ViewModels
 {
-    class EditSignalViewModel
+    public class EditSignalViewModel
     {
     }
 }

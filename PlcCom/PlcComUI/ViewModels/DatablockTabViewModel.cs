@@ -38,6 +38,7 @@ namespace PlcComUI.ViewModels
         public void EditSignal(object model)
         {
             Debug.Assert(model is SignalDisplayModel);
+
         }
 
         public List<SignalDisplayModel> Signals
