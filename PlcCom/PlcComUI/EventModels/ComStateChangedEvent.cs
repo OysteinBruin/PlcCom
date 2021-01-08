@@ -12,7 +12,7 @@ namespace PlcComUI.EventModels
         public ComStateChangedEvent(int cpuIndex, ComState comState)
         {
             CpuIndex = cpuIndex;
-            ComState = ComState;
+            ComState = comState;
         }
 
         public int CpuIndex { get; set; }

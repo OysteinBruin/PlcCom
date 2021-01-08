@@ -9,8 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static PlcComLibrary.Common.Enums;
 
 namespace PlcComUI.ViewModels
 {
@@ -82,7 +81,8 @@ namespace PlcComUI.ViewModels
             var eventArgs = (DatablockSelectedEvent)args;
             DatablockDisplayModel dbModel = eventArgs.DatablockSelected;
 
-            DatablockTabViewModel vm = new DatablockTabViewModel(_events, dbModel);
+            bool isConnected = (_plcComManager.PlcServiceList[dbModel.IndexModel.CpuIndex].ComState == ComState.Connected);
+            DatablockTabViewModel vm = new DatablockTabViewModel(_events, dbModel, isConnected);
 
             //DatablockTabView view = new DatablockTabView();
             //DatablockTabViewModel vm = new DatablockTabViewModel(_events, dbModel);

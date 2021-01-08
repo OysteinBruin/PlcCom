@@ -11,6 +11,8 @@ using PlcComLibrary.Models;
 using System.Diagnostics;
 using PlcComUI.Views;
 using MaterialDesignThemes.Wpf;
+using static PlcComLibrary.Common.Enums;
+
 
 namespace PlcComUI.ViewModels
 {
@@ -22,13 +24,22 @@ namespace PlcComUI.ViewModels
         private bool _isConnected;
         private bool _monitorCb;
         private bool _enableWriteCb;
+        private System.Windows.Forms.Timer _simTmer;
+        List<double> _randomValueList = new List<double>();
 
-        public DatablockTabViewModel(IEventAggregator events, DatablockDisplayModel displayModel)
+
+        public DatablockTabViewModel(IEventAggregator events, DatablockDisplayModel displayModel, bool isConnected)
 		{
             _events = events;
             _displayModel = displayModel;
             _events.Subscribe(this);
-		}
+            IsConnected = isConnected;
+
+            _simTmer = new System.Windows.Forms.Timer();
+            _simTmer.Interval = 250;
+        }
+
+        public event EventHandler MonitoringStateChanged;
 
         protected override void OnViewLoaded(object view)
         {
@@ -36,38 +47,47 @@ namespace PlcComUI.ViewModels
 
             // WriteEnableChecked = Properties.Settings.Default.SettingsMain. WriteEnableChecked;
 
-            System.Windows.Forms.Timer simTmer = new System.Windows.Forms.Timer();
-            simTmer.Interval = 250;
-
-            List<double> randomValueList = new List<double>();
-            Random rnd = new Random();
             
+        }
+
+        protected override void OnActivate()
+        {
+            base.OnActivate();
+
+
+            Random rnd = new Random();
+
             foreach (var item in Signals)
             {
-                randomValueList.Add(rnd.Next(1, 250));
+                _randomValueList.Add(rnd.Next(1, 250));
             }
 
-            simTmer.Tick += (sender, e) => {
-                
+
+            _simTmer.Tick += (sender, e) => {
+
                 for (int i = 0; i < Signals.Count; i++)
                 {
-                    if (i%2 == 0 && Signals[i].DataType != PlcComLibrary.Common.Enums.DataType.Bit)
+                    if (i % 2 == 0 && Signals[i].DataType != PlcComLibrary.Common.Enums.DataType.Bit)
                     {
-                        Signals[i].Value = randomValueList[i] += 0.68f;
+                        Signals[i].Value = _randomValueList[i] += 0.68f;
 
                         if (Signals[i].Value > Signals[i].RangeTo)
                         {
                             Signals[i].RangeTo = (int)Signals[i].Value + 25;
                         }
 
-                        if (randomValueList[i] > rnd.Next(150, 600))
+                        if (_randomValueList[i] > rnd.Next(150, 600))
                         {
-                            randomValueList[i] = 0;
+                            _randomValueList[i] = 0;
                         }
                     }
                 }
             };
-            simTmer.Start();
+            _simTmer.Start();
+        }
+        protected override void OnDeactivate(bool close)
+        {
+            base.OnDeactivate(close);
         }
 
         public async void EditSignal(object model)
@@ -142,32 +162,24 @@ namespace PlcComUI.ViewModels
             }
         }
 
-        public bool CanMonitorCb
-        {
-            get
-            {
-                return IsConnected;
-            }
-        }
-
         public bool MonitorCb
         {
             get => _monitorCb;
             set
             {
-                if (value.Equals(_monitorCb)) return;
+                if (value.Equals(_monitorCb))
+                {
+                    return;
+                }
+
                 _monitorCb = value;
 
-                NotifyOfPropertyChange(() => MonitorCb);
-                NotifyOfPropertyChange(() => CanEnableWriteCb);
-            }
-        }
+                if (value == false && EnableWriteCb)
+                {
+                    EnableWriteCb = false;
+                }
 
-        public bool CanEnableWriteCb
-        {
-            get
-            {
-                return MonitorCb;
+                NotifyOfPropertyChange(() => MonitorCb);
             }
         }
 
@@ -185,21 +197,20 @@ namespace PlcComUI.ViewModels
 
         public void Handle(PlcReadEvent message)
         {
-
-                foreach (var item in message.Data.IndexValueList)
+            foreach (var item in message.Data.IndexValueList)
+            {
+                if (item.CpuIndex == _displayModel.IndexModel.CpuIndex && item.DbIndex == _displayModel.IndexModel.DbIndex)
                 {
-                    if (item.CpuIndex == _displayModel.IndexModel.CpuIndex && item.DbIndex == _displayModel.IndexModel.DbIndex)
-                    {
-                        Signals[item.SignalIndex].Value = item.Value;
-                    }
+                    Signals[item.SignalIndex].Value = item.Value;
                 }
+            }
         }
 
         public void Handle(ComStateChangedEvent message)
         {
             if (message.CpuIndex == _displayModel.IndexModel.CpuIndex )
             {
-                if (message.ComState == PlcComLibrary.Common.Enums.ComState.Connected)
+                if (message.ComState == ComState.Connected)
                 {
                     IsConnected = true;
                 }
