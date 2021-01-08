@@ -14,7 +14,7 @@ using static PlcComLibrary.Common.Enums;
 
 namespace PlcComUI.Models
 {
-    public class SignalDisplayModel : INotifyPropertyChanged
+    public class SignalDisplayModel : INotifyPropertyChanged, IEquatable<SignalDisplayModel>
     {
         private IEventAggregator _events;
         private (int lower, int upper) _range;
@@ -167,5 +167,14 @@ namespace PlcComUI.Models
             _events.PublishOnUIThread(new PlcUiCmdEvent(PlcUiCmdEvent.CmdType.Slider, indexModel.CpuIndex, address, value));
         }
 
+        public bool Equals(SignalDisplayModel other)
+        {
+            if (other == null)
+                return false;
+
+            return this.IndexModel.Equals(other.IndexModel) &&
+                   this.Name == other.Name &&
+                   this.Address == other.Address;
+        }
     }
 }

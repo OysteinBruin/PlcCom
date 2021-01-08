@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using log4net;
 using PlcComLibrary.Models;
 using System.Diagnostics;
+using PlcComUI.Views;
+using MaterialDesignThemes.Wpf;
 
 namespace PlcComUI.ViewModels
 {
@@ -35,9 +37,22 @@ namespace PlcComUI.ViewModels
             // WriteEnableChecked = Properties.Settings.Default.SettingsMain. WriteEnableChecked;
         }
 
-        public void EditSignal(object model)
+        public async void EditSignal(object model)
         {
             Debug.Assert(model is SignalDisplayModel);
+
+            var signalDisplayModel = (SignalDisplayModel)model;
+
+            if (Signals.Contains(model))
+            {
+                var view = new EditSignalView
+                {
+                    DataContext = new EditSignalViewModel(signalDisplayModel)
+                };
+
+
+                var val = await DialogHost.Show(view, "MainDialogHost");
+            }
 
         }
 
