@@ -35,23 +35,62 @@ namespace PlcComUI.ViewModels
             base.OnViewLoaded(view);
 
             // WriteEnableChecked = Properties.Settings.Default.SettingsMain. WriteEnableChecked;
+
+            System.Windows.Forms.Timer simTmer = new System.Windows.Forms.Timer();
+            simTmer.Interval = 250;
+
+            List<double> randomValueList = new List<double>();
+            Random rnd = new Random();
+            
+            foreach (var item in Signals)
+            {
+                randomValueList.Add(rnd.Next(1, 250));
+            }
+
+            simTmer.Tick += (sender, e) => {
+                
+                for (int i = 0; i < Signals.Count; i++)
+                {
+                    if (i%2 == 0 && Signals[i].DataType != PlcComLibrary.Common.Enums.DataType.Bit)
+                    {
+                        Signals[i].Value = randomValueList[i] += 0.68f;
+
+                        if (Signals[i].Value > Signals[i].RangeTo)
+                        {
+                            Signals[i].RangeTo = (int)Signals[i].Value + 25;
+                        }
+
+                        if (randomValueList[i] > rnd.Next(150, 600))
+                        {
+                            randomValueList[i] = 0;
+                        }
+                    }
+                }
+            };
+            simTmer.Start();
         }
 
         public async void EditSignal(object model)
         {
             Debug.Assert(model is SignalDisplayModel);
-
             var signalDisplayModel = (SignalDisplayModel)model;
 
             if (Signals.Contains(model))
             {
-                var view = new EditSignalView
+                var view = new EditSignalView();
+                var viewModel = new EditSignalViewModel(signalDisplayModel);
+                ViewModelBinder.Bind(viewModel, view, null);
+
+                await DialogHost.Show(view, "MainDialogHost");
+
+                if (viewModel.DoSave)
                 {
-                    DataContext = new EditSignalViewModel(signalDisplayModel)
-                };
-
-
-                var val = await DialogHost.Show(view, "MainDialogHost");
+                    int index = Signals.IndexOf(viewModel.Model);
+                   if (index >= 0)
+                   {
+                        Signals[index] = viewModel.Model;
+                   }
+                }
             }
 
         }

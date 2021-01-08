@@ -84,6 +84,10 @@ namespace PlcComUI.ViewModels
 
             DatablockTabViewModel vm = new DatablockTabViewModel(_events, dbModel);
 
+            //DatablockTabView view = new DatablockTabView();
+            //DatablockTabViewModel vm = new DatablockTabViewModel(_events, dbModel);
+            //ViewModelBinder.Bind(vm, view, null);
+
             Items.Add(vm);
             ActivateItem(Items.Last());
         }

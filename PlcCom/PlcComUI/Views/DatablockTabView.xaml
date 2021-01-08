@@ -37,7 +37,10 @@
 
             <DataTemplate x:Key="DataSignalModelBoolTemplate" DataType="{x:Type models:SignalDisplayModel}">
                 <StackPanel Orientation="Horizontal" Margin="0 0 20 0">
-                    <Button x:Name="pulseBtn" Content="Pulse" FontSize="10" Height="20" Margin="0 0 20 0">
+                    <Button 
+                        x:Name="pulseBtn" 
+                        Content="Pulse" IsEnabled="{Binding ElementName=EnableWriteCb, Path=IsChecked}"
+                        FontSize="10" Height="20" Margin="0 0 20 0">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="Click">
                                 <i:InvokeCommandAction Command="{Binding PulseCommand}">
@@ -51,7 +54,10 @@
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                     </Button>
-                    <Button x:Name="toggleBtn" Content="Toggle" FontSize="10" Height="20" Margin="0 0 20 0">
+                    <Button 
+                        x:Name="toggleBtn" 
+                        Content="Toggle" IsEnabled="{Binding ElementName=EnableWriteCb, Path=IsChecked}"
+                        FontSize="10" Height="20" Margin="0 0 20 0">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="Click">
                                 <i:InvokeCommandAction Command="{Binding ToggleCommand}">
@@ -68,27 +74,58 @@
                 </StackPanel>
             </DataTemplate>
             <DataTemplate x:Key="DataSignalModelNumericTemplate" DataType="{x:Type models:SignalDisplayModel}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="0" Margin="10 5 10 5"/>
-                    <Slider  x:Name="slider" Value="50" Minimum="0" Maximum="200" MinWidth="150" VerticalAlignment="Center">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="ValueChanged">
-                                <i:InvokeCommandAction Command="{Binding SliderCommand}">
-                                    <i:InvokeCommandAction.CommandParameter>
-                                        <MultiBinding Converter="{StaticResource PlcCmdParameterConverter}">
-                                            <Binding Path="DataContext.IndexModel" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
-                                            <Binding Path="DataContext.Address" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
-                                            <Binding ElementName="slider" Path="Value"/>
-                                        </MultiBinding>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                
+                
+                <!--<StackPanel>
+                    <StackPanel Orientation="Horizontal">-->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Text="{Binding RangeFrom}" Margin="10 0 10 0"/>
 
-                                    </i:InvokeCommandAction.CommandParameter>
-                                </i:InvokeCommandAction>
+                    <ProgressBar
+                        Grid.Row="0" Grid.Column="1"
+                        Margin="0"
+                        Height="8"
+                        Style="{StaticResource MaterialDesignLinearProgressBar}"
+                        Value="{Binding Value}" Minimum="{Binding RangeFrom}" Maximum="{Binding RangeTo}"
+                        
+                        />
+                    <Slider  x:Name="slider" 
+                             Grid.Row="1" Grid.Column="1"
+                             Margin="0"
+       
+                             IsEnabled="{Binding ElementName=EnableWriteCb, Path=IsChecked}"
+                             Minimum="{Binding RangeFrom}" Maximum="{Binding RangeTo}" MinWidth="150" VerticalAlignment="Center">
+                            
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="ValueChanged">
+                                    <i:InvokeCommandAction Command="{Binding SliderCommand}">
+                                        <i:InvokeCommandAction.CommandParameter>
+                                            <MultiBinding Converter="{StaticResource PlcCmdParameterConverter}">
+                                                <Binding Path="DataContext.IndexModel" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=Grid}" />
+                                                <Binding Path="DataContext.Address" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=Grid}" />
+                                                <Binding ElementName="slider" Path="Value"/>
+                                            </MultiBinding>
 
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                    </Slider>
-                    <TextBlock Text="100" Margin="10 5 10 5"/>
-                </StackPanel>
+                                        </i:InvokeCommandAction.CommandParameter>
+                                    </i:InvokeCommandAction>
+
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </Slider>
+                    <TextBlock Grid.Row="0" Grid.Column="2"  Grid.RowSpan="2" Text="{Binding ElementName=slider, Path=Maximum}" Margin="10 0 10 0"/>
+                    <!--</StackPanel>
+                    
+                </StackPanel>-->
+                </Grid>
             </DataTemplate>
 
         </ResourceDictionary>
@@ -115,9 +152,9 @@
         VerticalScrollBarVisibility="Auto"
          Margin="5 20 5 5">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True" />
+                    <DataGridTextColumn  Header="Name" Binding="{Binding Name}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Address" Binding="{Binding Address}" IsReadOnly="True" />
-                <DataGridTextColumn CanUserSort="False" CanUserReorder="False" Header="Read" IsReadOnly="True" Binding="{Binding ValueStr}" />
+                    <DataGridTextColumn CanUserSort="False" CanUserReorder="False" Header="Read" IsReadOnly="True" Binding="{Binding ValueStr}" TextElement.FontSize="18" />
                 <DataGridTemplateColumn Header="Write" MinWidth="250" CellTemplateSelector="{StaticResource DataSignalModelTemplateSelector}"/>
                 <!-- Visibility="{Binding IsChecked, ElementName=cbWriteEnable, Converter={StaticResource BooleanToVisibilityConverter}}" -->
             </DataGrid.Columns>

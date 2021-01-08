@@ -28,6 +28,8 @@ namespace PlcComUI.Models
             PulseCommand = new RelayCommand<object>(OnPulseCommand);
             ToggleCommand = new RelayCommand<object>(OnToggleCommand);
             SliderCommand = new RelayCommand<object>(OnSliderCommand);
+
+            
         }
 
         public PlcComIndexModel IndexModel { get; set; }
@@ -61,9 +63,9 @@ namespace PlcComUI.Models
         public int Db { get; set; }
         public int Byte { get; set; }
         public int Bit { get; set; }
-        public int RangeFrom { get; set; }
+        public int RangeFrom { get; set; } = 0;
 
-        public int RangeTo { get; set; }
+        public int RangeTo { get; set; } = 110;
 
         public (int lower, int upper) Range
         {
@@ -98,8 +100,8 @@ namespace PlcComUI.Models
                     ValueStr = String.Format("{0:0.00}", _value);
                     OnPropertyChanged(nameof(Value));
                 }
-            }
-        }
+            } 
+        } 
 
         private string _valueStr;
 

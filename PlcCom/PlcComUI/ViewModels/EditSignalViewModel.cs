@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using MaterialDesignThemes.Wpf;
 using PlcComUI.Models;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,19 @@ namespace PlcComUI.ViewModels
                 _model = value;
                 NotifyOfPropertyChange(() => Model);
             }
+        }
+
+        public bool DoSave { get; set; }
+        public void Ok()
+        {
+            DoSave = true;
+            DialogHost.CloseDialogCommand.Execute(null, null);
+        }
+
+        public void Cancel()
+        {
+            DoSave = false;
+            DialogHost.CloseDialogCommand.Execute(null, null);
         }
 
     }

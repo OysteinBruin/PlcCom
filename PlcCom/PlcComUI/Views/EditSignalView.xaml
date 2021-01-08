@@ -14,8 +14,8 @@
              TextOptions.TextRenderingMode="Auto"
              Background="{DynamicResource MaterialDesignPaper}"
              FontFamily="{materialDesign:MaterialDesignFont}"
-             d:DesignHeight="400" d:DesignWidth="400">
-    <Grid>
+             d:DesignHeight="500" d:DesignWidth="400">
+    <Grid Margin="40">
         <Grid.ColumnDefinitions>
             <ColumnDefinition  />
             <ColumnDefinition  />
@@ -27,12 +27,13 @@
             <RowDefinition />
             <RowDefinition />
             <RowDefinition />
+            <RowDefinition />
         </Grid.RowDefinitions>
 
         <TextBlock
             Style="{StaticResource MaterialDesignHeadline5TextBlock}"
             Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4"
-                   HorizontalAlignment="Center" Margin='0 60 0 0'>
+                   HorizontalAlignment="Center" VerticalAlignment="Center">
             Edit Signal
         </TextBlock>
         
@@ -57,20 +58,36 @@
             Content="Range from"
             Style="{StaticResource MaterialDesignLabel}"
             FontSize="18"
-            VerticalAlignment="Center" />
+            VerticalAlignment="Bottom" />
         <mah:NumericUpDown
             Grid.Row="3" Grid.Column="1" 
+            VerticalAlignment="Bottom"
+            Value="{Binding Model.RangeFrom}"
             />
         <Label
             Grid.Row="3" Grid.Column="2" 
             Content="Range to"
             Style="{StaticResource MaterialDesignLabel}"
             FontSize="18"
-            VerticalAlignment="Center" />
+            VerticalAlignment="Bottom" />
 
         <mah:NumericUpDown
             Grid.Row="3" Grid.Column="3" 
+            Value="{Binding Model.RangeTo}"
+            VerticalAlignment="Bottom"
             />
+
+        <Button
+            x:Name="Ok"
+            Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+            Content="Ok"
+            Margin="30 20 30 0" />
+
+        <Button
+            x:Name="Cancel"
+            Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2"
+            Content="Cancel"
+            Margin="30 20 30 0"/>
 
     </Grid>
 </UserControl>
