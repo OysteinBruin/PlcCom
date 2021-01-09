@@ -81,6 +81,8 @@ namespace PlcComLibrary.PlcCom
         public ICpuConfig Config { get; protected set; }
         public List<IDatablockModel> Datablocks { get; protected set; }
 
+        public List<IDatablockModel> MontoredDatablocks { get; set; } = new List<IDatablockModel>();
+
         public event EventHandler ComStateChanged;
 
         protected void RaiseComStateChanged(EventArgs e)

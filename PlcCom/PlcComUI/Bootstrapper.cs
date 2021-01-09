@@ -13,10 +13,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using PlcComLibrary.PlcCom;
+using AutoMapper;
+using PlcComLibrary.Models;
 
 namespace PlcComUI
 {
-	public class Bootstrapper : BootstrapperBase
+    public class Order { }
+    public class OnlineOrder : Order { }
+    public class MailOrder : Order { }
+
+    public class OrderDto { }
+    public class OnlineOrderDto : OrderDto { }
+    public class MailOrderDto : OrderDto { }
+    public class Bootstrapper : BootstrapperBase
 	{
         private SimpleContainer _container = new SimpleContainer();
 
@@ -25,11 +34,41 @@ namespace PlcComUI
             Initialize();
         }
 
-        
+        private IMapper ConfigureAutoMapper()
+        {
+            var configuration = new MapperConfiguration(cfg => {
+                cfg.CreateMap<Order, OrderDto>()
+                    .Include<OnlineOrder, OnlineOrderDto>()
+                    .Include<MailOrder, MailOrderDto>();
+                cfg.CreateMap<OnlineOrder, OnlineOrderDto>();
+                cfg.CreateMap<MailOrder, MailOrderDto>();
+            });
+
+            var config = new MapperConfiguration(cfg => {
+
+                //cfg.CreateMap<ISignalModel, ISignalDisplayModel>()
+                //    .Include<SignalModel, SignalDisplayModel>();
+                //cfg.CreateMap<SignalModel, SignalDisplayModel>();
+
+                //cfg.CreateMap<IDatablockModel, IDatablockDisplayModel>()
+                //    .Include<DatablockModel, DatablockDisplayModel>();
+                //cfg.CreateMap<DatablockModel, DatablockDisplayModel>();
+
+                cfg.CreateMap<ISignalDisplayModel, ISignalModel>()
+                    .Include<SignalDisplayModel, SignalModel>();
+                cfg.CreateMap<SignalDisplayModel, SignalModel>();
+
+                cfg.CreateMap<IDatablockDisplayModel, IDatablockModel>()
+                    .Include<DatablockDisplayModel, DatablockModel>();
+                cfg.CreateMap<DatablockDisplayModel, DatablockModel>();
+            });
+
+            return config.CreateMapper();
+        }
 
         protected override void Configure()
         {
-
+            _container.Instance(ConfigureAutoMapper());
             _container.Instance(_container);
 
             _container.Singleton<IWindowManager, WindowManager>()

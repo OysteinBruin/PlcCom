@@ -12,13 +12,16 @@ namespace PlcComUI.ViewModels
     public class EditSignalViewModel : Screen
     {
         private SignalDisplayModel _model;
+        private int _selectedLowerRange;
+        private int _selectedUpperRange;
 
         public EditSignalViewModel(SignalDisplayModel model)
         {
             _model = model;
-        }
 
-        
+            SelectedLowerRange = model.RangeFrom;
+            SelectedUpperRange = model.RangeTo;
+        }
 
         public SignalDisplayModel Model
         {
@@ -27,6 +30,29 @@ namespace PlcComUI.ViewModels
             { 
                 _model = value;
                 NotifyOfPropertyChange(() => Model);
+            }
+        }
+
+
+        public int SelectedLowerRange
+        {
+            get => _selectedLowerRange;
+            set
+            {
+                _selectedLowerRange = value;
+                _model.RangeFrom = _selectedLowerRange;
+                NotifyOfPropertyChange(() => SelectedLowerRange);
+            }
+        }
+
+        public int SelectedUpperRange
+        {
+            get => _selectedUpperRange;
+            set
+            {
+                _selectedUpperRange = value;
+                _model.RangeTo = _selectedUpperRange;
+                NotifyOfPropertyChange(() => SelectedUpperRange);
             }
         }
 

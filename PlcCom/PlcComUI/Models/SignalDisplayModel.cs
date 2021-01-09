@@ -14,7 +14,7 @@ using static PlcComLibrary.Common.Enums;
 
 namespace PlcComUI.Models
 {
-    public class SignalDisplayModel : INotifyPropertyChanged, IEquatable<SignalDisplayModel>
+    public class SignalDisplayModel : INotifyPropertyChanged, IEquatable<SignalDisplayModel>, ISignalDisplayModel
     {
         private IEventAggregator _events;
         private (int lower, int upper) _range;
@@ -24,15 +24,15 @@ namespace PlcComUI.Models
         public SignalDisplayModel(PlcComIndexModel indexModel, IEventAggregator events)
         {
             IndexModel = indexModel;
+            Index = indexModel.SignalIndex;
             _events = events;
             PulseCommand = new RelayCommand<object>(OnPulseCommand);
             ToggleCommand = new RelayCommand<object>(OnToggleCommand);
             SliderCommand = new RelayCommand<object>(OnSliderCommand);
-
-            
         }
 
         public PlcComIndexModel IndexModel { get; set; }
+        public int Index { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string DataTypeStr { get; set; }
@@ -91,17 +91,17 @@ namespace PlcComUI.Models
         public double Value
         {
             get => _value;
-            set 
+            set
             {
-                
+
                 if (value != _value)
                 {
                     _value = value;
                     ValueStr = String.Format("{0:0.00}", _value);
                     OnPropertyChanged(nameof(Value));
                 }
-            } 
-        } 
+            }
+        }
 
         private string _valueStr;
 

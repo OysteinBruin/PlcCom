@@ -7,10 +7,6 @@ namespace PlcComLibrary.Models
 {
     public class SignalModel : ISignalModel
     {
-        public SignalModel()
-        {
-
-        }
         public SignalModel(int index )
         {
             Index = index;

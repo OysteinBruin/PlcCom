@@ -15,7 +15,6 @@ namespace PlcComLibrary.PlcCom
     public class SimulatedPlcService : PlcService
     {
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private ComState _comState;
 
         public SimulatedPlcService(int index, ICpuConfig config, List<IDatablockModel> datablocks)
             : base(index, config, datablocks)

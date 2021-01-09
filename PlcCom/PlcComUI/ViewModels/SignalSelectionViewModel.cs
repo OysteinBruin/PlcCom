@@ -48,7 +48,7 @@ namespace PlcComUI.ViewModels
 
             if (treeViewItemObj is DatablockDisplayModel ddm)
             {
-                DatablockSelected?.Invoke(this, new DatablockSelectedEvent(ddm));
+                DatablockSelected?.Invoke(this, new DbAddTotabEvent(ddm));
             }
             else if (treeViewItemObj is SignalDisplayModel sdm)
             {

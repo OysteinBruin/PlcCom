@@ -40,6 +40,9 @@
     <Reference Include="Autofac, Version=6.1.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\packages\Autofac.6.1.0\lib\netstandard2.0\Autofac.dll</HintPath>
     </Reference>
+    <Reference Include="AutoMapper, Version=10.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.10.1.1\lib\net461\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="Caliburn.Micro, Version=3.2.0.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
       <HintPath>..\packages\Caliburn.Micro.Core.3.2.0\lib\net45\Caliburn.Micro.dll</HintPath>
     </Reference>
@@ -152,7 +155,8 @@
     <Compile Include="Domain\AsyncRelayCommnd.cs" />
     <Compile Include="Domain\RelayCommand.cs" />
     <Compile Include="Domain\SettingBindingExtension.cs" />
-    <Compile Include="EventModels\DatablockSelectedEvent.cs" />
+    <Compile Include="EventModels\DbAddTotabEvent.cs" />
+    <Compile Include="EventModels\DbMonitoringChangedEvent.cs" />
     <Compile Include="EventModels\HandlingEventTrigger.cs" />
     <Compile Include="EventModels\MessageEvent.cs" />
     <Compile Include="EventModels\ComStateChangedEvent.cs" />
@@ -163,6 +167,8 @@
     <Compile Include="EventModels\SplashStatusChangedEvent.cs" />
     <Compile Include="Models\CpuDisplayModel.cs" />
     <Compile Include="Models\DatablockDisplayModel.cs" />
+    <Compile Include="Models\IDatablockDisplayModel.cs" />
+    <Compile Include="Models\ISignalDisplayModel.cs" />
     <Compile Include="ViewModels\EditSignalViewModel.cs" />
     <Compile Include="Views\EditSignalView.xaml.cs">
       <DependentUpon>EditSignalView.xaml</DependentUpon>

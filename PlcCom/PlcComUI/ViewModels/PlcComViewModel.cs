@@ -1,4 +1,5 @@
-﻿using Caliburn.Micro;
+﻿using AutoMapper;
+using Caliburn.Micro;
 using Dragablz;
 using PlcComLibrary.Models;
 using PlcComLibrary.PlcCom;
@@ -13,19 +14,24 @@ using static PlcComLibrary.Common.Enums;
 
 namespace PlcComUI.ViewModels
 {
-    public class PlcComViewModel : Conductor<IScreen>.Collection.OneActive, IHandle<PlcUiCmdEvent>
+    public class PlcComViewModel : Conductor<IScreen>.Collection.OneActive, 
+                                   IHandle<PlcUiCmdEvent>, 
+                                   IHandle<DbMonitoringChangedEvent>
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(PlcComViewModel));
         private IEventAggregator _events;
+        private IMapper _mapper;
         private IPlcComManager _plcComManager;
 
         public PlcComViewModel(IEventAggregator events,
             IPlcComManager plcComManager,
+            IMapper mapper,
             IInterTabClient interTabClient,
             IInterLayoutClient interLayoutClient)
         {
             _events = events;
             _plcComManager = plcComManager;
+            _mapper = mapper;
             InterTabClient = interTabClient;
             InterLayoutClient = interLayoutClient;
 
@@ -78,7 +84,7 @@ namespace PlcComUI.ViewModels
 
         private void OnDatablockSelected(object sender, EventArgs args)
         {
-            var eventArgs = (DatablockSelectedEvent)args;
+            var eventArgs = (DbAddTotabEvent)args;
             DatablockDisplayModel dbModel = eventArgs.DatablockSelected;
 
             bool isConnected = (_plcComManager.PlcServiceList[dbModel.IndexModel.CpuIndex].ComState == ComState.Connected);
@@ -161,6 +167,34 @@ namespace PlcComUI.ViewModels
                     ex.Message, MessageEvent.Level.Warn));
             }
 
+        }
+
+        public void Handle(DbMonitoringChangedEvent message)
+        {
+            int cpuIndex = message.Datablock.IndexModel.CpuIndex;
+            Debug.Assert(cpuIndex >= 0 && cpuIndex < _plcComManager.PlcServiceList.Count);
+            var plc = _plcComManager.PlcServiceList[cpuIndex];
+
+            try
+            {
+                DatablockDisplayModel ddm = message.Datablock;
+                var mappedDbModel = _mapper.Map(ddm, ddm.GetType(), typeof(IDatablockModel));
+                Debug.Assert(mappedDbModel is IDatablockModel);
+
+                if (message.DoMonitor)
+                {
+                    plc.MontoredDatablocks.Add(mappedDbModel as IDatablockModel);
+                }
+                else
+                {
+                    bool ok = plc.MontoredDatablocks.Remove(mappedDbModel as IDatablockModel);
+                }
+            }
+            catch (AutoMapperMappingException ex)
+            {
+                _events.PublishOnUIThread(new MessageEvent($"Failed to add {message.Datablock.Name} to the read list for cpu {plc.Config.Name}",
+                    ex.Message, MessageEvent.Level.Warn));
+            }
         }
     }
 }

@@ -48,7 +48,7 @@ namespace PlcComLibrary.PlcCom
                     ComState = ComState.ConnectFailed;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //LastError = ex.Message;
                 ComState = ComState.ConnectFailed;

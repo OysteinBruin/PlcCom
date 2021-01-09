@@ -39,8 +39,6 @@ namespace PlcComUI.ViewModels
             _simTmer.Interval = 250;
         }
 
-        public event EventHandler MonitoringStateChanged;
-
         protected override void OnViewLoaded(object view)
         {
             base.OnViewLoaded(view);
@@ -179,6 +177,7 @@ namespace PlcComUI.ViewModels
                     EnableWriteCb = false;
                 }
 
+                _events.PublishOnUIThread(new DbMonitoringChangedEvent(_displayModel, _monitorCb));
                 NotifyOfPropertyChange(() => MonitorCb);
             }
         }

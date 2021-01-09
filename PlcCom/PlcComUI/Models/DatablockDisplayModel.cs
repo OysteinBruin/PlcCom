@@ -8,23 +8,26 @@ using System.Threading.Tasks;
 
 namespace PlcComUI.Models
 {
-    public class DatablockDisplayModel : INotifyPropertyChanged
+    public class DatablockDisplayModel : INotifyPropertyChanged, IDatablockDisplayModel
     {
         public DatablockDisplayModel(PlcComIndexModel indexModel)
         {
             IndexModel = indexModel;
+            Index = indexModel.DbIndex;
         }
 
-        public List<SignalDisplayModel> Signals { get; set; } = new List<SignalDisplayModel>();
-
+        public int Index { get; set; }
         public PlcComIndexModel IndexModel { get; set; }
+
+        public string Name { get; set; }
 
         public int Number { get; set; }
         public string NumberStr
         {
             get => $"DB{Number}";
         }
-        public string Name { get; set; }
+
+        public List<SignalDisplayModel> Signals { get; set; } = new List<SignalDisplayModel>();
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void EmitPropertyChanged(string propName)

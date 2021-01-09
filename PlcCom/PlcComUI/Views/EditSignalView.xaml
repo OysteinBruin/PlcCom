@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:local="clr-namespace:PlcComUI.Views"
              mc:Ignorable="d" 
              TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -53,38 +52,31 @@
                 MinWidth="300"
                 Margin='0 0 0 10'
                />
-        <Label
-            Grid.Row="3" Grid.Column="0" 
-            Content="Range from"
-            Style="{StaticResource MaterialDesignLabel}"
-            FontSize="18"
-            VerticalAlignment="Bottom" />
-        <mah:NumericUpDown
-            Grid.Row="3" Grid.Column="1" 
-            VerticalAlignment="Bottom"
-            Value="{Binding Model.RangeFrom}"
-            />
-        <Label
-            Grid.Row="3" Grid.Column="2" 
-            Content="Range to"
-            Style="{StaticResource MaterialDesignLabel}"
-            FontSize="18"
-            VerticalAlignment="Bottom" />
 
-        <mah:NumericUpDown
-            Grid.Row="3" Grid.Column="3" 
-            Value="{Binding Model.RangeTo}"
-            VerticalAlignment="Bottom"
-            />
+        <TextBox x:Name="SelectedLowerRange" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" 
+                materialDesign:HintAssist.Hint="Lower Range"
+                Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                VerticalAlignment="Center" 
+                Margin='0 0 20 0'
+               />
+
+        <TextBox x:Name="SelectedUpperRange" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2"
+                materialDesign:HintAssist.Hint="Upper Range"
+                Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                VerticalAlignment="Center" 
+                Margin='0 0 20 0'
+               />
 
         <Button
             x:Name="Ok"
+            Style="{StaticResource MaterialDesignFlatButton}"
             Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
             Content="Ok"
             Margin="30 20 30 0" />
 
         <Button
             x:Name="Cancel"
+            Style="{StaticResource MaterialDesignFlatButton}"
             Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2"
             Content="Cancel"
             Margin="30 20 30 0"/>

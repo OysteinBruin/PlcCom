@@ -107,6 +107,7 @@ namespace PlcComLibrary.Config
                 //    }               
                 //}
             }
+            Thread.Sleep(2000);
             ConfigsLoaded?.Invoke(this, new EventArgs());
             return plcServiceList;
         }
