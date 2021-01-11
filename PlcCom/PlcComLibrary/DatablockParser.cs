@@ -345,7 +345,7 @@ namespace PlcComLibrary
             s.DataType = datatypeAndSize.dataType;
             s.Address = CreateDbAdressString(_dbNumber, datatypeAndSize.dataType, _byteCounter, _bitCounter);
             s.Db = _dbNumber;
-            s.Byte = _byteCounter;
+            s.DbByteIndex = _byteCounter;
             if (s.DataType == Enums.DataType.Bit)
             {
                 s.Bit = _bitCounter;

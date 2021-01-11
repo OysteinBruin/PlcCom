@@ -61,7 +61,7 @@ namespace PlcComUI.Models
 
         public string Address { get; set; }
         public int Db { get; set; }
-        public int Byte { get; set; }
+        public int DbByteIndex { get; set; }
         public int Bit { get; set; }
         public int RangeFrom { get; set; } = 0;
 

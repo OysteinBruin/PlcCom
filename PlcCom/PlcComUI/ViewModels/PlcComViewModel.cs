@@ -183,11 +183,11 @@ namespace PlcComUI.ViewModels
 
                 if (message.DoMonitor)
                 {
-                    plc.MontoredDatablocks.Add(mappedDbModel as IDatablockModel);
+                    plc.StartMonitoringDb(mappedDbModel as IDatablockModel);
                 }
                 else
                 {
-                    bool ok = plc.MontoredDatablocks.Remove(mappedDbModel as IDatablockModel);
+                    plc.StopMonitoringDb(mappedDbModel as IDatablockModel);
                 }
             }
             catch (AutoMapperMappingException ex)

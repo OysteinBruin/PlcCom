@@ -53,12 +53,12 @@ namespace PlcComUI.ViewModels
             base.OnActivate();
 
 
-            Random rnd = new Random();
+                Random rnd = new Random();
 
-            foreach (var item in Signals)
-            {
-                _randomValueList.Add(rnd.Next(1, 250));
-            }
+                foreach (var item in Signals)
+                {
+                    _randomValueList.Add(rnd.Next(1, 250));
+                }
 
 
             _simTmer.Tick += (sender, e) => {

@@ -80,8 +80,8 @@ namespace PlcComLibrary.Config
                         datablock.Signals = signals;
                         datablock.Name = dbNumberDbName.Last();
                         datablock.Number = dbNumber;
-                        datablock.FirstByte = signals.First().Byte;
-                        datablock.ByteCount = signals.Last().Byte - datablock.FirstByte;
+                        datablock.FirstByte = signals.First().DbByteIndex;
+                        datablock.ByteCount = signals.Last().DbByteIndex - datablock.FirstByte;
                         datablocks.Add(datablock);
                     }
                     configsProgressEventArgs.ProgressInput += 1;

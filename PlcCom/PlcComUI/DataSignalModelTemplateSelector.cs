@@ -33,11 +33,6 @@ namespace PlcComUI
             }
         }
 
-        public void EditSignal()
-        {
-
-        }
-
         private static DataTemplate FindDataTemplate(FrameworkElement frameworkElement, string key)
         {
             return (DataTemplate)frameworkElement.FindResource(key);

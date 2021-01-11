@@ -36,7 +36,9 @@ namespace PlcComLibrary.Tests.PlcCom
             throw new NotImplementedException();
         }
 
-        public override Task ReadDbAsync(IDatablockModel db)
+     
+        
+        protected override async Task ReadDbAsync(IDatablockModel db)
         {
             throw new NotImplementedException();
         }

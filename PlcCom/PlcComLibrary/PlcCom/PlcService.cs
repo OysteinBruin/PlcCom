@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace PlcComLibrary.PlcCom
 {
@@ -79,9 +80,27 @@ namespace PlcComLibrary.PlcCom
         }
 
         public ICpuConfig Config { get; protected set; }
+
         public List<IDatablockModel> Datablocks { get; protected set; }
 
-        public List<IDatablockModel> MontoredDatablocks { get; set; } = new List<IDatablockModel>();
+        public HashSet<IDatablockModel> MonitoredDatablocks { get; private set; } = new HashSet<IDatablockModel>();
+
+        public virtual void StartMonitoringDb(IDatablockModel dbModel)
+        {
+            if (dbModel != null)
+                MonitoredDatablocks.Add(dbModel);
+        }
+
+        public virtual bool StopMonitoringDb(IDatablockModel dbModel)
+        {
+            if (dbModel == null)
+                return false;
+
+            int numElementsAdded = MonitoredDatablocks.RemoveWhere(m => m.Name == dbModel.Name 
+                            && m.Index == dbModel.Index && m.Number == dbModel.Number 
+                            && m.Signals.Count == dbModel.Signals.Count );
+            return numElementsAdded == 1;
+        }
 
         public event EventHandler ComStateChanged;
 
@@ -108,7 +127,19 @@ namespace PlcComLibrary.PlcCom
 
         public abstract Task ReadSingleAsync(string address);
 
-        public abstract Task ReadDbAsync(IDatablockModel db);
+        public virtual async Task ReadDatablocksAsync()
+        {
+            while (MonitoredDatablocks.Count > 0)
+            {
+                foreach (var db in MonitoredDatablocks)
+                {
+                    await ReadDbAsync(db);
+                }
+            }
+        }
+
+        protected abstract Task ReadDbAsync(IDatablockModel db);
+
         public abstract Task WriteSingleAsync(string address, object value);
 
         public abstract Task PulseBitAsync(string address);

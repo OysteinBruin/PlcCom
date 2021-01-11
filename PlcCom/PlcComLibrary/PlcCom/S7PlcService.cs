@@ -81,18 +81,34 @@ namespace PlcComLibrary.PlcCom
             }
         }
 
-        public override async Task ReadDbAsync(IDatablockModel db)
+        protected override async Task ReadDbAsync(IDatablockModel db)
         {
             VerifyConnected();
-            //byte[] bytes = new byte;
-            byte[] bytes = await _plc.ReadBytesAsync(S7.Net.DataType.DataBlock, db.Number, db.FirstByte, db.ByteCount);
 
-            Debug.Assert(bytes.Length == db.ByteCount - db.FirstByte);
+            await DelayAsync(10);
+
+            byte[] dbBytes = await _plc.ReadBytesAsync(S7.Net.DataType.DataBlock, db.Number, db.FirstByte, db.ByteCount);
+
+
+
+            // TODO change Debug.Assert to if and create scheduler to check if it fails several times, 
+            // and throw exception + handling remove this db from read list
+            Debug.Assert(dbBytes.Length == db.ByteCount - db.FirstByte);
+
+
+            List<PlcComIndexValueModel> indexValueModels = new List<PlcComIndexValueModel>();
+
             for (int i = 0; i < db.Signals.Count; i++)
             {
-
+                ISignalModel s = db.Signals[i];
+                byte[] dbBytesRange = dbBytes.Skip(s.DbByteIndex).Take(s.ByteCount()).ToArray();
+                indexValueModels.Add(new PlcComIndexValueModel(Index, db.Index, s.Index, s.BytesToValue(dbBytesRange)));
             }
+
+            PlcReadResultEventArgs args = new PlcReadResultEventArgs(indexValueModels);
+            RaiseHasNewData(args);
         }
+
 
         public override async Task WriteSingleAsync(string address, object value)
         {

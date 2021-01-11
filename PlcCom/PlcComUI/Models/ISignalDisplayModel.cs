@@ -10,7 +10,7 @@ namespace PlcComUI.Models
     {
         string Address { get; set; }
         int Bit { get; set; }
-        int Byte { get; set; }
+        int DbByteIndex { get; set; }
         bool CanActivatePulseCmd { get; }
         Enums.DataType DataType { get; set; }
         string DataTypeStr { get; set; }

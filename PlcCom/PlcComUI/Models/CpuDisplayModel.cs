@@ -17,7 +17,6 @@ namespace PlcComUI.Models
 {
     public class CpuDisplayModel : INotifyPropertyChanged
     {
-        private string _name;
         PlcService _plcService;
         private string _connectionName;
         private string _ipAddress;
@@ -65,7 +64,7 @@ namespace PlcComUI.Models
                     sdm.DataType = sig.DataType;
                     sdm.DataTypeStr = sig.DataTypeStr;
                     sdm.Db = sig.Db;
-                    sdm.Byte = sig.Byte;
+                    sdm.DbByteIndex = sig.DbByteIndex;
                     sdm.Bit = sig.Bit;
                     sdm.Value = sig.Value;
                     signalDisplayModels.Add(sdm);
