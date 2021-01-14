@@ -47,13 +47,23 @@
         </dragablz:TabablzControl>
 
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
-
-        <dockablz:Layout Grid.Column="2" Style="{StaticResource CustomDockablzLayout}" >
-            <dragablz:TabablzControl Style="{StaticResource CustomTabablzControl}" ShowDefaultCloseButton="True" Margin="5 0 0 0">
+        <dockablz:Layout Grid.Column="2">
+            <dragablz:TabablzControl>
                 <dragablz:TabablzControl.InterTabController>
                     <dragablz:InterTabController InterTabClient="{Binding InterTabClient}"/>
                 </dragablz:TabablzControl.InterTabController>
             </dragablz:TabablzControl>
         </dockablz:Layout>
+
     </Grid>
 </UserControl>
+    
+    <!--
+        <dockablz:Layout Grid.Column="2" Style="{StaticResource CustomDockablzLayout}" >
+    <dragablz:TabablzControl Style="{StaticResource CustomTabablzControl}" ShowDefaultCloseButton="True" Margin="5 0 0 0">
+        <dragablz:TabablzControl.InterTabController>
+            <dragablz:InterTabController InterTabClient="{Binding InterTabClient}"/>
+        </dragablz:TabablzControl.InterTabController>
+    </dragablz:TabablzControl>
+    </dockablz:Layout>
+    -->

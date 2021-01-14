@@ -17,7 +17,8 @@
         </ResourceDictionary>
     </Window.Resources>
     <dockablz:Layout>
-        <dragablz:TabablzControl x:Name="Tabs" Style="{StaticResource CustomTabablzControl}">
+        <dragablz:TabablzControl x:Name="Tabs" >
+            <!-- Style="{StaticResource CustomTabablzControl}"-->
             <dragablz:TabablzControl.InterTabController>
                 <dragablz:InterTabController InterTabClient="{Binding InterTabClient}"/>
             </dragablz:TabablzControl.InterTabController>

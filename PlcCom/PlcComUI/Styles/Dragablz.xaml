@@ -7,7 +7,8 @@
         <ResourceDictionary Source="pack://application:,,,/Dragablz;component/Themes/materialdesign.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <Style x:Key="CustomDockablzLayout" TargetType="{x:Type dockablz:Layout}">
+    <Style  TargetType="{x:Type dockablz:Layout}">
+        <!-- x:Key="CustomDockablzLayout" -->
         <Setter Property="Margin" Value="0" />
         <Setter Property="IsFloatDropZoneEnabled" Value="False"/>
         <Setter Property="FloatingItemHeaderMemberPath" Value="DisplayName"/>
@@ -21,7 +22,8 @@
         </Setter>
     </Style>
     <dragablz:InterTabController x:Key="InterTabController" x:Shared="False" InterTabClient="{Binding InterTabClient}" />
-    <Style x:Key="CustomTabablzControl" TargetType="{x:Type dragablz:TabablzControl}" BasedOn="{StaticResource MaterialDesignTabablzControlStyle}">
+    <Style TargetType="{x:Type dragablz:TabablzControl}" BasedOn="{StaticResource MaterialDesignTabablzControlStyle}">
+        <!-- x:Key="CustomTabablzControl"  -->
         <Setter Property="Margin" Value="5"/>
         <Setter Property="ConsolidateOrphanedItems" Value="True"/>
         <Setter Property="HeaderMemberPath" Value="DisplayName"/>

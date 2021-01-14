@@ -30,7 +30,7 @@
 
                 <!-- Dragablz Material Design -->
                 <ResourceDictionary Source="pack://application:,,,/Dragablz;component/Themes/materialdesign.xaml"/>
-
+                <ResourceDictionary Source="/Styles/Dragablz.xaml" />
                 <!-- Caliburn micro -->
                 <ResourceDictionary>
                     <local:Bootstrapper x:Key="Bootstrapper" />
