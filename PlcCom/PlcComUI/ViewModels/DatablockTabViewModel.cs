@@ -24,8 +24,6 @@ namespace PlcComUI.ViewModels
         private bool _isConnected;
         private bool _monitorCb;
         private bool _enableWriteCb;
-        private System.Windows.Forms.Timer _simTmer;
-        List<double> _randomValueList = new List<double>();
 
 
         public DatablockTabViewModel(IEventAggregator events, DatablockDisplayModel displayModel, bool isConnected)
@@ -34,9 +32,6 @@ namespace PlcComUI.ViewModels
             _displayModel = displayModel;
             _events.Subscribe(this);
             IsConnected = isConnected;
-
-            _simTmer = new System.Windows.Forms.Timer();
-            _simTmer.Interval = 250;
         }
 
         protected override void OnViewLoaded(object view)
@@ -48,41 +43,6 @@ namespace PlcComUI.ViewModels
             
         }
 
-        protected override void OnActivate()
-        {
-            base.OnActivate();
-
-
-                Random rnd = new Random();
-
-                foreach (var item in Signals)
-                {
-                    _randomValueList.Add(rnd.Next(1, 250));
-                }
-
-
-            _simTmer.Tick += (sender, e) => {
-
-                for (int i = 0; i < Signals.Count; i++)
-                {
-                    if (i % 2 == 0 && Signals[i].DataType != PlcComLibrary.Common.Enums.DataType.Bit)
-                    {
-                        Signals[i].Value = _randomValueList[i] += 0.68f;
-
-                        if (Signals[i].Value > Signals[i].RangeTo)
-                        {
-                            Signals[i].RangeTo = (int)Signals[i].Value + 25;
-                        }
-
-                        if (_randomValueList[i] > rnd.Next(150, 600))
-                        {
-                            _randomValueList[i] = 0;
-                        }
-                    }
-                }
-            };
-            _simTmer.Start();
-        }
         protected override void OnDeactivate(bool close)
         {
             base.OnDeactivate(close);

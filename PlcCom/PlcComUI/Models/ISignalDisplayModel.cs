@@ -17,6 +17,7 @@ namespace PlcComUI.Models
         int Db { get; set; }
         string Description { get; set; }
         bool HasRange { get; }
+        bool IsUsingFixedRange { get; set; }
         int Index { get; set; }
         PlcComIndexModel IndexModel { get; set; }
         bool IsBoolType { get; set; }

@@ -53,19 +53,25 @@
                 Margin='0 0 0 10'
                />
 
-        <TextBox x:Name="SelectedLowerRange" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" 
+        <TextBox x:Name="SelectedLowerRange" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" 
                 materialDesign:HintAssist.Hint="Lower Range"
                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                 VerticalAlignment="Center" 
                 Margin='0 0 20 0'
                />
 
-        <TextBox x:Name="SelectedUpperRange" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2"
+        <TextBox x:Name="SelectedUpperRange" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1"
                 materialDesign:HintAssist.Hint="Upper Range"
                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                 VerticalAlignment="Center" 
                 Margin='0 0 20 0'
                />
+
+        <CheckBox x:Name="UseFixedRange" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2"
+                  IsEnabled="{Binding IsConnected}"  
+                  Content="Use fixed range" 
+                  VerticalAlignment="Center" 
+                  Margin="0 0 30 0" />
 
         <Button
             x:Name="Ok"

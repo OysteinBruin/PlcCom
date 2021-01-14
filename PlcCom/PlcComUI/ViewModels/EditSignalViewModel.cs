@@ -14,6 +14,7 @@ namespace PlcComUI.ViewModels
         private SignalDisplayModel _model;
         private int _selectedLowerRange;
         private int _selectedUpperRange;
+        private bool _useFixedRange;
 
         public EditSignalViewModel(SignalDisplayModel model)
         {
@@ -21,6 +22,7 @@ namespace PlcComUI.ViewModels
 
             SelectedLowerRange = model.RangeFrom;
             SelectedUpperRange = model.RangeTo;
+            UseFixedRange = model.IsUsingFixedRange;
         }
 
         public SignalDisplayModel Model
@@ -53,6 +55,22 @@ namespace PlcComUI.ViewModels
                 _selectedUpperRange = value;
                 _model.RangeTo = _selectedUpperRange;
                 NotifyOfPropertyChange(() => SelectedUpperRange);
+            }
+        }
+
+        public bool UseFixedRange
+        {
+            get => _useFixedRange;
+            set
+            {
+                if (value.Equals(_useFixedRange))
+                {
+                    return;
+                }
+
+                _useFixedRange = value;
+                _model.IsUsingFixedRange = _useFixedRange;
+                NotifyOfPropertyChange(() => UseFixedRange);
             }
         }
 

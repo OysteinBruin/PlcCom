@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PlcComLibrary.Tests.PlcCom
@@ -32,13 +33,6 @@ namespace PlcComLibrary.Tests.PlcCom
         }
 
         public override Task PulseBitAsync(string address)
-        {
-            throw new NotImplementedException();
-        }
-
-     
-        
-        protected override async Task ReadDbAsync(IDatablockModel db)
         {
             throw new NotImplementedException();
         }
@@ -81,6 +75,11 @@ namespace PlcComLibrary.Tests.PlcCom
         public new void VerifyConnectedAndValidateAddress(string address)
         {
             base.VerifyConnectedAndValidateAddress(address);
+        }
+
+        protected override Task ReadDbAsync(IDatablockModel db, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }

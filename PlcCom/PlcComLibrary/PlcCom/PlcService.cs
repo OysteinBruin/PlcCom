@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -53,6 +54,8 @@ namespace PlcComLibrary.PlcCom
     }
      
      */
+   
+
     public abstract class PlcService
     {
         private Enums.ComState _comState;
@@ -83,24 +86,7 @@ namespace PlcComLibrary.PlcCom
 
         public List<IDatablockModel> Datablocks { get; protected set; }
 
-        public HashSet<IDatablockModel> MonitoredDatablocks { get; private set; } = new HashSet<IDatablockModel>();
-
-        public virtual void StartMonitoringDb(IDatablockModel dbModel)
-        {
-            if (dbModel != null)
-                MonitoredDatablocks.Add(dbModel);
-        }
-
-        public virtual bool StopMonitoringDb(IDatablockModel dbModel)
-        {
-            if (dbModel == null)
-                return false;
-
-            int numElementsAdded = MonitoredDatablocks.RemoveWhere(m => m.Name == dbModel.Name 
-                            && m.Index == dbModel.Index && m.Number == dbModel.Number 
-                            && m.Signals.Count == dbModel.Signals.Count );
-            return numElementsAdded == 1;
-        }
+        public List<IDatablockModel> MonitoredDatablocks { get; private set; } = new List<IDatablockModel>();
 
         public event EventHandler ComStateChanged;
 
@@ -127,13 +113,36 @@ namespace PlcComLibrary.PlcCom
 
         public abstract Task ReadSingleAsync(string address);
 
-        public virtual async Task ReadDatablocksAsync()
+
+        /// <summary>
+        /// Add or removes a datablock from continously reading data from the repective plc datablcok
+        /// </summary>
+        /// <param name="add"></param>
+        /// <param name="dbModel"></param>
+        public virtual async void AddOrRemoveDb(bool add, IDatablockModel dbModel)
+        {
+            if (dbModel == null)
+                return;
+           
+            if (add == true)
+            {
+                MonitoredDatablocks.Add(dbModel);
+            }
+            else 
+            {
+                MonitoredDatablocks.Remove(dbModel);
+            }
+
+            await ReadDatablocksAsync();
+        }
+
+        public async Task ReadDatablocksAsync()
         {
             while (MonitoredDatablocks.Count > 0)
             {
-                foreach (var db in MonitoredDatablocks)
+                for (int i = MonitoredDatablocks.Count-1; i >= 0; i--)
                 {
-                    await ReadDbAsync(db);
+                    await ReadDbAsync(MonitoredDatablocks[i]);
                 }
             }
         }

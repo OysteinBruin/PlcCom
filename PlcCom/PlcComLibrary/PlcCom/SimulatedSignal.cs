@@ -121,34 +121,26 @@ namespace PlcComLibrary.PlcCom
 
         private bool _booleanValue = false;
         private float _floatValue = 0;
-        private float _startValue;
-        private int _highLimit = 3;
-        private bool _isRampingPos = false;
-        private bool _isRampingNeg = false;
-        private DateTime _rampDownTime;
-        private DateTime _boolTogleTime;
-        private DateTime _skipChangingTime;
+        private float _startValue = 0.0f;
+        private int _highLimit = 0;
+        private int _lowLimit = 0;
+        private DateTime modeChangeWaitTime;
         private int _sineCounter = 0;
+        int _randIncDecWaitValue;
 
-        private struct Mode
-        {
-            public int Decrease { get { return 20;  } }
-            public int Increase { get { return 40; } }
-            public int Grade { get { return 94; } }
-        }
 
-        private Mode _mode = new Mode();
+
+
 
         public SimulatedSignal(int index)
         {
             _index = index;
-            if (index == 0)
-            {
-                _startValue = 0.5f;
-            }  
-            else _startValue = index;
+            
 
-            _highLimit = (int)_startValue * 2;
+            _highLimit = index + 1 * _random.Next(1, 100);
+            _lowLimit =  _random.Next(_highLimit - 100, _highLimit - 50);
+            _startValue =  (_highLimit + _lowLimit)/2;
+            _randIncDecWaitValue = _random.Next(1, 100);
         }
 
 
@@ -156,7 +148,7 @@ namespace PlcComLibrary.PlcCom
         {
             if (DateTime.Now > _nextBooleanToggleTime)
             {
-                int mSecs = _random.Next(10, 10000);
+                int mSecs = _random.Next(100, 3000);
                 _nextBooleanToggleTime = DateTime.Now.AddMilliseconds(mSecs);
 
                 _booleanValue = !_booleanValue;
@@ -165,46 +157,67 @@ namespace PlcComLibrary.PlcCom
             return _booleanValue;
         }
 
-        float RandomFloat()
+        public float RandomFloat()
         {
-            int randomMode = _random.Next(1, 100);
-
-            if (_isRampingPos || _isRampingNeg)
+            if (Math.Abs(_floatValue) >= _highLimit)
             {
-                if (DateTime.Now > _rampDownTime)
-                {
-                    _rampDownTime = DateTime.Now.AddMilliseconds(10);
-                    if (_isRampingPos) _floatValue -= 0.01f;
-                    if (_isRampingNeg) _floatValue += 0.01f;
-                }
+                _randIncDecWaitValue = 0;
+                modeChangeWaitTime = DateTime.Now.AddMilliseconds(_random.Next(800, 3000));
             }
-            else
+            else if (Math.Abs(_floatValue) <= _lowLimit)
             {
-                if (DateTime.Now > _skipChangingTime)
-                {
-                    if (randomMode == _mode.Decrease)
-                    {
-                        _floatValue -= 0.1f;
-                    }
-                    else if (randomMode == _mode.Increase)
-                    {
-                        _floatValue += 0.1f;
-                    }
-                }
+                _randIncDecWaitValue = 100;
+                modeChangeWaitTime = DateTime.Now.AddMilliseconds(_random.Next(800, 3000));
             }
 
-            if (Math.Abs(_floatValue) > _highLimit && !_isRampingPos && !_isRampingNeg)
+            if (_randIncDecWaitValue < 33)
             {
-                _rampDownTime = DateTime.Now.AddMilliseconds(100);
-                if (_floatValue > 0) _isRampingPos = true;
-                else _isRampingNeg = true;
+                _floatValue -= 0.001f * _random.Next(1, 100);
+            }
+            else if (_randIncDecWaitValue > 66)
+            {
+                _floatValue += 0.001f * _random.Next(1, 100);
             }
 
-            if (Math.Abs(_floatValue) < _startValue)
+            if (DateTime.Now > modeChangeWaitTime)
             {
-                _isRampingPos = false;
-                _isRampingNeg = false;
+                modeChangeWaitTime = DateTime.Now.AddMilliseconds(_random.Next(10, 3000));
+                _randIncDecWaitValue = _random.Next(1, 100);
+
             }
+
+
+            //if (_isRampingPosDir || _isRampingNegDir)
+            //{
+            //    if (DateTime.Now > _rampDownTime)
+            //    {
+            //        _rampDownTime = DateTime.Now.AddMilliseconds(10);
+            //        if (_isRampingPosDir) _floatValue -= 0.01f;
+            //        if (_isRampingNegDir) _floatValue += 0.01f;
+            //    }
+            //}
+            //else
+            //{
+            //    if (DateTime.Now > modeChangeWaitTime)
+            //    {
+            //        if (randomMode == _mode.Decrease)
+            //        {
+            //            _floatValue -= 0.1f;
+            //        }
+            //        else if (randomMode == _mode.Increase)
+            //        {
+            //            _floatValue += 0.1f;
+            //        }
+            //    }
+            //}
+
+            
+
+            //if (Math.Abs(_floatValue) < _startValue)
+            //{
+            //    _isRampingPosDir = false;
+            //    _isRampingNegDir = false;
+            //}
 
             return _floatValue;
         }
@@ -213,7 +226,7 @@ namespace PlcComLibrary.PlcCom
         {
             ++_sineCounter;
             if (_sineCounter > 1000) _sineCounter = 0;
-            double amplitude = 0.1 + _index;
+            double amplitude = 0.1 + _index*20;
             double frequency = 1 / amplitude;
             return Math.Sin(_sineCounter * frequency + Math.PI) * amplitude / 2 + amplitude / 2;
         }

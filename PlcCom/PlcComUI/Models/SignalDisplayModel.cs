@@ -19,7 +19,10 @@ namespace PlcComUI.Models
         private IEventAggregator _events;
         private (int lower, int upper) _range;
         private double _value;
+        private int _rangeFrom;
+        private int _rangeTo;
         private bool _isBool;
+        private bool _isUsingFixedRange;
 
         public SignalDisplayModel(PlcComIndexModel indexModel, IEventAggregator events)
         {
@@ -29,6 +32,9 @@ namespace PlcComUI.Models
             PulseCommand = new RelayCommand<object>(OnPulseCommand);
             ToggleCommand = new RelayCommand<object>(OnToggleCommand);
             SliderCommand = new RelayCommand<object>(OnSliderCommand);
+
+            RangeFrom = 0;
+            RangeTo = 100;
         }
 
         public PlcComIndexModel IndexModel { get; set; }
@@ -63,9 +69,25 @@ namespace PlcComUI.Models
         public int Db { get; set; }
         public int DbByteIndex { get; set; }
         public int Bit { get; set; }
-        public int RangeFrom { get; set; } = 0;
+        public int RangeFrom 
+        { 
+            get => _rangeFrom; 
+            set
+            {
+                _rangeFrom = value;
+                OnPropertyChanged(nameof(RangeFrom));
+            }
+        }
 
-        public int RangeTo { get; set; } = 110;
+        public int RangeTo 
+        {
+            get => _rangeTo;
+            set
+            {
+                _rangeTo = value;
+                OnPropertyChanged(nameof(RangeTo));
+            }
+        }
 
         public (int lower, int upper) Range
         {
@@ -86,6 +108,16 @@ namespace PlcComUI.Models
             }
         }
 
+        public bool IsUsingFixedRange 
+        { 
+            get => _isUsingFixedRange; 
+            set
+            {
+                _isUsingFixedRange = value;
+                OnPropertyChanged(nameof(IsUsingFixedRange));
+            }
+        }
+
         public string Suffix { get; set; }
 
         public double Value
@@ -97,6 +129,18 @@ namespace PlcComUI.Models
                 if (value != _value)
                 {
                     _value = value;
+                    if (!IsUsingFixedRange)
+                    {
+                        int val = (int)value;
+                        if (val < RangeFrom)
+                        {
+                            RangeFrom = val - 10;
+                        }
+                        else if (val > RangeTo)
+                        {
+                            RangeTo = val + 10;
+                        }
+                    }
                     ValueStr = String.Format("{0:0.00}", _value);
                     OnPropertyChanged(nameof(Value));
                 }

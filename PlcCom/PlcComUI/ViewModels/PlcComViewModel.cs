@@ -181,19 +181,22 @@ namespace PlcComUI.ViewModels
                 var mappedDbModel = _mapper.Map(ddm, ddm.GetType(), typeof(IDatablockModel));
                 Debug.Assert(mappedDbModel is IDatablockModel);
 
-                if (message.DoMonitor)
-                {
-                    plc.StartMonitoringDb(mappedDbModel as IDatablockModel);
-                }
-                else
-                {
-                    plc.StopMonitoringDb(mappedDbModel as IDatablockModel);
-                }
+                plc.AddOrRemoveDb(message.DoMonitor, mappedDbModel as IDatablockModel);
             }
             catch (AutoMapperMappingException ex)
             {
-                _events.PublishOnUIThread(new MessageEvent($"Failed to add {message.Datablock.Name} to the read list for cpu {plc.Config.Name}",
-                    ex.Message, MessageEvent.Level.Warn));
+                string errorMsg = $"Failed to add {message.Datablock.Name} to the monitoring list for cpu {plc.Config.Name}";
+                if (!message.DoMonitor)
+                {
+                    errorMsg = $"Failed to remove {message.Datablock.Name} from the monitoring list for cpu {plc.Config.Name}";
+                }
+                    
+                _events.PublishOnUIThread(new MessageEvent(errorMsg, ex.Message, MessageEvent.Level.Warn));
+            }
+            catch (Exception ex)
+            {
+                _events.PublishOnUIThread(new MessageEvent("Unknown error occured while attempting to add " +
+                    $"or remove datablock {message.Datablock.Name} to/from {plc.Config.Name}", ex.Message, MessageEvent.Level.Warn));
             }
         }
     }
