@@ -165,7 +165,7 @@
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
 
         <dockablz:Layout Grid.Column="2"  Margin="0">
-            <dragablz:TabablzControl >
+            <dragablz:TabablzControl>
                 <dragablz:TabablzControl.InterTabController>
                     <dragablz:InterTabController InterTabClient="{Binding InterTabClient}"/>
                 </dragablz:TabablzControl.InterTabController>

@@ -33,7 +33,7 @@
             <ColumnDefinition Width="5" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <dragablz:TabablzControl Style="{StaticResource MaterialDesignTabablzControlStyle}" Margin="0 0 5 0">
+        <dragablz:TabablzControl Style="{StaticResource MaterialDesignTabablzControlStyle}"  Margin="0 0 5 0">
             <TabItem Header="Connections">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                     <ContentControl x:Name="ConnectionsViewModel"/>
@@ -48,7 +48,7 @@
 
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
         <dockablz:Layout Grid.Column="2">
-            <dragablz:TabablzControl>
+            <dragablz:TabablzControl ShowDefaultCloseButton="True" Margin="5 0 0 0">
                 <dragablz:TabablzControl.InterTabController>
                     <dragablz:InterTabController InterTabClient="{Binding InterTabClient}"/>
                 </dragablz:TabablzControl.InterTabController>

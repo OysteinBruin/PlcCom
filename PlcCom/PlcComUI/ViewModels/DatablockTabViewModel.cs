@@ -30,6 +30,7 @@ namespace PlcComUI.ViewModels
 		{
             _events = events;
             _displayModel = displayModel;
+            DisplayName = displayModel.Name;
             _events.Subscribe(this);
             IsConnected = isConnected;
         }
