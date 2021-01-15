@@ -134,11 +134,11 @@ namespace PlcComUI.Models
                         int val = (int)value;
                         if (val < RangeFrom)
                         {
-                            RangeFrom = val - 10;
+                            RangeFrom -= 10;
                         }
                         else if (val > RangeTo)
                         {
-                            RangeTo = val + 10;
+                            RangeTo += 10;
                         }
                     }
                     ValueStr = String.Format("{0:0.00}", _value);

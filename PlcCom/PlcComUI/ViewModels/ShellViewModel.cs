@@ -41,64 +41,6 @@ namespace PlcComUI.ViewModels
                 bw.RunWorkerAsync();
                 
                 windowManager.ShowDialog(new SplashViewModel(_events));
-
-                //_plcComManager.ConfigManager.
-
-
-
-                /*
-                protected override void OnInitialize()
-		        {
-			        base.OnInitialize();
-                    var windowManager = new WindowManager();
-
-                    using (BackgroundWorker bw = new BackgroundWorker())
-                    {
-                        bw = new BackgroundWorker();
-                        bw.DoWork += new DoWorkEventHandler(bw_DoWork);
-                        bw.ProgressChanged += new ProgressChangedEventHandler(bw_ProgressChanged);
-                        bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
-                        bw.WorkerReportsProgress = true;
-            
-                        this.button1.Click += new EventHandler(button1_Click);
-                    }
-                }
-
-                private void button1_Click(object sender, EventArgs e)
-                {
-                    if (!this.bw.IsBusy)
-                    {
-                        this.bw.RunWorkerAsync();
-                        this.button1.Enabled = false;
-                    }
-                }
-
-                private void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-                {
-                    this.label1.Text = "The answer is: " + e.Result.ToString();
-                    this.button1.Enabled = true;
-                }
-
-                private void bw_ProgressChanged(object sender, ProgressChangedEventArgs e)
-                {
-                    this.label1.Text = e.ProgressPercentage.ToString() + "% complete";
-                }
-
-                private void bw_DoWork(object sender, DoWorkEventArgs e)
-                {
-                    BackgroundWorker worker = (BackgroundWorker)sender;
-                    for (int i = 0; i < 100; ++i)
-                    {
-                        // report your progres
-                        worker.ReportProgress(i);
-
-                        // pretend like this a really complex calculation going on eating up CPU time
-                        System.Threading.Thread.Sleep(100);
-                    }
-                    e.Result = "42";
-                }
-
-                 */
             }
         }
 

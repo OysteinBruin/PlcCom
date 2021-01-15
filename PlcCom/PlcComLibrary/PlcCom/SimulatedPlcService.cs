@@ -102,7 +102,10 @@ namespace PlcComLibrary.PlcCom
                         simValue = _simulatedSignals[s.Index].RandomFloat();
                     }
                 }
-                indexValueModels.Add(new PlcComIndexValueModel(Index, db.Index, s.Index, simValue));
+                if (i % 3 == 0)
+                {
+                    indexValueModels.Add(new PlcComIndexValueModel(Index, db.Index, s.Index, simValue));
+                }
             }
 
             PlcReadResultEventArgs args = new PlcReadResultEventArgs(indexValueModels);

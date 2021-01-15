@@ -156,13 +156,28 @@ namespace PlcComUI.ViewModels
 
         public void Handle(PlcReadEvent message)
         {
-            foreach (var item in message.Data.IndexValueList)
+            // For sim test
+            if (message.Data.IndexValueList.Count == 1 && 
+                message.Data.PlcIndexModel.CpuIndex == _displayModel.IndexModel.CpuIndex &&
+                 message.Data.PlcIndexModel.DbIndex == _displayModel.IndexModel.DbIndex)
             {
-                if (item.CpuIndex == _displayModel.IndexModel.CpuIndex && item.DbIndex == _displayModel.IndexModel.DbIndex)
+                Signals[message.Data.IndexValueList[0].SignalIndex].Value = message.Data.IndexValueList[0].Value;
+            }
+            else
+            {
+                foreach (var item in message.Data.IndexValueList)
                 {
-                    Signals[item.SignalIndex].Value = item.Value;
+                    if (item.CpuIndex == _displayModel.IndexModel.CpuIndex && item.DbIndex == _displayModel.IndexModel.DbIndex)
+                    {
+                        if (item.SignalIndex % 3 == 0)
+                        {
+                            Signals[item.SignalIndex].Value = item.Value;
+                        }
+                        
+                    }
                 }
             }
+            
         }
 
         public void Handle(ComStateChangedEvent message)

@@ -15,7 +15,7 @@
              TextOptions.TextRenderingMode="Auto"
              Background="{DynamicResource MaterialDesignPaper}"
              FontFamily="{materialDesign:MaterialDesignFont}" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="300">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -29,7 +29,7 @@
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:CpuDisplayModel}">
 
-                    <materialDesign:ColorZone Mode="Dark" Padding="10" MinWidth="300">
+                    <materialDesign:ColorZone Padding="10" MinWidth="250">
 
                         <Grid  Grid.Row="1" Grid.Column="1" Margin="0"  >
                             <Grid.ColumnDefinitions>
@@ -45,7 +45,7 @@
 
                             <!-- Input line 0 -->
                             <TextBox 
-                                Text="{Binding CpuName}" 
+                                Text="{Binding Name}" 
                                 materialDesign:HintAssist.Hint="Name"
                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                 FontSize="13"
