@@ -1,1 +1,10 @@
-Scrollviewer issue:  Orignally fixed 01.01.21 - c30b412, New bug in 07.01.21 - 997207 (Probalby file DatablockTabView.xaml)
+Scrollviewer issue:  
+Orignally fixed in c30b412 - 01.01.21, 
+Re-introduced in 997207 - 07.01.21 (Probably file DatablockTabView.xaml)
+Fixed again in dbacfc4 - 15.01.21 (Also fixed bug# , ref github)
+
+Duplicated Datablocks in Cpus - possible related bugfix b21e945 30.12.20
+
+issue in b21e945:
+
+ConfigManager line 99: assign datablock Firstbyte: Not checking for empty signals container

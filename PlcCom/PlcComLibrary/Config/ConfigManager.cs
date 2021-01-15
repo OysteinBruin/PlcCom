@@ -32,7 +32,7 @@ namespace PlcComLibrary.Config
         {
             List<PlcService> plcServiceList = new List<PlcService>();
             List<ISignalModel> signals = new List<ISignalModel>();
-            List<IDatablockModel> datablocks = new List<IDatablockModel>();
+            
 
             int totalFilesToLoadCount = 0;
             List<IJsonFileConfig> jsonConfigs = _configParser.LoadConfigFiles(path);
@@ -49,7 +49,7 @@ namespace PlcComLibrary.Config
             foreach (var jsonConfig in jsonConfigs)
             {
                 ICpuConfig cpuConfig = new CpuConfig(jsonConfig);
-                datablocks.Clear();
+                List<IDatablockModel> datablocks = new List<IDatablockModel>();
 
                 foreach (var dbNumberDbNameString in jsonConfig.SignalLists)
                 {
