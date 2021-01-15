@@ -131,7 +131,14 @@
         </ResourceDictionary>
 
     </UserControl.Resources>
-    <StackPanel>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+
+
 
         <StackPanel Orientation="Horizontal" Margin="10">
             <TextBlock Text="{Binding Name}" Margin="0 0 30 0" />
@@ -139,10 +146,11 @@
             <CheckBox x:Name="EnableWriteCb" IsEnabled="{Binding ElementName=MonitorCb, Path=IsChecked}" Content="Enable Write" Margin="0 0 30 0" />
         </StackPanel>
 
-        <Grid>
+
             
         
         <DataGrid
+        Grid.Row="1"
         ItemsSource="{Binding Signals}"
         CanUserSortColumns="True"
         CanUserResizeRows="False"
@@ -176,5 +184,5 @@
             </DataGrid.ItemContainerStyle>
         </DataGrid>
         </Grid>
-    </StackPanel>
+
 </UserControl>
