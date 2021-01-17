@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace PlcComUI.EventModels
 {
-    public class DbAddTotabEvent : EventArgs
+    public class NewDatablockTabEvent : EventArgs
     {
-        public DbAddTotabEvent(DatablockDisplayModel dbSelected)
+        public NewDatablockTabEvent(DatablockDisplayModel dbSelected)
         {
             DatablockSelected = dbSelected;
         }

@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PlcComUI"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             
+             xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:collections="clr-namespace:System.Collections;assembly=mscorlib"
              xmlns:realTimeGraphX="clr-namespace:RealTimeGraphX.WPF;assembly=RealTimeGraphX.WPF"
              xmlns:models="clr-namespace:PlcComUI.Models"
@@ -56,7 +56,7 @@
                 </Setter>
                 <Setter Property="Template">
                     <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type graph:WpfGraphControl}">
+                        <ControlTemplate TargetType="{x:Type graph:WpfGraphControl}" >
                             <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
@@ -74,10 +74,10 @@
 
                                     <Grid Grid.Column="1">
                                         <realTimeGraphX:WpfGraphGridLines Controller="{TemplateBinding Controller}" Foreground="#FF2E2E2E" />
-                                        <realTimeGraphX:WpfGraphSurface x:Name="surface" Controller="{TemplateBinding Controller}" BorderThickness="1 0 0 1" BorderBrush="{TemplateBinding Foreground}" />
+                                        <realTimeGraphX:WpfGraphSurface x:Name="surface" Controller="{TemplateBinding Controller}" BorderThickness="1 0 0 1" BorderBrush="{TemplateBinding Foreground}"/>
                                     </Grid>
 
-                                    <realTimeGraphX:WpfGraphAxisControl Orientation="Vertical" Controller="{TemplateBinding Controller}" StringFormat="0.0" />
+                                    <realTimeGraphX:WpfGraphAxisControl Orientation="Vertical" Controller="{TemplateBinding Controller}" StringFormat="0.0" dd:DragDrop.IsDropTarget="True"/>
                                     <realTimeGraphX:WpfGraphAxisControl Orientation="Horizontal" Controller="{TemplateBinding Controller}" Grid.Column="1" Grid.Row="1" StringFormat="hh\:mm\:ss"/>
                                 </Grid>
                             </Border>
@@ -95,7 +95,8 @@
         <graph:WpfGraphControl Margin="0" Controller="{Binding Controller}" />
 
         <Border Grid.Column="1" Margin="0" BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Padding="5">
-            <StackPanel>
+            <ScrollViewer>
+            <StackPanel >
                 <TextBlock FontSize="10">Duration</TextBlock>
                 <TextBox Margin="0 5 0 0" Text="{Binding Controller.Range.MaximumX,Mode=TwoWay}"></TextBox>
 
@@ -121,8 +122,42 @@
 
                 <CheckBox Margin="0 10 0 0" IsChecked="{Binding Controller.IsPaused,Mode=TwoWay}">Paused</CheckBox>
 
+                <TextBlock FontSize="10" Margin="0">Graphs</TextBlock>
+                <ListBox ItemsSource="{Binding Controller.DataSeriesCollection}" Height="120" Margin="0 20" >
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <CheckBox Content="{Binding Name}"  />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <TextBlock FontSize="10" Margin="0 10 0 0">Signal Models</TextBlock>
+                    <ListBox ItemsSource="{Binding Signals}" Height="120" Margin="0 20" dd:DragDrop.IsDropTarget="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.DragHandler="{Binding}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <CheckBox Content="{Binding Name}" IsChecked="{Binding IsVisible}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <TextBlock FontSize="10" Margin="0 10 0 0">Signal Models</TextBlock>
+                <ListBox ItemsSource="{Binding Signals2}" Height="120" Margin="0 20" dd:DragDrop.IsDropTarget="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.DragHandler="{Binding}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <CheckBox Content="{Binding Name}" IsChecked="{Binding IsVisible}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
                 <Button Margin="0 10 0 0" Padding="5" Command="{Binding Controller.ClearCommand}">Clear</Button>
             </StackPanel>
+            </ScrollViewer>
         </Border>
     </Grid>
 </UserControl>

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:local="clr-namespace:PlcComUI.Views"
              xmlns:models="clr-namespace:PlcComUI.Models"
@@ -30,40 +31,61 @@
     </UserControl.Resources>
     <StackPanel>
 
-        <TreeView Style="{StaticResource CustomMDIXTreeView}" VerticalAlignment="Stretch" ItemsSource="{Binding CpuList}">
+        <TreeView x:Name="SignalsTreeView" Style="{StaticResource CustomMDIXTreeView}" 
+                  VerticalAlignment="Stretch" ItemsSource="{Binding CpuList}" 
+                  dd:DragDrop.IsDragSource="True" 
+                  dd:DragDrop.IsDropTarget="True" 
+                  dd:DragDrop.DragHandler="{Binding}"
+                  >
             <TreeView.ItemContainerStyle>
                 <Style TargetType="TreeViewItem" BasedOn="{StaticResource CustomMDIXTreeViewItem}">
+                    <Setter Property="cal:Message.Attach" Value="[MouseDoubleClick] = [Action TreeViewItemDoubleClicked($dataContext, $eventArgs)]"/>
                     <Setter Property="IsExpanded" Value="True" />
-                    <Setter Property="cal:Message.Attach" Value="[MouseDoubleClick] = [Action TreeViewItemDoubleClicked($dataContext)]"/>
                 </Style>
             </TreeView.ItemContainerStyle>
 
             <TreeView.Resources>
 
                 <DataTemplate DataType="{x:Type models:SignalDisplayModel}" >
+                    
                     <TextBlock Text="{Binding Name}" />
                 </DataTemplate>
 
                 <HierarchicalDataTemplate DataType="{x:Type models:DatablockDisplayModel}" ItemsSource="{Binding Signals}" >
+                    <HierarchicalDataTemplate.ItemContainerStyle>
+                        <Style TargetType="TreeViewItem" BasedOn="{StaticResource CustomMDIXTreeViewItem}">
+                            <Setter Property="cal:Message.Attach" Value="[MouseDoubleClick] = [Action TreeViewItemDoubleClicked($dataContext, $eventArgs)]"/>
+                            <Setter Property="IsExpanded" Value="False" />
+                        </Style>
+                    </HierarchicalDataTemplate.ItemContainerStyle>
                     <TextBlock  
                         Text="{Binding Path=Name}" 
                         Foreground="CornflowerBlue" 
                         VerticalAlignment="Center" 
                         Margin="5 0 5 0" />
-                    
                 </HierarchicalDataTemplate>
 
                 <HierarchicalDataTemplate DataType="{x:Type models:CpuDisplayModel}" ItemsSource="{Binding Datablocks}" >
+                    <HierarchicalDataTemplate.ItemContainerStyle>
+                        <Style TargetType="TreeViewItem" BasedOn="{StaticResource CustomMDIXTreeViewItem}">
+                            <Setter Property="IsExpanded" Value="False" />
+                            <Setter Property="cal:Message.Attach" Value="[MouseDoubleClick] = [Action TreeViewItemDoubleClicked($dataContext, $eventArgs)]"/>
+                        </Style>
+                    </HierarchicalDataTemplate.ItemContainerStyle>
                     <TextBlock  
                         Text="{Binding Path=Name}" 
                         FontWeight="Bold" 
                         Margin="5 10 5 5"/>
-                    
                 </HierarchicalDataTemplate>
-
             </TreeView.Resources>
-
         </TreeView>
+
+        <ListView ItemsSource="{Binding Signals}"
+                  VerticalAlignment="Stretch"
+                  dd:DragDrop.IsDragSource="True"
+                  dd:DragDrop.IsDropTarget="True">
+            
+        </ListView>
         
     </StackPanel>
 </UserControl>

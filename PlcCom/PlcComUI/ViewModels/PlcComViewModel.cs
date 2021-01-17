@@ -84,7 +84,7 @@ namespace PlcComUI.ViewModels
 
         private void OnDatablockSelected(object sender, EventArgs args)
         {
-            var eventArgs = (DbAddTotabEvent)args;
+            var eventArgs = (NewDatablockTabEvent)args;
             DatablockDisplayModel dbModel = eventArgs.DatablockSelected;
 
             bool isConnected = (_plcComManager.PlcServiceList[dbModel.IndexModel.CpuIndex].ComState == ComState.Connected);
