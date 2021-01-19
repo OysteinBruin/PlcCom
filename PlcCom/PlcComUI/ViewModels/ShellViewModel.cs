@@ -18,6 +18,7 @@ namespace PlcComUI.ViewModels
         private IPlcComManager _plcComManager;
         private bool _modalViewIsActive = false;
         private bool _showDrawer = false;
+        private System.Windows.WindowState _windowState;
 
         public ShellViewModel(IEventAggregator events, IPlcComManager plcComManager)
 		{
@@ -33,7 +34,18 @@ namespace PlcComUI.ViewModels
             _events.Subscribe(this);
 		}
 
-        
+        public System.Windows.WindowState WindowState
+        {
+            get { return _windowState; }
+            set
+            {
+                if (Equals(_windowState, value))
+                    return;
+
+                _windowState = value;
+                NotifyOfPropertyChange(() => WindowState);
+            }
+        }
 
         protected override void OnInitialize()
 		{
@@ -50,6 +62,20 @@ namespace PlcComUI.ViewModels
             }
         }
 
+        protected override void OnDeactivate(bool close)
+        {
+            if (WindowState == System.Windows.WindowState.Maximized)
+            {
+                Properties.Settings.Default.SettingsMain.MainWindow.IsWindowStateMaximized = true;
+            }
+            else
+            {
+                Properties.Settings.Default.SettingsMain.MainWindow.IsWindowStateMaximized = false;
+            }
+            base.OnDeactivate(close);
+
+        }
+
         private void InitializeApplication(object sender, DoWorkEventArgs e)
         {
             _plcComManager.LoadConfigs();
@@ -58,6 +84,15 @@ namespace PlcComUI.ViewModels
         private void InitializationCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             _events.PublishOnUIThread(new SplashStatusChangedEvent(true));
+            
+            if (Properties.Settings.Default.SettingsMain.MainWindow.IsWindowStateMaximized)
+            {
+                WindowState = System.Windows.WindowState.Maximized;
+            }
+            else
+            {
+                WindowState = System.Windows.WindowState.Normal;
+            }
             ActivateHomeView();
         }
 

@@ -14,7 +14,7 @@ namespace PlcComUI.ViewModels
         public PaletteSelectorViewModel()
         {
             Swatches = new SwatchesProvider().Swatches;
-            LightDarkThemeToggle(Properties.Settings.Default.SettingsMain.MainWindow.DarkMode);
+            LightDarkThemeToggle(Properties.Settings.Default.SettingsMain.MainWindow.IsDarkMode);
         }
 
         protected override void OnInitialize()

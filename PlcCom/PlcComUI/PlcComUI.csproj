@@ -176,6 +176,7 @@
     <Compile Include="Controls\RealTimeGraph\WpfGraphControl.cs" />
     <Compile Include="Converters\BooleanGreenGrayColorConverter.cs" />
     <Compile Include="Converters\BooleanGreenRedColorConverter.cs" />
+    <Compile Include="Converters\BooleanToWindowStateConverter.cs" />
     <Compile Include="Converters\BrushRoundConverter.cs" />
     <Compile Include="Converters\DatabindingDebugConverter.cs" />
     <Compile Include="Converters\ExpanderDirectionConverter.cs" />

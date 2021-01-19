@@ -26,6 +26,7 @@
         Height="{usersettings:SettingBinding MainWindow.Height}"
         Top="{usersettings:SettingBinding MainWindow.Top}"
         Left="{usersettings:SettingBinding MainWindow.Left}"
+        WindowState="{Binding WindowState, Mode=TwoWay}"
         MinHeight="500" MinWidth="500">
     <!--WindowTitleBrush="{DynamicResource MaterialDesignDarkBackground}" -->
     <Window.Resources>
