@@ -77,7 +77,7 @@ namespace PlcComLibrary.Tests.PlcCom
             base.VerifyConnectedAndValidateAddress(address);
         }
 
-        protected override Task ReadDbAsync(IDatablockModel db, CancellationToken cancellationToken)
+        protected override Task ReadDbAsync(IDatablockModel db)
         {
             throw new NotImplementedException();
         }

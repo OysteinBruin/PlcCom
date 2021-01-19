@@ -24,12 +24,18 @@ namespace PlcComUI.ViewModels
 			_events = events;
             _plcComManager = plcComManager;
             _plcComManager.ConfigManager.ConfigsLoadingProgressChanged += OnConfigLoadingProgressChanged;
+            foreach (var plc in _plcComManager.PlcServiceList)
+            {
+                plc.ComStateChanged += OnPlcComStateChanged;
+            }
             Items.Add(IoC.Get<PlcComViewModel>());
             Items.Add(IoC.Get<PaletteSelectorViewModel>());
             _events.Subscribe(this);
 		}
 
-		protected override void OnInitialize()
+        
+
+        protected override void OnInitialize()
 		{
 			base.OnInitialize();
 
@@ -51,11 +57,9 @@ namespace PlcComUI.ViewModels
 
         private void InitializationCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            
             _events.PublishOnUIThread(new SplashStatusChangedEvent(true));
             ActivateHomeView();
         }
-
 
         private void OnConfigLoadingProgressChanged(object sender, EventArgs args)
         {
@@ -64,17 +68,15 @@ namespace PlcComUI.ViewModels
             _events.PublishOnUIThread(new SplashStatusChangedEvent(splashContent, configArgs.ProgressInput, configArgs.ProgressTotal));
         }
 
-
-
         public void ActivateHomeView()
         {
             ActivateItem(Items[0]);
         }
 
-        public void ActivatePaletteSelectorView()
-        {
-            ActivateItem(Items[1]);
-        }
+        //public void ActivatePaletteSelectorView()
+        //{
+        //    ActivateItem(Items[1]);
+        //}
 
         public void ActivateSettingsView()
         {
@@ -90,15 +92,15 @@ namespace PlcComUI.ViewModels
             }
         }
 
-        public bool ShowDrawer
-        {
-            get => _showDrawer; 
-            set 
-            { 
-                _showDrawer = value;
-                NotifyOfPropertyChange(() => ShowDrawer);
-            }
-        }
+        //public bool ShowDrawer
+        //{
+        //    get => _showDrawer; 
+        //    set 
+        //    { 
+        //        _showDrawer = value;
+        //        NotifyOfPropertyChange(() => ShowDrawer);
+        //    }
+        //}
 
         private async Task ShowMessageDialog(MessageEvent ev)
         {
@@ -119,6 +121,13 @@ namespace PlcComUI.ViewModels
 
             _modalViewIsActive = false;
             // https://stackoverflow.com/questions/49965223/how-to-open-a-material-design-dialog-from-the-code-xaml-cs
+        }
+
+        //public List<>
+
+        private void OnPlcComStateChanged(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         // TODO: Implement can close check

@@ -24,8 +24,8 @@ namespace PlcComUI.Domain
 
         private void Initialize()
         {
-            //this.Source = Settings.Default.SettingsMain;
-            //this.Mode = BindingMode.TwoWay;
+            this.Source = Properties.Settings.Default.SettingsMain;
+            this.Mode = BindingMode.TwoWay;
         }
     }
 }

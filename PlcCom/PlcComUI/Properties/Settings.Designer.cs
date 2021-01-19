@@ -28,11 +28,11 @@ namespace PlcComUI.Properties
 
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::AppSettings.SettingsMain SettingsMain
+        public global::Settings.SettingsMain SettingsMain
         {
             get
             {
-                return ((global::AppSettings.SettingsMain)(this["SettingsMain"]));
+                return ((global::Settings.SettingsMain)(this["SettingsMain"]));
             }
             set
             {

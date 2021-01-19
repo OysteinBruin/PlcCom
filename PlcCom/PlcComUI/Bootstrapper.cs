@@ -1,4 +1,4 @@
-﻿using AppSettings;
+﻿
 using Autofac;
 using Caliburn.Micro;
 using Dragablz;
@@ -15,16 +15,10 @@ using System.Windows;
 using PlcComLibrary.PlcCom;
 using AutoMapper;
 using PlcComLibrary.Models;
+using Settings;
 
 namespace PlcComUI
 {
-    public class Order { }
-    public class OnlineOrder : Order { }
-    public class MailOrder : Order { }
-
-    public class OrderDto { }
-    public class OnlineOrderDto : OrderDto { }
-    public class MailOrderDto : OrderDto { }
     public class Bootstrapper : BootstrapperBase
 	{
         private SimpleContainer _container = new SimpleContainer();
@@ -36,14 +30,6 @@ namespace PlcComUI
 
         private IMapper ConfigureAutoMapper()
         {
-            var configuration = new MapperConfiguration(cfg => {
-                cfg.CreateMap<Order, OrderDto>()
-                    .Include<OnlineOrder, OnlineOrderDto>()
-                    .Include<MailOrder, MailOrderDto>();
-                cfg.CreateMap<OnlineOrder, OnlineOrderDto>();
-                cfg.CreateMap<MailOrder, MailOrderDto>();
-            });
-
             var config = new MapperConfiguration(cfg => {
 
                 //cfg.CreateMap<ISignalModel, ISignalDisplayModel>()
@@ -96,9 +82,24 @@ namespace PlcComUI
         {
             base.OnStartup(sender, e);
 
-            if (Settings.Default.SettingsMain == null)
+            if (Properties.Settings.Default.SettingsMain == null)
             {
-                Settings.Default.SettingsMain = new SettingsMain();
+                Properties.Settings.Default.SettingsMain = new SettingsMain();
+            }
+            else
+            {
+                int mainWinWidth = Properties.Settings.Default.SettingsMain.MainWindow.Width;
+                int mainWinHeight = Properties.Settings.Default.SettingsMain.MainWindow.Height;
+                int splashWinWidth = Properties.Settings.Default.SettingsMain.SplashWindow.Width;
+                int splashWinHeight = Properties.Settings.Default.SettingsMain.SplashWindow.Height;
+
+                if (mainWinWidth > splashWinWidth)
+                {
+                    Properties.Settings.Default.SettingsMain.SplashWindow.Left = Properties.Settings.Default.SettingsMain.MainWindow.Left + (mainWinWidth / 2) - (splashWinWidth / 2);
+                    Properties.Settings.Default.SettingsMain.SplashWindow.Top = Properties.Settings.Default.SettingsMain.MainWindow.Top + (mainWinHeight / 2) - (splashWinHeight / 2);
+                }
+
+
             }
 
             DisplayRootViewFor<ShellViewModel>();
@@ -107,7 +108,7 @@ namespace PlcComUI
         protected override void OnExit(object sender, EventArgs e)
         {
             base.OnExit(sender, e);
-            Settings.Default.Save();
+            Properties.Settings.Default.Save();
         }
 
         protected override object GetInstance(Type service, string key)

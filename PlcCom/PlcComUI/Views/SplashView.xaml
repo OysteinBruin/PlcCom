@@ -15,9 +15,12 @@
         TextOptions.TextRenderingMode="Auto"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{materialDesign:MaterialDesignFont}"
-        Title="PLC COM" Height="450" Width="800"
-        Top="{usersettings:SettingBinding MainWindow.Top}"
-        Left="{usersettings:SettingBinding MainWindow.Left}">
+        Title="PLC COM" 
+        Width="{usersettings:SettingBinding SplashWindow.Width}"
+        Height="{usersettings:SettingBinding SplashWindow.Height}"
+        Top="{usersettings:SettingBinding SplashWindow.Top}"
+        Left="{usersettings:SettingBinding SplashWindow.Left}">
+
     <StackPanel>
 
         <TextBlock

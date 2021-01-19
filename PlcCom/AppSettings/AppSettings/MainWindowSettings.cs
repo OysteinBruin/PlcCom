@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AppSettings
+namespace Settings.AppSettings
 {
     [Serializable]
     public class MainWindowSettings

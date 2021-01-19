@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlcComUI", "PlcComUI\PlcCom
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlcComLibrary", "PlcComLibrary\PlcComLibrary.csproj", "{58E3C7FE-804D-4811-A28E-A7D327A9F330}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppSettings", "AppSettings\AppSettings.csproj", "{92E09E0D-9F66-4E85-B5FD-484C5113B8C0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Settings", "AppSettings\Settings.csproj", "{92E09E0D-9F66-4E85-B5FD-484C5113B8C0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RealTimeGraphX", "RealTimeGraphX\RealTimeGraphX.csproj", "{7C62EE10-DD2C-4762-A876-10B918A8BDA6}"
 EndProject

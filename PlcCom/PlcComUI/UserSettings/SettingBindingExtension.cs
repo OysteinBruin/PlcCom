@@ -18,8 +18,9 @@ namespace PlcComUI.UserSettings
 
         private void Initialize()
         {
-            this.Source = Settings.Default.SettingsMain;
+            this.Source = Properties.Settings.Default.SettingsMain;
             this.Mode = BindingMode.TwoWay;
+
         }
     }
 }

@@ -14,7 +14,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Title="PlcCom" 
-        
+        WindowTitleBrush="{DynamicResource MaterialDesignDarkBackground}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
@@ -107,11 +107,8 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <!--<ScrollViewer Grid.Row="1" 
-                                  materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">-->
-                        <ContentControl x:Name="ActiveItem" Grid.Row="1"  Margin="0" />
-                    
-                    <!--</ScrollViewer>-->
+
+                    <ContentControl x:Name="ActiveItem" Grid.Row="1"  Margin="0" />
                     <materialDesign:Snackbar MessageQueue="{materialDesign:MessageQueue}" x:Name="MainSnackbar"
                                             Grid.Row="1" />
                 </Grid>
