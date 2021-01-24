@@ -188,6 +188,7 @@
     <Compile Include="Converters\PlcCmdParameterConverter.cs" />
     <Compile Include="DataSignalModelTemplateSelector.cs" />
     <Compile Include="Domain\AsyncRelayCommnd.cs" />
+    <Compile Include="Styles\CollapseAction.cs" />
     <Compile Include="Domain\GraphDropHandler.cs" />
     <Compile Include="Domain\RelayCommand.cs" />
     <Compile Include="Domain\SettingBindingExtension.cs" />
@@ -206,6 +207,9 @@
     <Compile Include="Models\IDatablockDisplayModel.cs" />
     <Compile Include="Models\ISignalDisplayModel.cs" />
     <Compile Include="ViewModels\EditSignalViewModel.cs" />
+    <Compile Include="ViewModels\SingleGraphCollectionViewModel.cs" />
+    <Compile Include="ViewModels\SingleGraphViewModel.cs" />
+    <Compile Include="ViewModels\WelcomeTabViewModel.cs" />
     <Compile Include="Views\EditSignalView.xaml.cs">
       <DependentUpon>EditSignalView.xaml</DependentUpon>
     </Compile>
@@ -246,12 +250,21 @@
     <Compile Include="Views\SignalSelectionView.xaml.cs">
       <DependentUpon>SignalSelectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\SingleGraphCollectionView.xaml.cs">
+      <DependentUpon>SingleGraphCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SingleGraphView.xaml.cs">
+      <DependentUpon>SingleGraphView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SplashView.xaml.cs">
       <DependentUpon>SplashView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TabablzView.xaml.cs" />
     <Compile Include="Views\DatablockTabView.xaml.cs" />
     <Compile Include="Views\TearedView.xaml.cs" />
+    <Compile Include="Views\WelcomeTabView.xaml.cs">
+      <DependentUpon>WelcomeTabView.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\InterLayoutClient.cs" />
@@ -290,6 +303,10 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Styles\CollapsableGridSplitterStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\EditSignalView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -342,6 +359,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\SingleGraphCollectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SingleGraphView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\SplashView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -357,6 +382,10 @@
     <Page Include="Views\TearedView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\WelcomeTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

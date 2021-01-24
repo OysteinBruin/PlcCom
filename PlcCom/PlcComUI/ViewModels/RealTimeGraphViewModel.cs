@@ -17,6 +17,7 @@ namespace PlcComUI.ViewModels
 {
     public class RealTimeGraphViewModel : Screen, GongSolutions.Wpf.DragDrop.IDropTarget
     {
+        
         public RealTimeGraphViewModel(string header)
         {
             DisplayName = header;
@@ -28,6 +29,7 @@ namespace PlcComUI.ViewModels
             Controller.Range.MaximumY = 1080;
             Controller.Range.MaximumX = TimeSpan.FromSeconds(60);
             Controller.Range.AutoY = true;
+
             IEventAggregator agg = new EventAggregator();
             PlcComLibrary.Models.PlcComIndexModel indexModel = new PlcComLibrary.Models.PlcComIndexModel(0, 0, 0);
             Signals.Add(new SignalDisplayModel(indexModel, agg));
@@ -84,16 +86,27 @@ namespace PlcComUI.ViewModels
 
         public List<SignalDisplayModel> Signals2 { get; set; } = new List<SignalDisplayModel>();
 
-
-        public void DragOver(IDropInfo dropInfo)
+        void GongSolutions.Wpf.DragDrop.IDropTarget.DragOver(IDropInfo dropInfo)
         {
-            Console.WriteLine("DragOver");
+            SignalDisplayModel sourceItem = dropInfo.Data as SignalDisplayModel;
+            SignalDisplayModel targetItem = dropInfo.TargetItem as SignalDisplayModel;
+
+            //if (sourceItem != null && targetItem != null && targetItem.CanAcceptChildren)
+            //{
+            //    dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+            //    dropInfo.Effects = DragDropEffects.Copy;
+            //}
         }
 
-        public void Drop(IDropInfo dropInfo)
+
+        void GongSolutions.Wpf.DragDrop.IDropTarget.Drop(IDropInfo dropInfo)
         {
-            Console.WriteLine("Drop");
+
+            SignalDisplayModel sourceItem = dropInfo.Data as SignalDisplayModel;
+            SignalDisplayModel targetItem = dropInfo.TargetItem as SignalDisplayModel;
+
         }
+
     }
 
 

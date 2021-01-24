@@ -40,6 +40,7 @@ namespace PlcComUI.ViewModels
 
             this.SignalSelectionViewModel.SignalSelected += OnSignalSelected;
             this.SignalSelectionViewModel.DatablockSelected += OnDatablockSelected;
+            this.SignalSelectionViewModel.GraphViewSelected += OnGraphViewSelected;
 
             _events.Subscribe(this);
         }
@@ -63,8 +64,8 @@ namespace PlcComUI.ViewModels
             this.ConnectionsViewModel.CpuList = cpuList;
             this.SignalSelectionViewModel.CpuList = cpuList;
 
-            RealTimeGraphViewModel realTimeModel = new RealTimeGraphViewModel("Graph View");
-            Items.Add(realTimeModel);
+            WelcomeTabViewModel welcomeModel = new WelcomeTabViewModel();
+            Items.Add(welcomeModel);
         }
 
         public ConnectionsViewModel ConnectionsViewModel { get; set; }
@@ -102,6 +103,15 @@ namespace PlcComUI.ViewModels
         {
             var eventArgs = (SignalSelectedEvent)args;
 
+
+        }
+
+        private void OnGraphViewSelected(object sender, EventArgs args)
+        {
+
+            var vm = new SingleGraphCollectionViewModel();
+            Items.Add(vm);
+            ActivateItem(Items.Last());
 
         }
 

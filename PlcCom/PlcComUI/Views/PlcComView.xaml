@@ -22,6 +22,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Styles/Dragablz.xaml"/>
+                <ResourceDictionary Source="../Styles/CollapsableGridSplitterStyle.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Card.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Flipper.xaml" />
             </ResourceDictionary.MergedDictionaries>
@@ -30,7 +31,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="220" />
-            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="7" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <dragablz:TabablzControl Style="{StaticResource MaterialDesignTabablzControlStyle}"  Margin="0 0 5 0">
@@ -46,7 +47,7 @@
             </TabItem>
         </dragablz:TabablzControl>
 
-        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+        <GridSplitter Grid.Column="1" Width="7" HorizontalAlignment="Stretch" Style="{DynamicResource CollapsibleGridSplitterStyle}"/>
         <dockablz:Layout Grid.Column="2">
             <dragablz:TabablzControl ShowDefaultCloseButton="True" Margin="5 0 0 0">
                 <dragablz:TabablzControl.InterTabController>

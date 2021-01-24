@@ -26,6 +26,12 @@ namespace PlcComUI.ViewModels
 
         public event EventHandler DatablockSelected;
         public event EventHandler SignalSelected;
+        public event EventHandler GraphViewSelected;
+
+        public void CreateGraphView()
+        {
+            GraphViewSelected?.Invoke(this, new EventArgs());
+        }
 
         public List<CpuDisplayModel> CpuList
         {
