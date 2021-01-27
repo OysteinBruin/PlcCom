@@ -188,6 +188,7 @@
     <Compile Include="Converters\PlcCmdParameterConverter.cs" />
     <Compile Include="DataSignalModelTemplateSelector.cs" />
     <Compile Include="Domain\AsyncRelayCommnd.cs" />
+    <Compile Include="EventModels\OpenGraphViewEvent.cs" />
     <Compile Include="Styles\CollapseAction.cs" />
     <Compile Include="Domain\GraphDropHandler.cs" />
     <Compile Include="Domain\RelayCommand.cs" />

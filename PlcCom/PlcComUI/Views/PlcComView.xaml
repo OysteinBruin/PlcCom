@@ -49,7 +49,7 @@
 
         <GridSplitter Grid.Column="1" Width="7" HorizontalAlignment="Stretch" Style="{DynamicResource CollapsibleGridSplitterStyle}"/>
         <dockablz:Layout Grid.Column="2">
-            <dragablz:TabablzControl ShowDefaultCloseButton="True" Margin="5 0 0 0">
+            <dragablz:TabablzControl ShowDefaultCloseButton="True" FixedHeaderCount="1" Margin="5 0 0 0">
                 <dragablz:TabablzControl.InterTabController>
                     <dragablz:InterTabController InterTabClient="{Binding InterTabClient}"/>
                 </dragablz:TabablzControl.InterTabController>

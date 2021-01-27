@@ -18,10 +18,11 @@ namespace PlcComUI.ViewModels
     public class RealTimeGraphViewModel : Screen, GongSolutions.Wpf.DragDrop.IDropTarget
     {
         
-        public RealTimeGraphViewModel(string header)
+        public RealTimeGraphViewModel()
         {
-            DisplayName = header;
             ContentText = "Real Time Graph";
+            DisplayName = ContentText;
+            
 
             //DropTarget = new GraphDropHandler();
             Controller = new WpfGraphController<TimeSpanDataPoint, DoubleDataPoint>();

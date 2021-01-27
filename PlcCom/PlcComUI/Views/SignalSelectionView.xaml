@@ -47,34 +47,28 @@
             Margin="6">
             <StackPanel>
                 <Button
-                    x:Name="CreateGraphView"
+                    x:Name="CreateSingleGraphsView"
                     Content="Single Graphs View"
-                    Margin="10 10 0 0"
-                    HorizontalAlignment="Left"
-                    Style="{StaticResource MaterialDesignFlatButton}"/>
+                    Margin="10"
+                    HorizontalAlignment="Stretch"
+                    Style="{StaticResource MaterialDesignRaisedButton}"/>
 
                 <Button
-                    x:Name="CreateGraphView2"
+                    x:Name="CreateMultiGraphView"
                     Content="Multi Graph View"
                     Margin="10"
-                    HorizontalAlignment="Left"
-                    Style="{StaticResource MaterialDesignFlatButton}"/>
+                    HorizontalAlignment="Stretch"
+                    Style="{StaticResource MaterialDesignRaisedButton}"/>
             </StackPanel>
         </GroupBox>
 
         <GroupBox
             Header="Cpus - Datablocks - Signals"
             Style="{DynamicResource MaterialDesignCardGroupBox}"
+            ToolTip="Double click datablock name to open it in a new tab"
             Margin="6">
 
             <StackPanel>
-                <TextBlock
-                    Text="Datablocks"
-                    Margin="10 5 10 0"
-                    Style="{StaticResource MaterialDesignButtonTextBlock}"
-                    HorizontalAlignment="Left"
-                    ToolTip="Double click to open datablock in a new tab"/>
-
                 <TreeView x:Name="SignalsTreeView" Style="{StaticResource CustomMDIXTreeView}" 
                   HorizontalAlignment="Left"
                   VerticalAlignment="Stretch" ItemsSource="{Binding CpuList}" 

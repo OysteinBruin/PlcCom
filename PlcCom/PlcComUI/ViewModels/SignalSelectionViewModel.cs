@@ -28,9 +28,16 @@ namespace PlcComUI.ViewModels
         public event EventHandler SignalSelected;
         public event EventHandler GraphViewSelected;
 
-        public void CreateGraphView()
+        public void CreateMultiGraphView() 
         {
-            GraphViewSelected?.Invoke(this, new EventArgs());
+            GraphViewSelected?.Invoke(this, 
+                new OpenGraphViewEvent(OpenGraphViewEvent.GraphViewType.MultiGraph));
+        }
+
+        public void CreateSingleGraphsView() 
+        {
+            GraphViewSelected?.Invoke(this, 
+                new OpenGraphViewEvent(OpenGraphViewEvent.GraphViewType.SingleGraphs));
         }
 
         public List<CpuDisplayModel> CpuList

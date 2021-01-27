@@ -94,6 +94,7 @@
                         Grid.Row="0" Grid.Column="1"
                         Margin="0"
                         Height="8"
+                        Background="{StaticResource MaterialDesignPaper}"
                         Style="{StaticResource MaterialDesignLinearProgressBar}"
                         Value="{Binding Value}" Minimum="{Binding RangeFrom}" Maximum="{Binding RangeTo}"
                         
@@ -101,7 +102,7 @@
                     <Slider  x:Name="slider" 
                              Grid.Row="1" Grid.Column="1"
                              Margin="0"
-       
+                             
                              IsEnabled="{Binding ElementName=EnableWriteCb, Path=IsChecked}"
                              Minimum="{Binding RangeFrom}" Maximum="{Binding RangeTo}" MinWidth="150" VerticalAlignment="Center">
 
