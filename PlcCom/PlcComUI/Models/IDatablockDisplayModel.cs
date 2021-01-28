@@ -11,6 +11,8 @@ namespace PlcComUI.Models
         string Name { get; set; }
         int Number { get; set; }
         string NumberStr { get; }
+        int FirstByte { get; set; }
+        int ByteCount { get; set; }
         List<SignalDisplayModel> Signals { get; set; }
 
         event PropertyChangedEventHandler PropertyChanged;

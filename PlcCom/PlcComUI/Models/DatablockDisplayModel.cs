@@ -27,7 +27,11 @@ namespace PlcComUI.Models
             get => $"DB{Number}";
         }
 
+        public int FirstByte { get; set; }
+        public int ByteCount { get; set; }
+
         public List<SignalDisplayModel> Signals { get; set; } = new List<SignalDisplayModel>();
+        
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void EmitPropertyChanged(string propName)

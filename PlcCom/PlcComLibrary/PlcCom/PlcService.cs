@@ -130,7 +130,8 @@ namespace PlcComLibrary.PlcCom
             }
             else 
             {
-                MonitoredDatablocks.Remove(dbModel);
+                MonitoredDatablocks.RemoveAll(x => x.Name == dbModel.Name && 
+                                                    x.Index == dbModel.Index);
             }
 
             await ReadDatablocksAsync();

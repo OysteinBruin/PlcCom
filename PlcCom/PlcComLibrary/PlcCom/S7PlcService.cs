@@ -37,7 +37,7 @@ namespace PlcComLibrary.PlcCom
 
             try
             {
-                _plc = new Plc(S7NetCpuType, Config.Ip, (short)Config.Rack, (short)Config.Slot);
+                _plc = new Plc(S7NetCpuType, "100.67.165.113"/*Config.Ip*/, (short)Config.Rack, (short)Config.Slot);
                 await _plc.OpenAsync();
 
                 if (_plc.IsConnected)
@@ -87,26 +87,28 @@ namespace PlcComLibrary.PlcCom
             VerifyConnected();
 
             await DelayAsync(10);
-
             byte[] dbBytes = await _plc.ReadBytesAsync(S7.Net.DataType.DataBlock, db.Number, db.FirstByte, db.ByteCount);
-
-
 
             // TODO change Debug.Assert to if and create scheduler to check if it fails several times, 
             // and throw exception + handling remove this db from read list
-            Debug.Assert(dbBytes.Length == db.ByteCount - db.FirstByte);
-
+            //Debug.Assert(dbBytes.Length == db.ByteCount - db.FirstByte);
 
             List<PlcComIndexValueModel> indexValueModels = new List<PlcComIndexValueModel>();
-
             for (int i = 0; i < db.Signals.Count; i++)
             {
                 ISignalModel s = db.Signals[i];
-                byte[] dbBytesRange = dbBytes.Skip(s.DbByteIndex).Take(s.ByteCount()).ToArray();
+                int signalByteCount = s.ByteCount();
+                byte[] dbBytesRange = dbBytes.Skip(s.DbByteIndex - db.FirstByte).Take(s.ByteCount()).ToArray();
                 indexValueModels.Add(new PlcComIndexValueModel(Index, db.Index, s.Index, s.BytesToValue(dbBytesRange)));
             }
 
             PlcReadResultEventArgs args = new PlcReadResultEventArgs(indexValueModels);
+
+            // foreach (var item in args.IndexValueList)
+            // {
+            //     Console.WriteLine($"");
+            // }
+
             RaiseHasNewData(args);
         }
 
@@ -114,7 +116,6 @@ namespace PlcComLibrary.PlcCom
         public override async Task WriteSingleAsync(string address, object value)
         {
             VerifyConnectedAndValidateAddress(address);
-
             await _plc.WriteAsync(address, value);
         }
 
@@ -151,7 +152,7 @@ namespace PlcComLibrary.PlcCom
                 }
                 else
                 {
-                    await _plc.WriteAsync(address, true);
+                    await _plc.WriteAsync(address, false);
                 }
             }
             else

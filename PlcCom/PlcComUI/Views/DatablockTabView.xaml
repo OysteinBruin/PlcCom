@@ -146,7 +146,7 @@
 
         <DataGrid
         Grid.Row="1"
-        ItemsSource="{Binding Signals}"
+        ItemsSource="{Binding Signals2}"
         CanUserSortColumns="True"
         CanUserResizeRows="False"
         CanUserAddRows="False"

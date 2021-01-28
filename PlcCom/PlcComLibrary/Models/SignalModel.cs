@@ -27,6 +27,9 @@ namespace PlcComLibrary.Models
         // TODO Consider refactoring SignalModel to derived types for each type (BoolSignalModel, Int32SignalModel etc) and change Value type to object.
         public double BytesToValue(byte[] bytes)
         {
+            if (bytes == null || bytes.Length < 1)
+                return 0.0;
+
             // TODO - Verify below code
             switch (DataType)
             {
@@ -123,9 +126,19 @@ namespace PlcComLibrary.Models
             return (float)d;
         }
 
+
         private double ByteToBool(byte[] boolByte)
         {
-            if (boolByte?[0] == 0)
+            if (boolByte.Length != 1)
+            {
+                // TODO: throw exception and handle it
+                return -1.0;
+            }
+
+            int mask = 1 << Bit; 
+            bool retVal = (boolByte[0] & mask) != 0;
+
+            if (retVal == false)
                 return 0.0;
 
             return 1.0;

@@ -53,6 +53,8 @@ namespace PlcComUI.Models
                 DatablockDisplayModel dbModel = new DatablockDisplayModel(new PlcComIndexModel(_plcService.Index,db.Index, -1));
                 dbModel.Name = db.Name;
                 dbModel.Number = db.Number;
+                dbModel.FirstByte = db.FirstByte;
+                dbModel.ByteCount = db.ByteCount;
                 List<SignalDisplayModel> signalDisplayModels = new List<SignalDisplayModel>();
                 foreach (var sig in db.Signals)
                 {
@@ -171,7 +173,6 @@ namespace PlcComUI.Models
         {
             if (_plcService.ComState == ComState.DisConnected)
             {
-
                 _plcService.Config.CpuType = SelectedCpuType;
                 _plcService.Config.Ip = IpAddress;
                 _plcService.Config.Rack = Rack;
