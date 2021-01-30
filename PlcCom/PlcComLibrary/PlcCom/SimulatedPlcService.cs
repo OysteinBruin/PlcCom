@@ -10,8 +10,7 @@ using System.Threading.Tasks;
 using static PlcComLibrary.Common.Enums;
 using log4net;
 using System.Threading;
-
-
+using System.Diagnostics;
 
 namespace PlcComLibrary.PlcCom
 {
@@ -55,6 +54,23 @@ namespace PlcComLibrary.PlcCom
         public override void DisConnect()
         {
             ComState = ComState.DisConnected;
+        }
+
+        protected async override void PlcReadWriteCallback(object state)
+        {
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+
+            if (MonitoredDatablocks.Count > 0)
+            {
+                for (int i = MonitoredDatablocks.Count - 1; i >= 0; i--)
+                {
+                    await ReadDbAsync(MonitoredDatablocks[i]);
+                }
+            }
+
+            _plcReadWriteTimer.Change(Math.Max(0, _interval - watch.ElapsedMilliseconds), Timeout.Infinite);
+
         }
 
         public override async Task ReadSingleAsync(string address)

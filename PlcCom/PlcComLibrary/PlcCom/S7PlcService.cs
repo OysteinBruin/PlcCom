@@ -17,6 +17,9 @@ namespace PlcComLibrary.PlcCom
     {
         private S7.Net.Plc _plc;
         private static readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 3);
+        private List<IPlcComTask> _collectedPlcTasks = new List<IPlcComTask>();
+        private List<IPlcComTask> _collectedPlcTasksToExecute = new List<IPlcComTask>();
+
 
         public S7PlcService(int index, ICpuConfig config, List<IDatablockModel> datablocks)
             : base(index, config, datablocks)
@@ -36,7 +39,7 @@ namespace PlcComLibrary.PlcCom
 
             try
             {
-                _plc = new Plc(S7NetCpuType, "100.67.165.113"/*Config.Ip*/, (short)Config.Rack, (short)Config.Slot);
+                _plc = new Plc(S7NetCpuType, "169.254.73.125"/*Config.Ip*/, (short)Config.Rack, (short)Config.Slot);
                 await _plc.OpenAsync();
 
                 if (_plc.IsConnected)
@@ -65,6 +68,29 @@ namespace PlcComLibrary.PlcCom
             ComState = ComState.DisConnected;
         }
 
+        protected async override void PlcReadWriteCallback(object state)
+        {
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+
+            foreach (var task in _collectedPlcTasksToExecute)
+            {
+                task.Execute(_plc);
+            }
+
+            if (MonitoredDatablocks.Count > 0)
+            {
+                for (int i = MonitoredDatablocks.Count - 1; i >= 0; i--)
+                {
+                    await ReadDbAsync(MonitoredDatablocks[i]);
+                }
+            }
+
+            _collectedPlcTasksToExecute = _collectedPlcTasks;
+            _collectedPlcTasks.Clear();
+            _plcReadWriteTimer.Change(Math.Max(0, _interval - watch.ElapsedMilliseconds), Timeout.Infinite);
+        }
+
         public override async Task ReadSingleAsync(string address)
         {
             VerifyConnectedAndValidateAddress(address);
@@ -83,27 +109,12 @@ namespace PlcComLibrary.PlcCom
             }
         }
 
-        /*
-         * 
-        ReadWriteScheduler
-            
-
-        ReadSingleAsync
-        ReadDbAsync
-
-        WriteSingleAsync
-        PulseBitAsync
-        ToggleBitAsync
-
-
-        */
-
         protected override async Task ReadDbAsync(IDatablockModel db)
         {
             VerifyConnected();
 
             Console.WriteLine($"ReadDbAsync BEG sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
-            await _semaphoreSlim.WaitAsync(5);
+            //await _semaphoreSlim.WaitAsync(5);
             byte[] dbBytes = await _plc.ReadBytesAsync(S7.Net.DataType.DataBlock, db.Number, db.FirstByte, db.ByteCount);
 
             // TODO change Debug.Assert to if and create scheduler to check if it fails several times, 
@@ -118,7 +129,6 @@ namespace PlcComLibrary.PlcCom
                 byte[] dbBytesRange = dbBytes.Skip(s.DbByteIndex - db.FirstByte).Take(s.ByteCount()).ToArray();
                 indexValueModels.Add(new PlcComIndexValueModel(Index, db.Index, s.Index, s.BytesToValue(dbBytesRange)));
             }
-
             PlcReadResultEventArgs args = new PlcReadResultEventArgs(indexValueModels);
 
             // foreach (var item in args.IndexValueList)
@@ -129,7 +139,7 @@ namespace PlcComLibrary.PlcCom
             Console.WriteLine($"ReadDbAsync {db.Name} sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
 
             RaiseHasNewData(args);
-            _semaphoreSlim.Release();
+            //_semaphoreSlim.Release();
             Console.WriteLine($"ReadDbAsync END sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
         }
 
@@ -151,13 +161,24 @@ namespace PlcComLibrary.PlcCom
                 throw new Exception($"Plc Write Error - Attempting to pulse a non boolean address: {address}");
             }
 
-            Console.WriteLine($"PulseBitAsync BEG sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
-            await _semaphoreSlim.WaitAsync();
-            await _plc.WriteAsync(address, true);
-            await DelayAsync(100);
-            await _plc.WriteAsync(address, false);
-            _semaphoreSlim.Release();
-            Console.WriteLine($"PulseBitAsync END sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
+            await DelayAsync(5);
+            if (ReadWriteTimerIsRunning)
+            {
+                _collectedPlcTasks.Add(new PlcPulseBitTask(address));
+            }
+            {
+                var task = new PlcPulseBitTask(address);
+                task.Execute(_plc);
+            }
+            
+
+            //Console.WriteLine($"PulseBitAsync BEG sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
+            //await _semaphoreSlim.WaitAsync();
+            //await _plc.WriteAsync(address, true);
+            //await DelayAsync(100);
+            //await _plc.WriteAsync(address, false);
+            //_semaphoreSlim.Release();
+            //Console.WriteLine($"PulseBitAsync END sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
         }
 
         public override async Task ToggleBitAsync(string address)
@@ -173,18 +194,29 @@ namespace PlcComLibrary.PlcCom
 
             if (dbIndex >= 0 && signalIndex >= 0)
             {
-                Console.WriteLine($"ToggleBitAsync BEG sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
-                await _semaphoreSlim.WaitAsync(5);
-                if (Datablocks[dbIndex].Signals[signalIndex].Value == 0)
+                await DelayAsync(5);
+                double val = Datablocks[dbIndex].Signals[signalIndex].Value;
+
+                if (ReadWriteTimerIsRunning)
                 {
-                    await _plc.WriteAsync(address, true);
+                    _collectedPlcTasks.Add(new PlcToggleTask(address, val));
                 }
-                else
                 {
-                    await _plc.WriteAsync(address, false);
+                    var task = new PlcToggleTask(address, val);
+                    task.Execute(_plc);
                 }
-                _semaphoreSlim.Release();
-                Console.WriteLine($"ToggleBitAsync END sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
+                //Console.WriteLine($"ToggleBitAsync BEG sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
+                //await _semaphoreSlim.WaitAsync(5);
+                //if (Datablocks[dbIndex].Signals[signalIndex].Value == 0)
+                //{
+                //    await _plc.WriteAsync(address, true);
+                //}
+                //else
+                //{
+                //    await _plc.WriteAsync(address, false);
+                //}
+                //_semaphoreSlim.Release();
+                //Console.WriteLine($"ToggleBitAsync END sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
             }
             else
             {

@@ -3,6 +3,7 @@ using PlcComLibrary.Config;
 using PlcComLibrary.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -56,28 +57,31 @@ namespace PlcComLibrary.PlcCom
      */
 
     // https://stackoverflow.com/questions/4890915/is-there-a-task-based-replacement-for-system-threading-timer
-    public class PeriodicTask
-    {
-        public static async Task Run(Action action, TimeSpan period, CancellationToken cancellationToken)
-        {
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                await Task.Delay(period, cancellationToken);
+    // https://stackoverflow.com/questions/12796148/system-threading-timer-in-c-sharp-it-seems-to-be-not-working-it-runs-very-fast
+    //public class PeriodicTask
+    //{
+    //    public static async Task Run(Action action, TimeSpan period, CancellationToken cancellationToken)
+    //    {
+    //        while (!cancellationToken.IsCancellationRequested)
+    //        {
+    //            await Task.Delay(period, cancellationToken);
 
-                if (!cancellationToken.IsCancellationRequested)
-                    action();
-            }
-        }
+    //            if (!cancellationToken.IsCancellationRequested)
+    //                action();
+    //        }
+    //    }
 
-        public static Task Run(Action action, TimeSpan period)
-        {
-            return Run(action, period, CancellationToken.None);
-        }
-    }
+    //    public static Task Run(Action action, TimeSpan period)
+    //    {
+    //        return Run(action, period, CancellationToken.None);
+    //    }
+    //}
 
     public abstract class PlcService
     {
         private Enums.ComState _comState;
+        protected System.Threading.Timer _plcReadWriteTimer;
+        protected int _interval = 20;
         
 
         protected PlcService(int index, ICpuConfig config, List<IDatablockModel> datablocks)
@@ -85,7 +89,11 @@ namespace PlcComLibrary.PlcCom
             Index = index;
             Config = config;
             Datablocks = datablocks;
+            _plcReadWriteTimer = new System.Threading.Timer(PlcReadWriteCallback, null, _interval, Timeout.Infinite);
         }
+
+        protected abstract void PlcReadWriteCallback(Object state);
+        protected bool ReadWriteTimerIsRunning { get; set; }
 
         public int Index { get; set; }
 
@@ -139,7 +147,7 @@ namespace PlcComLibrary.PlcCom
         /// </summary>
         /// <param name="add"></param>
         /// <param name="dbModel"></param>
-        public virtual async void AddOrRemoveDb(bool add, IDatablockModel dbModel)
+        public virtual void AddOrRemoveDb(bool add, IDatablockModel dbModel)
         {
             if (dbModel == null)
                 return;
@@ -154,17 +162,15 @@ namespace PlcComLibrary.PlcCom
                                                     x.Index == dbModel.Index);
             }
 
-            await ReadDatablocksAsync();
-        }
-
-        public async Task ReadDatablocksAsync()
-        {
-            while (MonitoredDatablocks.Count > 0)
+            if (MonitoredDatablocks.Count > 0 && !ReadWriteTimerIsRunning)
             {
-                for (int i = MonitoredDatablocks.Count-1; i >= 0; i--)
-                {
-                    await ReadDbAsync(MonitoredDatablocks[i]);
-                }
+                ReadWriteTimerIsRunning = true;
+                _plcReadWriteTimer.Change(_interval, Timeout.Infinite);
+            }
+            else if (MonitoredDatablocks.Count == 0)
+            {
+                ReadWriteTimerIsRunning = false;
+                _plcReadWriteTimer.Change(Timeout.Infinite, Timeout.Infinite);
             }
         }
 

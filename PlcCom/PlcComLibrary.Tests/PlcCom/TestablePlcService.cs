@@ -81,5 +81,10 @@ namespace PlcComLibrary.Tests.PlcCom
         {
             throw new NotImplementedException();
         }
+
+        protected override void PlcReadWriteCallback(object state)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
