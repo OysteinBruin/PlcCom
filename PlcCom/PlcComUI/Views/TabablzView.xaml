@@ -31,7 +31,7 @@
     </UserControl.Resources>
 
     <Grid>
-        <Grid.ColumnDefinitions>
+        <!--<Grid.ColumnDefinitions>
             <ColumnDefinition Width="220" />
             <ColumnDefinition Width="5" />
             <ColumnDefinition Width="*" />
@@ -60,7 +60,7 @@
                                                 <RowDefinition Height="auto" />
                                             </Grid.RowDefinitions>
 
-                                            <!-- Input line 0 -->
+                                            --><!-- Input line 0 --><!--
                                             <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
                                                 <Button
                                         Style="{StaticResource MaterialDesignToolForegroundButton}"
@@ -81,7 +81,7 @@
                                             </StackPanel>
 
 
-                                            <!-- Input line 1 -->
+                                            --><!-- Input line 1 --><!--
                                             <TextBox x:Name="IpAddress" Grid.Row="1" Grid.Column="0" 
                                     materialDesign:HintAssist.Hint="Ip Adddress"
                                     Text="{Binding Path=IpAddress}" 
@@ -97,7 +97,7 @@
                                     VerticalAlignment="Center" 
                                     Margin='5' />
 
-                                            <!-- Input line 2 -->
+                                            --><!-- Input line 2 --><!--
                                             <ComboBox x:Name="S7CpuType" Grid.Row="2" Grid.Column="0" SelectedItem="{Binding Path=SelectedCpuType}"
                                                   ItemsSource="{Binding S7CpuType}"
                                     Style="{StaticResource MaterialDesignFloatingHintComboBox}"
@@ -113,7 +113,7 @@
                                     VerticalAlignment="Center" 
                                     Margin='5' />
 
-                                            <!-- Input line 3 -->
+                                            --><!-- Input line 3 --><!--
                                             <Button x:Name="Connect" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
                                     Style="{StaticResource MaterialDesignRaisedButton}"
                                     materialDesign:ButtonProgressAssist.Value="-1"
@@ -170,7 +170,7 @@
                     <dragablz:InterTabController InterTabClient="{Binding InterTabClient}"/>
                 </dragablz:TabablzControl.InterTabController>
             </dragablz:TabablzControl>
-        </dockablz:Layout>
+        </dockablz:Layout>-->
         
     </Grid>
 </UserControl>

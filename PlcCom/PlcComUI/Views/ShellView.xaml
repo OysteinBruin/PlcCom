@@ -84,7 +84,7 @@
             <DockPanel>
                
                 <materialDesign:ColorZone 
-                Background="LightGray"
+                Background="{StaticResource MaterialDesignDarkBackground}"
                 Padding="3"
                 Height="35"
                 DockPanel.Dock="Bottom" >

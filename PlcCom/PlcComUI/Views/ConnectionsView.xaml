@@ -24,12 +24,22 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
-        <ListView x:Name="CpuList" Margin="0" HorizontalAlignment="Center">
-            <ListView.ItemTemplate>
-                <DataTemplate DataType="{x:Type models:CpuDisplayModel}">
+    <StackPanel>
+        <Expander ExpandDirection="Down" IsExpanded="True">
+            <Expander.Header>
+                <TextBlock
+                    Text="PLC CONTROLLERS"
+                    Margin="20 10 5 5"
+                    Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                    Foreground="LightGray"
+                    />
+            </Expander.Header>
 
-                    <materialDesign:Card Padding="10" >
+
+            <ItemsControl ItemsSource="{Binding CpuList}" Margin="0" HorizontalAlignment="Center">
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type models:CpuDisplayModel}">
 
                         <Grid  Grid.Row="1" Grid.Column="1" Margin="0" MinWidth="170">
                             <Grid.ColumnDefinitions>
@@ -47,7 +57,7 @@
                             <TextBox 
                                 Text="{Binding Name}" 
                                 Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                                materialDesign:HintAssist.Hint="Name"
+                                materialDesign:HintAssist.Hint="CPU Name"
                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                 FontSize="13"
                                 VerticalAlignment="Center" 
@@ -103,9 +113,9 @@
                                 </i:Interaction.Triggers>
                             </Button>
                         </Grid>
-                    </materialDesign:Card >
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-    </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Expander>
+    </StackPanel>
 </UserControl>

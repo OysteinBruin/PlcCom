@@ -21,8 +21,7 @@ namespace PlcComUI.ViewModels
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private IEventAggregator _events;
         private DatablockDisplayModel _displayModel;
-        private BindableCollection<SignalDisplayModel> _signals2;
-        private ObservableCollection<SignalDisplayModel> _signals;
+
         private bool _isConnected;
         private bool _monitorCb;
         private bool _enableWriteCb;
@@ -33,7 +32,7 @@ namespace PlcComUI.ViewModels
             _events = events;
             _displayModel = displayModel;
             //Signals = new ObservableCollection<SignalDisplayModel>(displayModel.Signals);
-            Signals2 = new BindableCollection<SignalDisplayModel>(displayModel.Signals);
+            Signals = new BindableCollection<SignalDisplayModel>(displayModel.Signals);
             DisplayName = displayModel.Name;
             _events.Subscribe(this);
             IsConnected = isConnected;
@@ -58,7 +57,7 @@ namespace PlcComUI.ViewModels
             Debug.Assert(model is SignalDisplayModel);
             var signalDisplayModel = (SignalDisplayModel)model;
 
-            if (Signals2.Contains(model))
+            if (Signals.Contains(model))
             {
                 var view = new EditSignalView();
                 var viewModel = new EditSignalViewModel(signalDisplayModel);
@@ -68,31 +67,17 @@ namespace PlcComUI.ViewModels
 
                 if (viewModel.DoSave)
                 {
-                    int index = Signals2.IndexOf(viewModel.Model);
+                    int index = Signals.IndexOf(viewModel.Model);
                    if (index >= 0)
                    {
-                        Signals2[index] = viewModel.Model;
+                        Signals[index] = viewModel.Model;
                    }
                 }
             }
 
         }
 
-        //public ObservableCollection<SignalDisplayModel> Signals
-        //{
-        //    get => _signals;
-        //    set 
-        //    {
-        //        _signals = value;
-        //       // NotifyOfPropertyChange(()=> Signals);
-        //    }
-        //}
-
-        public BindableCollection<SignalDisplayModel> Signals2 
-        {
-            get; 
-            set; 
-        }
+        public BindableCollection<SignalDisplayModel> Signals { get; set; }
 
         public string Name
         {
@@ -110,7 +95,7 @@ namespace PlcComUI.ViewModels
             set
             {
                 _displayModel.Number = value;
-                NotifyOfPropertyChange(() => Signals2);
+                NotifyOfPropertyChange(() => Signals);
             }
         }
 
@@ -126,6 +111,11 @@ namespace PlcComUI.ViewModels
             {
                 if (value.Equals(_isConnected)) return;
                 _isConnected = value;
+
+                if (value == false)
+                {
+                    MonitorCb = false;
+                }
 
                 NotifyOfPropertyChange(() => IsConnected);
             }
@@ -167,23 +157,17 @@ namespace PlcComUI.ViewModels
 
         public void Handle(PlcReadEvent message)
         {
-            //int cnt = System.DateTime.Now.Second;
-            //Console.WriteLine("\nStart Handle(PlcReadEvent message)");
+            //Console.Write('\n');
             foreach (var item in message.Data.IndexValueList)
             {
                 if (item.CpuIndex == _displayModel.IndexModel.CpuIndex && item.DbIndex == _displayModel.IndexModel.DbIndex)
                 {
-                    if (item.Value == 0.0)
-                        item.Value = 0.01;
+                   // Console.Write($" | index {item.SignalIndex} value {item.Value}");
 
-                    Signals2[item.SignalIndex].Value = item.Value;
-                    //NotifyOfPropertyChange(() => Signals2);
-                    //cnt += 10;
-                    //Signals2[item.SignalIndex].Value = cnt * 14.623;
-                    //Console.WriteLine($"PlcReadEvent val {Signals2[item.SignalIndex].Value} index {item.SignalIndex} in Value {item.Value}");
+                    Signals[item.SignalIndex].Value = item.Value;
                 }
             }
-            //Console.WriteLine("\nEnd Handle(PlcReadEvent message)\n\n");
+            //Console.Write($" | time sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
         }
 
         public void Handle(ComStateChangedEvent message)

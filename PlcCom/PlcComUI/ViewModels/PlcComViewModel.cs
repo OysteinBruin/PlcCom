@@ -83,20 +83,41 @@ namespace PlcComUI.ViewModels
         public IInterTabClient InterTabClient { get; }
         public IInterLayoutClient InterLayoutClient { get; }
 
+        /// <summary>
+        /// Adds the selcted 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void OnDatablockSelected(object sender, EventArgs args)
         {
             var eventArgs = (NewDatablockTabEvent)args;
             DatablockDisplayModel dbModel = eventArgs.DatablockSelected;
 
-            bool isConnected = (_plcComManager.PlcServiceList[dbModel.IndexModel.CpuIndex].ComState == ComState.Connected);
-            DatablockTabViewModel vm = new DatablockTabViewModel(_events, dbModel, isConnected);
+            bool itemExists = false;
 
-            //DatablockTabView view = new DatablockTabView();
-            //DatablockTabViewModel vm = new DatablockTabViewModel(_events, dbModel);
-            //ViewModelBinder.Bind(vm, view, null);
+            foreach (var item in Items)
+            {
+                if (item.DisplayName == dbModel.Name)
+                {
+                    itemExists = true;
+                    ActivateItem(item);
+                }
+            }
 
-            Items.Add(vm);
-            ActivateItem(Items.Last());
+            if (!itemExists)
+            {
+                bool isConnected = (_plcComManager.PlcServiceList[dbModel.IndexModel.CpuIndex].ComState == ComState.Connected);
+                DatablockTabViewModel vm = new DatablockTabViewModel(_events, dbModel, isConnected);
+                Items.Add(vm);
+                ActivateItem(Items.Last());
+            }
+
+            // If WelcomeTab exists and new tabs are added, remove WelcomeTab
+            if (Items.Count > 1 && Items[0] is WelcomeTabViewModel)
+            {
+                Items.RemoveAt(0);
+            }
+
         }
 
         private void OnSignalSelected(object sender, EventArgs args)
@@ -160,7 +181,7 @@ namespace PlcComUI.ViewModels
                         break;
                     case PlcUiCmdEvent.CmdType.Slider:
                         Debug.Assert(message.Value != null);
-                        await _plcComManager.PlcServiceList[0].WriteSingleAsync(message.Address, message.Value);
+                        await _plcComManager.PlcServiceList[message.CpuIndex].WriteSingleAsync(message.Address, message.Value);
                         break;
                     default:
                         break;

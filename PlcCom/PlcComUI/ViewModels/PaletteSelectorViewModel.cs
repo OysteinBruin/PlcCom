@@ -20,7 +20,9 @@ namespace PlcComUI.ViewModels
         protected override void OnInitialize()
         {
             base.OnInitialize();
-            
+            LightDarkThemeToggle(true);
+
+
         }
 
         public IEnumerable<Swatch> Swatches { get; }

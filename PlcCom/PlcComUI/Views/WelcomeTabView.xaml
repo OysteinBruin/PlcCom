@@ -6,11 +6,8 @@
              xmlns:local="clr-namespace:PlcComUI.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <StackPanel Grid.Column="1" HorizontalAlignment="Center" Margin="10 50 10 10">
-            <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}" TextWrapping="Wrap">Welcome to PLC  COM </TextBlock>
-            
-        </StackPanel>
 
-    </Grid>
+    <StackPanel  HorizontalAlignment="Center" Margin="10 50 10 10">
+        <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}" TextWrapping="Wrap">Welcome to PLC COM</TextBlock>
+    </StackPanel>
 </UserControl>

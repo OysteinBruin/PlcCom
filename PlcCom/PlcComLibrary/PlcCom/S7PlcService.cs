@@ -16,6 +16,7 @@ namespace PlcComLibrary.PlcCom
     public class S7PlcService : PlcService
     {
         private S7.Net.Plc _plc;
+        private static readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 3);
 
         public S7PlcService(int index, ICpuConfig config, List<IDatablockModel> datablocks)
             : base(index, config, datablocks)
@@ -25,8 +26,6 @@ namespace PlcComLibrary.PlcCom
         }
 
         //public string LastError { get; private set; }
-
-
         public override async Task ConnectAsync()
         {
             ComState = ComState.Connecting;
@@ -74,7 +73,9 @@ namespace PlcComLibrary.PlcCom
 
             if (dbIndex >= 0 && signalIndex >= 0)
             {
+                await _semaphoreSlim.WaitAsync();
                 await _plc.ReadAsync(address);
+                _semaphoreSlim.Release();
             }
             else
             {
@@ -82,11 +83,27 @@ namespace PlcComLibrary.PlcCom
             }
         }
 
+        /*
+         * 
+        ReadWriteScheduler
+            
+
+        ReadSingleAsync
+        ReadDbAsync
+
+        WriteSingleAsync
+        PulseBitAsync
+        ToggleBitAsync
+
+
+        */
+
         protected override async Task ReadDbAsync(IDatablockModel db)
         {
             VerifyConnected();
 
-            await DelayAsync(10);
+            Console.WriteLine($"ReadDbAsync BEG sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
+            await _semaphoreSlim.WaitAsync(5);
             byte[] dbBytes = await _plc.ReadBytesAsync(S7.Net.DataType.DataBlock, db.Number, db.FirstByte, db.ByteCount);
 
             // TODO change Debug.Assert to if and create scheduler to check if it fails several times, 
@@ -109,14 +126,20 @@ namespace PlcComLibrary.PlcCom
             //     Console.WriteLine($"");
             // }
 
+            Console.WriteLine($"ReadDbAsync {db.Name} sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
+
             RaiseHasNewData(args);
+            _semaphoreSlim.Release();
+            Console.WriteLine($"ReadDbAsync END sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
         }
 
 
         public override async Task WriteSingleAsync(string address, object value)
         {
             VerifyConnectedAndValidateAddress(address);
+            await _semaphoreSlim.WaitAsync();
             await _plc.WriteAsync(address, value);
+            _semaphoreSlim.Release();
         }
 
         public override async Task PulseBitAsync(string address)
@@ -128,9 +151,13 @@ namespace PlcComLibrary.PlcCom
                 throw new Exception($"Plc Write Error - Attempting to pulse a non boolean address: {address}");
             }
 
+            Console.WriteLine($"PulseBitAsync BEG sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
+            await _semaphoreSlim.WaitAsync();
             await _plc.WriteAsync(address, true);
             await DelayAsync(100);
             await _plc.WriteAsync(address, false);
+            _semaphoreSlim.Release();
+            Console.WriteLine($"PulseBitAsync END sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
         }
 
         public override async Task ToggleBitAsync(string address)
@@ -146,6 +173,8 @@ namespace PlcComLibrary.PlcCom
 
             if (dbIndex >= 0 && signalIndex >= 0)
             {
+                Console.WriteLine($"ToggleBitAsync BEG sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
+                await _semaphoreSlim.WaitAsync(5);
                 if (Datablocks[dbIndex].Signals[signalIndex].Value == 0)
                 {
                     await _plc.WriteAsync(address, true);
@@ -154,6 +183,8 @@ namespace PlcComLibrary.PlcCom
                 {
                     await _plc.WriteAsync(address, false);
                 }
+                _semaphoreSlim.Release();
+                Console.WriteLine($"ToggleBitAsync END sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
             }
             else
             {

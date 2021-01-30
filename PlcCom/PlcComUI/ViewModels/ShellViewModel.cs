@@ -17,7 +17,6 @@ namespace PlcComUI.ViewModels
 		private IEventAggregator _events;
         private IPlcComManager _plcComManager;
         private bool _modalViewIsActive = false;
-        private bool _showDrawer = false;
         private System.Windows.WindowState _windowState;
 
         public ShellViewModel(IEventAggregator events, IPlcComManager plcComManager)
@@ -32,7 +31,12 @@ namespace PlcComUI.ViewModels
             Items.Add(IoC.Get<PlcComViewModel>());
             Items.Add(IoC.Get<PaletteSelectorViewModel>());
             _events.Subscribe(this);
-		}
+
+            PaletteHelper paletteHelper = new PaletteHelper();
+            ITheme theme = paletteHelper.GetTheme();
+            theme.SetBaseTheme(Theme.Dark);
+            paletteHelper.SetTheme(theme);
+        }
 
         public System.Windows.WindowState WindowState
         {
