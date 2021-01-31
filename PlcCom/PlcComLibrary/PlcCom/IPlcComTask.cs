@@ -8,7 +8,7 @@ namespace PlcComLibrary.PlcCom
 {
     public interface IPlcComTask
     {
-        void Execute(S7.Net.Plc _plc);
+        Task Execute(S7.Net.Plc _plc);
         string Address { get; set; }
         double Value { get; set; }
     }

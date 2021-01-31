@@ -105,25 +105,32 @@ namespace PlcComLibrary.Models
 
         private Int16 BytesToInt16(byte[] bytes)
         {
-            Int32 d = 0;
+            //Int32 d = 0;
 
-            if (bytes.Length == sizeof(Int16))
-            {
-                for (int i = 0; i < sizeof(Int16); ++i)
-                {
-                    d |= bytes[i] << (i * 8);
-                }
-            }
+            //if (bytes.Length == sizeof(Int16))
+            //{
+            //    for (int i = 0; i < sizeof(Int16); ++i)
+            //    {
+            //        d |= bytes[i] << (i * 8);
+            //    }
+            //}
 
-            return (Int16)d;
+            //return (Int16)d;
+
+            return System.BitConverter.ToInt16(bytes, 0);
         }
 
         private float BytesToFloat(byte[] bytes)
         {
-            Int32 d = BytesToInt32(bytes);
+            for (int i = 0; i < bytes.Length; i++)
+            {
 
-            // TODO: To be verified
-            return (float)d;
+            }
+            return System.BitConverter.ToSingle(bytes, 0);
+            //Int32 d = BytesToInt32(bytes);
+
+            //// TODO: To be verified
+            //return (float)d;
         }
 
 

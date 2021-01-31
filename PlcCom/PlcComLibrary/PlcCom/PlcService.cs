@@ -89,7 +89,7 @@ namespace PlcComLibrary.PlcCom
             Index = index;
             Config = config;
             Datablocks = datablocks;
-            _plcReadWriteTimer = new System.Threading.Timer(PlcReadWriteCallback, null, _interval, Timeout.Infinite);
+            _plcReadWriteTimer = new System.Threading.Timer(PlcReadWriteCallback, null, Timeout.Infinite, Timeout.Infinite);
         }
 
         protected abstract void PlcReadWriteCallback(Object state);

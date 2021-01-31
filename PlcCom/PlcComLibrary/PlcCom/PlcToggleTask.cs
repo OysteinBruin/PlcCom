@@ -17,8 +17,9 @@ namespace PlcComLibrary.PlcCom
         public string Address { get; set; }
         public double Value { get; set; }
 
-        public async void Execute(Plc plc)
+        public async Task Execute(Plc plc)
         {
+            Console.WriteLine("BEG PlcToggleTask");
             if (Value == 0)
             {
                 await plc.WriteAsync(Address, true);
@@ -27,6 +28,7 @@ namespace PlcComLibrary.PlcCom
             {
                 await plc.WriteAsync(Address, false);
             }
+            Console.WriteLine("END PlcToggleTask");
         }
     }
 }
