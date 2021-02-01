@@ -6,8 +6,11 @@
              xmlns:local="clr-namespace:PlcComUI.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-
+    <!--<UserControl.Background>
+        <ImageBrush ImageSource="pack://application:,,,/PlcComUI;component/Assets/Images/bg_img01.png" Opacity="0.4"/>
+    </UserControl.Background>-->
     <StackPanel  HorizontalAlignment="Center" Margin="10 50 10 10">
-        <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}" TextWrapping="Wrap">Welcome to PLC COM</TextBlock>
+        <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}" TextWrapping="Wrap">Welcome to PLC <Bold>COM</Bold></TextBlock>
+
     </StackPanel>
 </UserControl>

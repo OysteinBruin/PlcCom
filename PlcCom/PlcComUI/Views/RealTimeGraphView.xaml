@@ -18,10 +18,13 @@
              TextElement.FontSize="13"
              TextOptions.TextFormattingMode="Ideal" 
              TextOptions.TextRenderingMode="Auto"
-             Background="{DynamicResource MaterialDesignPaper}"
+
              FontFamily="{materialDesign:MaterialDesignFont}" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
+    <UserControl.Background>
+        <ImageBrush ImageSource="pack://application:,,,/PlcComUI;component/Assets/Images/GraphInDevMode01.png" Opacity="1.0"/>
+    </UserControl.Background>
+    <!--<UserControl.Resources>
         <ResourceDictionary>
             <graph:WpfGraphControl x:Key="WpfGraphControl"/>
 
@@ -86,9 +89,9 @@
                 </Setter>
             </Style>
         </ResourceDictionary>
-    </UserControl.Resources>
+    </UserControl.Resources>-->
     <Grid>
-        <Grid.ColumnDefinitions>
+        <!--<Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="200"/>
         </Grid.ColumnDefinitions>
@@ -158,7 +161,7 @@
                 <Button Margin="0 10 0 0" Padding="5" Command="{Binding Controller.ClearCommand}">Clear</Button>
             </StackPanel>
             </ScrollViewer>
-        </Border>
+        </Border>-->
     </Grid>
 </UserControl>
 

@@ -103,7 +103,16 @@ namespace PlcComUI.ViewModels
         private void OnConfigLoadingProgressChanged(object sender, EventArgs args)
         {
             ConfigsProgressEventArgs configArgs = (ConfigsProgressEventArgs)args;
-            string splashContent = $"Loading configs {configArgs.ProgressInput} of {configArgs.ProgressTotal}";
+            string splashContent;
+
+            if (configArgs.ProgressInput == configArgs.ProgressTotal)
+            {
+                splashContent = "Loading finished. Starting main appplication";
+            }
+            else
+            {
+                splashContent = $"Loading configs {configArgs.ProgressInput} of {configArgs.ProgressTotal}";
+            }
             _events.PublishOnUIThread(new SplashStatusChangedEvent(splashContent, configArgs.ProgressInput, configArgs.ProgressTotal));
         }
 

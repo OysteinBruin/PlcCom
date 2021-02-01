@@ -19,7 +19,7 @@ namespace Settings
 
             SplashWindow = new SplashWindowSettings();
             SplashWindow.Height = 450;
-            SplashWindow.Width = 800;
+            SplashWindow.Width = 1000;
         }
     }
 }

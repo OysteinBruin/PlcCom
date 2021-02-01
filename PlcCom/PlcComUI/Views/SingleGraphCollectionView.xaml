@@ -10,7 +10,11 @@
              xmlns:converters="clr-namespace:PlcComUI.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
+
+    <UserControl.Background>
+        <ImageBrush ImageSource="pack://application:,,,/PlcComUI;component/Assets/Images/GraphInDevMode01.png" Opacity="0.6"/>
+    </UserControl.Background>
+    <!--<UserControl.Resources>
     <ResourceDictionary>
         <graph:WpfGraphControl x:Key="WpfGraphControl"/>
 
@@ -75,9 +79,9 @@
             </Setter>
         </Style>
     </ResourceDictionary>
-    </UserControl.Resources>
+    </UserControl.Resources>-->
     <Grid>
-        <Grid.ColumnDefinitions>
+        <!--<Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
@@ -88,7 +92,7 @@
         <graph:WpfGraphControl Grid.Column="0" Grid.Row="0" Margin="0" Controller="{Binding Controller1}" />
         <graph:WpfGraphControl Grid.Column="1" Grid.Row="0" Margin="0" Controller="{Binding Controller2}" />
         <graph:WpfGraphControl Grid.Column="0" Grid.Row="1" Margin="0" Controller="{Binding Controller3}" />
-        <graph:WpfGraphControl Grid.Column="1" Grid.Row="1" Margin="0" Controller="{Binding Controller4}" />
+        <graph:WpfGraphControl Grid.Column="1" Grid.Row="1" Margin="0" Controller="{Binding Controller4}" />-->
 
     </Grid>
 </UserControl>

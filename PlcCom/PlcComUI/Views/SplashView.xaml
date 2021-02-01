@@ -16,23 +16,28 @@
         WindowStyle="None"
         AllowsTransparency="True"
         ResizeMode="CanResizeWithGrip"
-        Background="{DynamicResource MaterialDesignPaper}"
+
         FontFamily="{materialDesign:MaterialDesignFont}"
         Title="PLC COM" 
+        
         Width="{usersettings:SettingBinding SplashWindow.Width}"
         Height="{usersettings:SettingBinding SplashWindow.Height}"
         Top="{usersettings:SettingBinding SplashWindow.Top}"
-        Left="{usersettings:SettingBinding SplashWindow.Left}">
+        Left="{usersettings:SettingBinding SplashWindow.Left}"
+        >
+    <Window.Background>
+        <ImageBrush ImageSource="pack://application:,,,/PlcComUI;component/Assets/Images/splash.png"/>
+    </Window.Background>
 
     <StackPanel>
 
         <TextBlock
-                Grid.Row="0" HorizontalAlignment="Center" Margin="0 150 0 110"
-                Text="PLC COM"
-                Style="{StaticResource MaterialDesignHeadline3TextBlock}"
-            />
+            Grid.Row="0" HorizontalAlignment="Center" Margin="0 150 0 110"
+            Style="{StaticResource MaterialDesignHeadline3TextBlock}"
+            Foreground="DimGray"
+            > PLC <Bold>COM</Bold></TextBlock>
 
-            <TextBlock 
+        <TextBlock 
                 Margin="5"
             HorizontalAlignment="Center" 
             Text="{Binding Content}"

@@ -41,7 +41,7 @@ namespace PlcComLibrary.PlcCom
 
             try
             {
-                string ip = "100.67.173.169";
+                string ip = "100.67.165.113";
                 _plcReader = new Plc(S7NetCpuType, ip/*Config.Ip*/, (short)Config.Rack, (short)Config.Slot);
                 _plcWriter = new Plc(S7NetCpuType, ip/*Config.Ip*/, (short)Config.Rack, (short)Config.Slot);
                 await _plcReader.OpenAsync();
@@ -145,39 +145,18 @@ namespace PlcComLibrary.PlcCom
             // TODO change Debug.Assert to if and create scheduler to check if it fails several times, 
             // and throw exception + handling remove this db from read list
             //Debug.Assert(dbBytes.Length == db.ByteCount - db.FirstByte);
-            if (_collectedPlcTasksToExecute.Count > 0)
-            {
-                Console.WriteLine($"\t sec bytes received {dbBytes.Length}");
-            }
+
             List<PlcComIndexValueModel> indexValueModels = new List<PlcComIndexValueModel>();
             for (int i = 0; i < db.Signals.Count; i++)
             {
                 ISignalModel s = db.Signals[i];
                 int signalByteCount = s.ByteCount();
-                byte[] dbBytesRange = dbBytes.Skip(s.DbByteIndex - db.FirstByte).Take(s.ByteCount()).ToArray();
-                indexValueModels.Add(new PlcComIndexValueModel(Index, db.Index, s.Index, s.BytesToValue(dbBytesRange)));
-                if (_collectedPlcTasksToExecute.Count > 0)
-                {
-                    Console.WriteLine($"/t received value {s.BytesToValue(dbBytesRange)}");
-                }
+                byte[] signalValueArray = dbBytes.Skip(s.DbByteIndex - db.FirstByte).Take(s.ByteCount()).ToArray();
+                indexValueModels.Add(new PlcComIndexValueModel(Index, db.Index, s.Index, s.BytesToValue(signalValueArray)));
             }
+
             PlcReadResultEventArgs args = new PlcReadResultEventArgs(indexValueModels);
-
-            // foreach (var item in args.IndexValueList)
-            // {
-            //     Console.WriteLine($"");
-            // }
-            if (_collectedPlcTasksToExecute.Count > 0)
-            {
-                Console.WriteLine($"ReadDbAsync {db.Name} sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
-            }
-
             RaiseHasNewData(args);
-            //_semaphoreSlim.Release();
-            if (_collectedPlcTasksToExecute.Count > 0)
-            {
-                Console.WriteLine($"END ReadDbAsync sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");
-            }
         }
 
 

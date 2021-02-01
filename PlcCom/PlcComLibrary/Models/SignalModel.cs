@@ -90,47 +90,46 @@ namespace PlcComLibrary.Models
 
         private Int32 BytesToInt32(byte[] bytes)
         {
-            Int32 d = 0;
+            byte tmp = bytes[0];
+            bytes[0] = bytes[3];
+            bytes[3] = tmp;
+            tmp = bytes[1];
+            bytes[1] = bytes[2];
+            bytes[2] = tmp;
 
-            if (bytes.Length == sizeof(Int32))
-            {
-                for (int i = 0; i < sizeof(Int32); ++i)
-                {
-                    d |= bytes[i] << (i * 8);
-                }
-            }
-
-            return d;
+            return System.BitConverter.ToInt32(bytes, 0);
         }
 
         private Int16 BytesToInt16(byte[] bytes)
         {
-            //Int32 d = 0;
-
-            //if (bytes.Length == sizeof(Int16))
-            //{
-            //    for (int i = 0; i < sizeof(Int16); ++i)
-            //    {
-            //        d |= bytes[i] << (i * 8);
-            //    }
-            //}
-
-            //return (Int16)d;
+            if (bytes.Length != 2)
+            {
+                // TODO: throw exception and handle it
+                return -1;
+            }
+            byte tmp = bytes[0];
+            bytes[0] = bytes[1];
+            bytes[1] = tmp;
 
             return System.BitConverter.ToInt16(bytes, 0);
         }
 
         private float BytesToFloat(byte[] bytes)
         {
-            for (int i = 0; i < bytes.Length; i++)
+            if (bytes.Length != 4)
             {
-
+                // TODO: throw exception and handle it
+                return -1.0f;
             }
-            return System.BitConverter.ToSingle(bytes, 0);
-            //Int32 d = BytesToInt32(bytes);
 
-            //// TODO: To be verified
-            //return (float)d;
+            byte tmp = bytes[0];
+            bytes[0] = bytes[3];
+            bytes[3] = tmp;
+            tmp = bytes[1];
+            bytes[1] = bytes[2];
+            bytes[2] = tmp;
+
+            return BitConverter.ToSingle(bytes, 0);
         }
 
 

@@ -86,7 +86,7 @@ namespace PlcComLibrary.Config
                     }
                     configsProgressEventArgs.ProgressInput += 1;
                     ConfigsLoadingProgressChanged?.Invoke(this, configsProgressEventArgs);
-                    Thread.Sleep(150);
+                    Thread.Sleep(250);
                 }
 
                 int plcIndex = plcServiceList.Count;
@@ -107,7 +107,7 @@ namespace PlcComLibrary.Config
                 //    }               
                 //}
             }
-            Thread.Sleep(2000);
+            Thread.Sleep(2500);
             ConfigsLoaded?.Invoke(this, new EventArgs());
             return plcServiceList;
         }
