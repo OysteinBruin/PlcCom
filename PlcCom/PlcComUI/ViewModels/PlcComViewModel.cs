@@ -22,6 +22,7 @@ namespace PlcComUI.ViewModels
         private IEventAggregator _events;
         private IMapper _mapper;
         private IPlcComManager _plcComManager;
+        private int _fixedTabHeaderCount = 0;
 
         public PlcComViewModel(IEventAggregator events,
             IPlcComManager plcComManager,
@@ -59,13 +60,23 @@ namespace PlcComUI.ViewModels
                 plc.HasNewData += OnPlcHasNewData;
             }
 
-           
-
             this.ConnectionsViewModel.CpuList = cpuList;
             this.SignalSelectionViewModel.CpuList = cpuList;
 
             WelcomeTabViewModel welcomeModel = new WelcomeTabViewModel();
             Items.Add(welcomeModel);
+        }
+
+        //ItemActionCallback
+
+        public override void ActivateItem(IScreen item)
+        {
+            base.ActivateItem(item);
+            if (Items.Count > 1)
+            {
+                FixedTabHeaderCount = 0;
+            }
+            else FixedTabHeaderCount = 1;
         }
 
         public ConnectionsViewModel ConnectionsViewModel { get; set; }
@@ -82,6 +93,27 @@ namespace PlcComUI.ViewModels
 
         public IInterTabClient InterTabClient { get; }
         public IInterLayoutClient InterLayoutClient { get; }
+
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        public int FixedTabHeaderCount
+        {
+            get => _fixedTabHeaderCount;
+            set 
+            { 
+                _fixedTabHeaderCount = value;
+                //if (Equals(_fixedTabHeaderCount,value))
+                //    return;
+
+                if(value < 0 || value > 1)
+                    return;
+
+                NotifyOfPropertyChange(() => FixedTabHeaderCount);
+            }
+        }
+
 
         /// <summary>
         /// Adds the selcted 
@@ -117,7 +149,6 @@ namespace PlcComUI.ViewModels
             {
                 Items.RemoveAt(0);
             }
-
         }
 
         private void OnSignalSelected(object sender, EventArgs args)

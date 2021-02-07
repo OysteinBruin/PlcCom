@@ -8,7 +8,7 @@ namespace PlcComLibrary
 {
     public class AssemblyEnvironment
     {
-        private static readonly bool _isDevelopment = false;
+        private static readonly bool _isDevelopment = true;
         public static bool IsDevelopment()
         {
             return _isDevelopment;
