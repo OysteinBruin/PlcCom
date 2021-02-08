@@ -8,6 +8,16 @@ branches:
   only:
    - dev
  
+
+#---------------------------------#
+#    test configuration           #
+#---------------------------------#
+test:
+  # only assemblies to test
+  assemblies:
+    only:
+        -
+
 #---------------------------------#
 #    environment configuration    #
 #---------------------------------#
