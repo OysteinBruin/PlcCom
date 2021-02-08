@@ -50,12 +50,10 @@ configuration: Release
 #     deployment configuration    #
 #---------------------------------#
 
-
-   
-  deploy:
-  provider: AzureBlob
-  storage_account_name: plccom
-  storage_access_key:
-    secure: npIfGLaoEsRVM/xDLLe7oP2f5Ow6OyWOY904hUcKXDdz7KYJBxF6zWOH+pdOZo+9Vflu2oyKikV6MCaVh3gNKs1jfZFCxMUrzj3qL7BbdcmhVHFVUxU+Yx+HRbcztG+S
-  container: src
-  folder: $(APPVEYOR_PROJECT_SLUG)\$(APPVEYOR_BUILD_VERSION)
+deploy:
+-  provider: AzureBlob
+   storage_account_name: plccom
+   storage_access_key:
+     secure: npIfGLaoEsRVM/xDLLe7oP2f5Ow6OyWOY904hUcKXDdz7KYJBxF6zWOH+pdOZo+9Vflu2oyKikV6MCaVh3gNKs1jfZFCxMUrzj3qL7BbdcmhVHFVUxU+Yx+HRbcztG+S
+   container: src
+   folder: $(APPVEYOR_PROJECT_SLUG)\$(APPVEYOR_BUILD_VERSION)
