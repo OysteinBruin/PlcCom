@@ -12,11 +12,11 @@ branches:
 #---------------------------------#
 #    test configuration           #
 #---------------------------------#
-test:
+test: off
   # only assemblies to test
-  assemblies:
-    only:
-        -
+ # assemblies:
+ #   only:
+        
 
 #---------------------------------#
 #    environment configuration    #
