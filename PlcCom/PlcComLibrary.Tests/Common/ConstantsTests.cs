@@ -22,7 +22,6 @@ namespace PlcComLibrary.Tests
 
         [Theory]
         [InlineData("DB1.DBD1.2")]
-        [InlineData("DB60000.DBD100")]
         [InlineData("db0.DBx100.1")]
         [InlineData("DB100.DBW.100")]
         public void SignalAddressRegExp_ShouldNotMatch(string input)
