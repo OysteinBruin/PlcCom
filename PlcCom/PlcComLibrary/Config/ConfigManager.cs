@@ -1,13 +1,10 @@
 ﻿using PlcComLibrary.Common;
 using PlcComLibrary.PlcCom;
 using PlcComLibrary.Models;
+using PlcComLibrary.Factories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.IO;
-using static PlcComLibrary.Common.Enums;
-using System.Threading.Tasks;
 using System.Threading;
 
 namespace PlcComLibrary.Config
@@ -27,6 +24,8 @@ namespace PlcComLibrary.Config
             _dbParser = dbParser;
         }
 
+
+        // Parse json files first, to find saved to json db's, those not found will be parsed here
 
         public List<PlcService> LoadConfigs(string path = "")
         {
@@ -92,20 +91,6 @@ namespace PlcComLibrary.Config
                 int plcIndex = plcServiceList.Count;
                 PlcService plcService = PlcServiceFactory.Create(plcIndex, cpuConfig, datablocks);
                 plcServiceList.Add(plcService);
-
-
-                //foreach (var plc in PlcServiceList)
-                //{
-                //    Console.WriteLine($"\n\n-----------------| Plc Index {plc.Index} Name {plc.Config.Name} Ip {plc.Config.Ip} |-------------------\n");
-                //    foreach (var db in plc.Datablocks)
-                //    {
-                //        Console.WriteLine($"\n\tDatablock Index {db.Index} Name {db.Name} Numer {db.Number} FirstByte {db.FirstByte} ByteCount {db.ByteCount} Signal Count {db.Signals.Count} \n");
-                //        foreach (var sig in db.Signals)
-                //        {
-                //            Console.WriteLine($"\n\t\tSignal Index {sig.Index} Name {sig.Name} Address {sig.Address} Byte {sig.Byte} Bit {sig.Bit} DB {sig.Db} DataType {sig.DataType} DataTypeStr {sig.DataTypeStr}");
-                //        }
-                //    }               
-                //}
             }
             Thread.Sleep(2500);
             ConfigsLoaded?.Invoke(this, new EventArgs());

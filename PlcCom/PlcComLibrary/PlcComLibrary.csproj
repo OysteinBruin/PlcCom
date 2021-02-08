@@ -72,6 +72,7 @@
     <Compile Include="Config\IJsonConfigFileParser.cs" />
     <Compile Include="Config\ICpuConfig.cs" />
     <Compile Include="Config\CpuConfig.cs" />
+    <Compile Include="Factories\SignalFactory.cs" />
     <Compile Include="Models\PlcComIndexModel.cs" />
     <Compile Include="Models\PlcComIndexValueModel.cs" />
     <Compile Include="Models\PlcReadResultEventArgs.cs" />
@@ -82,7 +83,7 @@
     <Compile Include="PlcCom\PlcComManager.cs" />
     <Compile Include="PlcCom\PlcPulseBitTask.cs" />
     <Compile Include="PlcCom\PlcService.cs" />
-    <Compile Include="PlcCom\PlcServiceFactory.cs" />
+    <Compile Include="Factories\PlcServiceFactory.cs" />
     <Compile Include="PlcCom\PlcToggleTask.cs" />
     <Compile Include="PlcCom\SimulatedPlcService.cs" />
     <Compile Include="Config\IConfigManager.cs" />

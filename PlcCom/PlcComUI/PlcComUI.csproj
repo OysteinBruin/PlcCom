@@ -208,6 +208,7 @@
     <Compile Include="Models\IDatablockDisplayModel.cs" />
     <Compile Include="Models\ISignalDisplayModel.cs" />
     <Compile Include="ViewModels\EditSignalViewModel.cs" />
+    <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\SingleGraphCollectionViewModel.cs" />
     <Compile Include="ViewModels\SingleGraphViewModel.cs" />
     <Compile Include="ViewModels\WelcomeTabViewModel.cs" />
@@ -246,6 +247,9 @@
     </Compile>
     <Compile Include="Views\RealTimeGraphView.xaml.cs">
       <DependentUpon>RealTimeGraphView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SettingsView.xaml.cs">
+      <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellView.xaml.cs" />
     <Compile Include="Views\SignalSelectionView.xaml.cs">
@@ -349,6 +353,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RealTimeGraphView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

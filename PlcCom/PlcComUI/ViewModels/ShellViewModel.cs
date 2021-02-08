@@ -29,7 +29,7 @@ namespace PlcComUI.ViewModels
                 plc.ComStateChanged += OnPlcComStateChanged;
             }
             Items.Add(IoC.Get<PlcComViewModel>());
-            Items.Add(IoC.Get<PaletteSelectorViewModel>());
+            Items.Add(IoC.Get<SettingsViewModel>());
             _events.Subscribe(this);
 
             PaletteHelper paletteHelper = new PaletteHelper();

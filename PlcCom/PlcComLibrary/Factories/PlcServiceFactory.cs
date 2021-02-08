@@ -1,12 +1,13 @@
 ﻿using PlcComLibrary.Config;
 using PlcComLibrary.Models;
+using PlcComLibrary.PlcCom;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PlcComLibrary.PlcCom
+namespace PlcComLibrary.Factories
 {
     public static class PlcServiceFactory
     {
