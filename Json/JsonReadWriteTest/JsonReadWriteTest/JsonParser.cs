@@ -25,6 +25,8 @@ namespace JsonReadWriteTest
 
             item.Signals.Add(new Signal { Name = $"New @ {DateTime.Now}", Address = $"DB240.DBD{DateTime.Now.Second}", Description = "Genearated value 1"});
             item.Signals.Add(new Signal { Name = $"Another new @ {DateTime.Now}", Address = $"DB1630.DBD{DateTime.Now.Millisecond}", Description = "Genearated value 2" });
+
+
             using (StreamWriter writer = new StreamWriter(fileName))
             {
                 string json = JsonConvert.SerializeObject(item, Formatting.Indented);

@@ -1,0 +1,61 @@
+#---------------------------------#
+#      general configuration      #
+#---------------------------------#
+
+version: 1.0.{build}-{branch}
+
+branches:
+  only:
+   - main
+ 
+#---------------------------------#
+#    environment configuration    #
+#---------------------------------#
+
+clone_depth: 1
+
+image: Visual Studio 2019
+
+# cache:
+#   - '%LocalAppData%\NuGet\Cache'    # NuGet < v3
+#   - '%LocalAppData%\NuGet\v3-cache' # NuGet v3
+
+# init:
+#   - cmd: git config --global core.autocrlf true
+  
+#---------------------------------#
+#       build configuration       #
+#---------------------------------#
+
+platform: Any CPU
+
+configuration: Release
+  
+#before_build:
+#  - cmd: dotnet --version
+#  - cmd: dotnet restore ./Appveyor.CI.Test/Appveyor.CI.Test.csproj --verbosity m
+#build_script:
+#  - cmd: dotnet publish ./Appveyor.CI.Test/Appveyor.CI.Test.csproj
+       
+#---------------------------------#
+#      artifacts configuration    #
+#---------------------------------#
+
+# artifacts:
+# - path: '\Appveyor.CI.Test\bin\Any CPU\Release\netcoreapp3.0\publish'
+#   name: WebsiteSourceCode
+#   type: WebDeployPackage
+  
+#---------------------------------#
+#     deployment configuration    #
+#---------------------------------#
+
+
+   
+  deploy:
+  provider: AzureBlob
+  storage_account_name: plccom
+  storage_access_key:
+    secure: npIfGLaoEsRVM/xDLLe7oP2f5Ow6OyWOY904hUcKXDdz7KYJBxF6zWOH+pdOZo+9Vflu2oyKikV6MCaVh3gNKs1jfZFCxMUrzj3qL7BbdcmhVHFVUxU+Yx+HRbcztG+S
+  container: src
+  folder: $(APPVEYOR_PROJECT_SLUG)\$(APPVEYOR_BUILD_VERSION)
