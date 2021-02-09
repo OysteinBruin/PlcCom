@@ -4,18 +4,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlcComUI", "PlcComUI\PlcComUI.csproj", "{3DC1F327-233C-4DF7-BA27-54A1E88B5B80}"
-	ProjectSection(ProjectDependencies) = postProject
-		{7C62EE10-DD2C-4762-A876-10B918A8BDA6} = {7C62EE10-DD2C-4762-A876-10B918A8BDA6}
-		{6B9774F7-960D-438E-AD81-C6B9BE328D50} = {6B9774F7-960D-438E-AD81-C6B9BE328D50}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlcComLibrary", "PlcComLibrary\PlcComLibrary.csproj", "{58E3C7FE-804D-4811-A28E-A7D327A9F330}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Settings", "AppSettings\Settings.csproj", "{92E09E0D-9F66-4E85-B5FD-484C5113B8C0}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RealTimeGraphX", "RealTimeGraphX\RealTimeGraphX.csproj", "{7C62EE10-DD2C-4762-A876-10B918A8BDA6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealTimeGraphX.WPF", "RealTimeGraphX.WPF\RealTimeGraphX.WPF.csproj", "{6B9774F7-960D-438E-AD81-C6B9BE328D50}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,14 +27,6 @@ Global
 		{92E09E0D-9F66-4E85-B5FD-484C5113B8C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92E09E0D-9F66-4E85-B5FD-484C5113B8C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92E09E0D-9F66-4E85-B5FD-484C5113B8C0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7C62EE10-DD2C-4762-A876-10B918A8BDA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7C62EE10-DD2C-4762-A876-10B918A8BDA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7C62EE10-DD2C-4762-A876-10B918A8BDA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7C62EE10-DD2C-4762-A876-10B918A8BDA6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6B9774F7-960D-438E-AD81-C6B9BE328D50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6B9774F7-960D-438E-AD81-C6B9BE328D50}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6B9774F7-960D-438E-AD81-C6B9BE328D50}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6B9774F7-960D-438E-AD81-C6B9BE328D50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
