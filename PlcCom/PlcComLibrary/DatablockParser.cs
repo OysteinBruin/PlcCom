@@ -1,11 +1,11 @@
-﻿using PlcComLibrary.Common;
-using PlcComLibrary.Config;
-using PlcComLibrary.Models;
+﻿using log4net;
+using PlcComLibrary.Common;
+using PlcComLibrary.Factories;
+using PlcComLibrary.Models.Signal;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using log4net;
 
 namespace PlcComLibrary
 {
@@ -13,45 +13,39 @@ namespace PlcComLibrary
     {
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private string[] _separatingStrings = { "//", ";", ":" };
-        private readonly IList<string> _endOfHeaderKeywords = new List<string> { "STRUCT", "VAR" };
-        private readonly IList<string> _dbSectionKeywords = new List<string> { "STRUCT", "Struct", "VAR", "Var", "TYPE"};
-        
+        private readonly IList<string> _contentStartKeywords = new List<string> { "STRUCT", "VAR" };
         private string _path;
         private int _dbNumber;
         private List<string> _discardKeywords;
         private int _bitCounter = 0;
         private int _byteCounter = 0;
+        private IList<string> _structNames = new List<string>();
 
-       
-
-        public DatablockParser()
-        {
-        }
 
         public int FirstByte { get; } = 0;
         public int ByteCount { get; } = 0;
 
-        public List<ISignalModel> ParseDb(string path, int dbNumber, List<string> discardKeywords)
+        public List<SignalModel> ParseDb(string path, int dbNumber, List<string> discardKeywords)
         {
-
+            log.Info($"DatablockParser.ParseDb path {_path} db {dbNumber}");
             _path = path;
             _dbNumber = dbNumber;
             _discardKeywords = discardKeywords;
-            List<ISignalModel> signals = new List<ISignalModel>();
+            List<SignalModel> signals = new List<SignalModel>();
             List<string> fileLines = ReadS7DbFile(_path);
+
 
             // Return if no data from db file
             if (fileLines.Count == 0)
             {
+                log.Warn($"DatablockParser.ParseDb return - no lines in file");
                 return signals;
             }
 
             _bitCounter = 0;
             _byteCounter = 0;
 
-            bool result = RemoveHeaderData(fileLines, _endOfHeaderKeywords);
-            Console.WriteLine($"DatablockParser.ParseDb path {_path}");
-            log.Info($"DatablockParser.ParseDb path {_path}");
+            bool result = RemoveHeaderData(fileLines, _contentStartKeywords);
 
             // TODO: HANDLE
             if (!result)
@@ -63,33 +57,72 @@ namespace PlcComLibrary
             {
                 (List<string> splittedLines, bool signalDiscarded) = SplitAndValidateLine(line, _discardKeywords);
 
-                signals.AddRange(CheckforUDT(splittedLines));
+                IList<SignalModel> signalsFromUdt = CheckforUDT(splittedLines);
+                signals.AddRange(signalsFromUdt);
 
-                splittedLines = FilterOnKeywords(splittedLines);
 
-                if (splittedLines.Count > 1)
+                if (splittedLines.Count == 1)
                 {
-                    (Enums.DataType dataType, string dataTypeStr, int byteSize) datatypeAndSize = GetDataTypeAndByteSizeFromLine(splittedLines[1]);
-
-                    if (datatypeAndSize.dataType != Enums.DataType.Array)
+                    if (splittedLines[0] == "END_STRUCT")
                     {
-                        if (!signalDiscarded)
-                        {
-                            int signalIndex = signals.Count;
-                            signals.Add(CreateSignal(signalIndex, splittedLines, datatypeAndSize));
-                        }                        
+                        if (_structNames.Count > 0)
+                            _structNames.RemoveAt(_structNames.Count-1);
                     }
 
-                    UpdateByteAndBitIndex(datatypeAndSize, signals);
+                }  
+                else if (splittedLines.Count >= 2 && splittedLines.Count <= 3)
+                {
+                    // The datatype kan be struct, Array or one of the target data types (Constants.S7DataTypes)
+                    string dataTypeStr = splittedLines[1];
+                    int dataTypeByteCount = -1;
 
+                    if (Constants.S7DataTypes.Contains(dataTypeStr))
+                    {
+                        dataTypeByteCount = Constants.S7DataTypesByteSize[dataTypeStr];
+
+                        if (!signalDiscarded)
+                        {
+
+                            string name = String.Empty;
+                            foreach (var structName in _structNames)
+                            {
+                                name += structName + '.';
+                            }
+                            name += splittedLines[0];
+
+                            string desciption = String.Empty;
+                            if (splittedLines.Count == 3)
+                            {
+                                desciption = splittedLines.Last();
+                            }
+
+                            SignalModelContext ctx = new SignalModelContext(
+                                signals.Count,
+                                name,
+                                dbNumber,
+                                dataTypeStr,
+                                _byteCounter,
+                                desciption,
+                                _bitCounter);
+
+                            signals.Add(SignalFactory.Create(ctx));
+                        }
+
+                        UpdateByteAndBitIndex(dataTypeByteCount, false, dataTypeStr == "Bool", signals.Count == 0);
+                    }
+                    else if (dataTypeStr.Contains(Constants.S7DbArrayKeyword))
+                    {
+                        UpdateByteAndBitIndex(dataTypeByteCount, true, false, signals.Count == 0);
+                    }
+                    else if (dataTypeStr.Contains(Constants.S7DbStructKeyword))
+                    {
+                        _structNames.Add(splittedLines[0]);
+                    }
                 }
             }
-
+            log.Info($"DatablockParser.ParseDb - parse completed - signal count {signals.Count}");
             return signals;
         }
-
-
-
 
         /// <summary>
         /// TODOTODOTODOTODOTODOTODOTODO   TODO: Handle File exceptions
@@ -144,10 +177,10 @@ namespace PlcComLibrary
         (List<string> splittedLines, bool discarded) SplitAndValidateLine(string line, List<string> discardKeywords)
         {
             List<string> splittedLineStrings = new List<string>();
-            splittedLineStrings = StringExtensions.Split_RemoveWhiteTokens(line, _separatingStrings).ToList();
+            splittedLineStrings = line.Split_RemoveWhiteTokens(_separatingStrings).ToList();
 
             bool doDiscardSignal = false;
-            // Console.WriteLine($"-------------------\nSplitAndValidateLine() ");
+
             foreach (var discardKeyword in discardKeywords)
             {
                 List<string> containsDiscardKeywordList = splittedLineStrings.Where(str => str.Contains(discardKeyword)).ToList();
@@ -156,22 +189,18 @@ namespace PlcComLibrary
                 {
                     doDiscardSignal = true;
                 }
-
-                //Console.Write($"discardKeyword {discardKeyword}, line to check: ");
-                //foreach (var str in splittedLineStrings)
-                //{
-                //    Console.Write(str);
-                //    Console.Write(" - ");
-                //}
-                //Console.WriteLine($"{discardKeyword} result: {doDiscardSignal}");
             }
-            //Console.WriteLine($"Return value: {doDiscardSignal}");
             return (splittedLineStrings, doDiscardSignal);
         }
 
-        List<ISignalModel> CheckforUDT(List<string> splittedLines)
+        /// <summary>
+        /// Check if the current line is a UDT
+        /// </summary>
+        /// <param name="splittedLines"></param>
+        /// <returns></returns>
+        private List<SignalModel> CheckforUDT(List<string> splittedLines)
         {
-            List<ISignalModel> signals = new List<ISignalModel>();
+            List<SignalModel> signals = new List<SignalModel>();
 
             foreach (var word in splittedLines)
             {
@@ -187,136 +216,79 @@ namespace PlcComLibrary
 
             return signals;
         }
-        List<string> FilterOnKeywords(List<string> splittedLines)
-        {
-            // Check for _dbSectionKeywords
-            foreach (var keyword in _dbSectionKeywords)
-            {
-                if (splittedLines.Contains(keyword))
-                {
-                    splittedLines.Clear();
-                    return splittedLines;
-                }
-            }
-            return splittedLines;
-        }
+        //private List<string> FilterOnKeywords(List<string> splittedLines)
+        //{
+        //    // Check for _dbSectionKeywords
+        //    foreach (var keyword in _dbSectionKeywords)
+        //    {
+        //        if (splittedLines.Contains(keyword))
+        //        {
+        //            splittedLines.Clear();
+        //            return splittedLines;
+        //        }
+        //    }
+        //    return splittedLines;
+        //}
 
-        private (Enums.DataType dataType, string dataTypeStr, int byteSize) GetDataTypeAndByteSizeFromLine(string dataTypeStr)
-        {
-            foreach (var dataTypeLookupItem in Constants.DataTypeLookup)
-            {
-                if (dataTypeStr.Contains(Constants.S7DbArrayKeyword))
-                {
-                    int arraySize = HandleDatatpeArray(dataTypeStr);
-                    return (Enums.DataType.Array, "", arraySize);
-                }
-                else if (dataTypeStr.Contains(dataTypeLookupItem.dataTypeStr))
-                {
-                    return dataTypeLookupItem;
-                }
-            }
-            return (Enums.DataType.Bit, "", -1);
-        }
-
-        int HandleDatatpeArray(string dataTypeStr)
+        private int HandleDatatypeArray(string dataTypeStr)
         {
             // Excepected input string if array is Int type and size is 3: Array[0..2] of Int
 
-            int arrayByteSize = 0;
+            // Array[0..2] of Int   
+            // 1. split .. and remove 0, 6 => splitted[0] = lower value
+            // splitt on ']' + ' '  =>  splitted.First = upper value,  splitted.First
 
-            List<string> splittedstrings = dataTypeStr.Split(' ').ToList<string>();
-            
-            if (splittedstrings.Count == 3)
+            // Example input string: "Array[0..2] of Int" At least 18 chars and always begins with: Array[
+            if (String.IsNullOrEmpty(dataTypeStr) || dataTypeStr.Count() < 18 || !dataTypeStr.StartsWith("Array["))
             {
-                // 1. Get the from and to values to get the size of the array
-                string arraySizeStr = splittedstrings.First();
+                throw new ArgumentException("Invalid file. Array parse error. Array string: ");
+            }
 
-                //  - remove the first chars: Array[ and last: ]
-                arraySizeStr = arraySizeStr.Remove(0, 6);
-                arraySizeStr = arraySizeStr.Remove(arraySizeStr.Length - 1);
+            int arrayByteSize = 0;
+            string arrayBeginStr, arrayEndStr, arrayDataTypeStr;
 
-                //  - split  on .. to get the 2 numbers
-                List<string> splittedArraySizeStr = arraySizeStr.Split(new string[] { ".." }, StringSplitOptions.None).ToList<string>();
 
-                bool isNumeric;
-                int arrayBegin;
-                int arrayEnd;
-                isNumeric = Int32.TryParse(splittedArraySizeStr.First(), out arrayBegin);
-                isNumeric = Int32.TryParse(splittedArraySizeStr.Last(), out arrayEnd);
+            // 1. split on .. and remove 0, 6 => splitted[0] == lower value
+            List<string> dataTypeStrSplitted = dataTypeStr.Split(new string[] { ".." } , StringSplitOptions.None).ToList();
+            arrayBeginStr = dataTypeStrSplitted[0].Remove(0, 6);
+            
+            List<string> splitGetUpperValueAndType = dataTypeStrSplitted[1].Split(new string[] { "]", " " } , StringSplitOptions.None).ToList();
+            arrayEndStr = splitGetUpperValueAndType.First();
+            arrayDataTypeStr = splitGetUpperValueAndType.Last();
 
-                // 2. Get the datatype and its bytesize
-                int byteMultiplier = 0;
-                foreach (var dataTypeLookupItem in Constants.DataTypeLookup)
-                {
-                    if (splittedstrings.Last().Contains(dataTypeLookupItem.dataTypeStr))
-                    {
-                        byteMultiplier = dataTypeLookupItem.byteSize;
-                    }
-                }
 
-                if (isNumeric && byteMultiplier > 0)
-                {
-                    int arraySize = arrayEnd - arrayBegin + 1;
-                    arrayByteSize = arraySize * byteMultiplier;
-                }
-                else
-                {
-                    throw new Exception("Invalid file. Array parse error");
-                }
+            bool parseOk;
+            int arrayBegin;
+            int arrayEnd;
+            parseOk = Int32.TryParse(arrayBeginStr, out arrayBegin);
+            parseOk = Int32.TryParse(arrayEndStr, out arrayEnd);
+
+            // 2. Get the datatype and its bytesize
+            int byteMultiplier = Constants.S7DataTypesByteSize[arrayDataTypeStr];
+
+            if (parseOk && byteMultiplier > 0)
+            {
+                int arraySize = arrayEnd - arrayBegin + 1;
+                arrayByteSize = arraySize * byteMultiplier;
             }
             else
             {
                 throw new Exception("Invalid file. Array parse error");
             }
-
+          
             return arrayByteSize;
         }
 
-        private string CreateDbAdressString(int dbNumber, Enums.DataType dataType, int byteIndex, int bit = -1)
-        {
-            string dbAddress = "DB";
-            dbAddress += dbNumber;
+        
 
-            switch (dataType)
-            {
-                case Enums.DataType.Bit:
-                    dbAddress += ".DBX" + byteIndex + '.' + bit;
-                    break;
-                case Enums.DataType.Byte:
-                    dbAddress += ".DBB" + byteIndex;
-                    break;
-                case Enums.DataType.Word:
-                    dbAddress += ".DBW" + byteIndex;
-                    break;
-                case Enums.DataType.DWord:
-                    dbAddress += ".DBD" + byteIndex;
-                    break;
-                case Enums.DataType.Int:
-                    dbAddress += ".DBW" + byteIndex;
-                    break;
-                case Enums.DataType.DInt:
-                    dbAddress += ".DBW" + byteIndex;
-                    break;
-                case Enums.DataType.Real:
-                    dbAddress += ".DBD" + byteIndex;
-                    break;
-                case Enums.DataType.Array:
-                    break;
-                default:
-                    break;
-            }
-            return dbAddress;
-        }
-
-        private void UpdateByteAndBitIndex((Enums.DataType dataType, string dataTypeStr, int byteSize) datatypeAndSize,
-                                            List<ISignalModel> signals)
+        private void UpdateByteAndBitIndex(int byteSize, bool isArrayType, bool isBoolType, bool isFirstItem)
         {
-            if (datatypeAndSize.dataType != Enums.DataType.Array)
+            if (!isArrayType)
             {
 
-                if (datatypeAndSize.dataType == Enums.DataType.Bit)
+                if (isBoolType)
                 {
-                    if (signals.Any())
+                    if (!isFirstItem)
                     {
                         _bitCounter++;
                     }
@@ -329,39 +301,13 @@ namespace PlcComLibrary
                 }
                 else
                 {
-                    _byteCounter += datatypeAndSize.byteSize;
+                    _byteCounter += byteSize;
                 }
             }
             else
             {
-                _byteCounter += datatypeAndSize.byteSize;
+                _byteCounter += byteSize;
             }
-        }
-
-        ISignalModel CreateSignal(int index, List<string> splittedLines, (Enums.DataType dataType, string dataTypeStr, int byteSize) datatypeAndSize)
-        {
-            ISignalModel s = new SignalModel(index);
-            s.Name = splittedLines[0];
-            s.DataType = datatypeAndSize.dataType;
-            s.Address = CreateDbAdressString(_dbNumber, datatypeAndSize.dataType, _byteCounter, _bitCounter);
-            s.Db = _dbNumber;
-            s.DbByteIndex = _byteCounter;
-            if (s.DataType == Enums.DataType.Bit)
-            {
-                s.Bit = _bitCounter;
-            }
-            else
-            {
-                s.Bit = -1;
-            }
-
-            s.DataTypeStr = datatypeAndSize.dataTypeStr;
-
-            if (splittedLines.Count == 3)
-            {
-                s.Description = splittedLines[2];
-            }
-            return s;
         }
     }
 }

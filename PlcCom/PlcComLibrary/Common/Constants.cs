@@ -14,6 +14,7 @@ namespace PlcComLibrary.Common
         public static string S7AwlExtension { get => ".awl"; }
         public static string S7UdtExtension { get => ".udt"; }
         public static string S7DbArrayKeyword { get => "Array["; }
+        public static string S7DbStructKeyword { get => "Struct"; }
 
         public static int LastBitInByte { get => 7; }
 
@@ -21,17 +22,48 @@ namespace PlcComLibrary.Common
         public static string SignalAddressBoolRegExp { get => @"^\bdb[0-9]{1,4}\b.\bdbx[0-9]{1,4}\b.[0-7]$"; }
         public static string SignalAddressNumericRegExp { get => @"^\bdb[0-9]{1,4}\b.\bdb[bdw][0-9]{1,4}$"; }
 
-        public static readonly (Enums.DataType dataType, string dataTypeStr, int byteSize)[] DataTypeLookup = {
-            (Enums.DataType.Bit, "Bool", 0),
-            (Enums.DataType.Byte, "Byte", 1),
-            (Enums.DataType.Word, "Word", 2),
-            (Enums.DataType.DWord, "DWord", 4),
-            (Enums.DataType.Byte, "Int", 2),
-            (Enums.DataType.Word, "DInt", 4),
-            (Enums.DataType.Real, "Real", 4),
-            (Enums.DataType.Array, S7DbArrayKeyword, 0)
+        // https://openautomationsoftware.com/knowledge-base/siemens-address-syntax/
+        //public static readonly (string dataTypeStr, string specifier)[] S7DataTypeDataSpecifierLookup = {
+        //    ("Bool",  "X"),
+        //    ("Byte",  "B"),
+        //    ("Int",   "W"),
+        //    ("DInt",  "D"),
+        //    ("Word",  "W"),
+        //    ("DWord", "D"),
+        //    ("Real",  "D") 
+        //};
+
+        // https://stackoverflow.com/questions/313324/declare-a-dictionary-inside-a-static-class
+        public static readonly Dictionary<string, string> S7DataTypeSpecifiers
+            = new Dictionary<string, string> {
+            { "Bool",  "X" },
+            { "Byte",  "B" },
+            { "Int",   "W" },
+            { "DInt",  "D" },
+            { "Word",  "W" },
+            { "DWord", "D" },
+            { "Real",  "D" }
         };
 
+        public static readonly Dictionary<string, int> S7DataTypesByteSize
+            = new Dictionary<string, int> {
+            { "Bool",  1 },
+            { "Byte",  1 },
+            { "Int",   2 },
+            { "DInt",  4 },
+            { "Word",  2 },
+            { "DWord", 4 },
+            { "Real",  4 }
+        };
 
+        public static readonly IList<string> S7DataTypes = new List<string>() {
+            "Bool",
+            "Byte",
+            "Int",
+            "DInt",
+            "Word",
+            "DWord",
+            "Real"
+        };
     }
 }

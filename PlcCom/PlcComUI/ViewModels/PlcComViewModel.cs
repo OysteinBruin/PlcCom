@@ -53,7 +53,7 @@ namespace PlcComUI.ViewModels
 
             foreach (var plc in _plcComManager.PlcServiceList)
             {
-                CpuDisplayModel cpuDisplayModel = new CpuDisplayModel(plc, _events);
+                CpuDisplayModel cpuDisplayModel = new CpuDisplayModel(plc, _mapper, _events);
                 cpuList.Add(cpuDisplayModel);
 
                 plc.ComStateChanged += OnPlcComStateChanged;

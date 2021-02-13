@@ -8,12 +8,12 @@ namespace PlcComLibrary.Models
 {
     public class PlcComIndexValueModel : PlcComIndexModel
     {
-        public PlcComIndexValueModel(int cpuIndex, int dbIndex, int signalIndex, double value)  
+        public PlcComIndexValueModel(int cpuIndex, int dbIndex, int signalIndex, object value)  
             : base(cpuIndex, dbIndex, signalIndex)
         {
             Value = value;
         }
 
-        public double Value { get; set; }
+        public object Value { get; set; }
     }
 }

@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyEnvironment.cs" />
+    <Compile Include="Common\Extensions.cs" />
     <Compile Include="Config\ConfigManager.cs" />
     <Compile Include="Common\Constants.cs" />
     <Compile Include="Common\Enums.cs" />
@@ -73,11 +74,16 @@
     <Compile Include="Config\ICpuConfig.cs" />
     <Compile Include="Config\CpuConfig.cs" />
     <Compile Include="Factories\SignalFactory.cs" />
+    <Compile Include="Models\Signal\BoolSignalModel.cs" />
+    <Compile Include="Models\Signal\Int16SignalModel.cs" />
+    <Compile Include="Models\Signal\Int32SignalModel.cs" />
     <Compile Include="Models\PlcComIndexModel.cs" />
     <Compile Include="Models\PlcComIndexValueModel.cs" />
     <Compile Include="Models\PlcReadResultEventArgs.cs" />
     <Compile Include="Models\DatablockModel.cs" />
     <Compile Include="DatablockParser.cs" />
+    <Compile Include="Models\Signal\ISignalModelContext.cs" />
+    <Compile Include="Models\Signal\SignalModelContext.cs" />
     <Compile Include="PlcCom\IPlcComManager.cs" />
     <Compile Include="PlcCom\IPlcComTask.cs" />
     <Compile Include="PlcCom\PlcComManager.cs" />
@@ -89,13 +95,12 @@
     <Compile Include="Config\IConfigManager.cs" />
     <Compile Include="Models\IDatablockModel.cs" />
     <Compile Include="IDatablockParser.cs" />
-    <Compile Include="PlcCom\IPlcService.cs" />
-    <Compile Include="Models\ISignalModel.cs" />
+    <Compile Include="Models\Signal\SignalModel.cs" />
     <Compile Include="PlcCom\PlcException.cs" />
     <Compile Include="PlcCom\SimulatedSignal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PlcCom\S7PlcService.cs" />
-    <Compile Include="Models\SignalModel.cs" />
+    <Compile Include="Models\Signal\FloatSignalModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1,4 +1,5 @@
 ﻿using PlcComLibrary.Config;
+using PlcComLibrary.Models.Signal;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,11 +11,11 @@ namespace PlcComLibrary.Models
         public DatablockModel()
         {
             Index = -1;
-            Signals = new List<ISignalModel>();
+            Signals = new List<SignalModel>();
             Name = String.Empty;
             Number = -1;
         }
-        public DatablockModel(int index, List<ISignalModel> signals, string name = "", int number = -1)
+        public DatablockModel(int index, List<SignalModel> signals, string name = "", int number = -1)
         {
             Index = index;
             Signals = signals;
@@ -26,7 +27,7 @@ namespace PlcComLibrary.Models
         public int Number { get; set; }
         //public IJsonFileConfig Config { get; set; }
 
-        public List<ISignalModel> Signals { get; set; }
+        public List<SignalModel> Signals { get; set; }
 
         public bool IsValid 
         {

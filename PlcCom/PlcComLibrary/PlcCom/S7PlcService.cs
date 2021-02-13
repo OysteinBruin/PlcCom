@@ -1,6 +1,7 @@
 ﻿using PlcComLibrary.Common;
 using PlcComLibrary.Config;
 using PlcComLibrary.Models;
+using PlcComLibrary.Models.Signal;
 using S7.Net;
 using System;
 using System.Collections.Generic;
@@ -149,9 +150,10 @@ namespace PlcComLibrary.PlcCom
             List<PlcComIndexValueModel> indexValueModels = new List<PlcComIndexValueModel>();
             for (int i = 0; i < db.Signals.Count; i++)
             {
-                ISignalModel s = db.Signals[i];
-                int signalByteCount = s.ByteCount();
-                byte[] signalValueArray = dbBytes.Skip(s.DbByteIndex - db.FirstByte).Take(s.ByteCount()).ToArray();
+                SignalModel s = db.Signals[i];
+                int signalByteCount = s.ByteCount;
+                int skipBytesValue = s.DbByteIndex() - db.FirstByte;
+                byte[] signalValueArray = dbBytes.Skip(skipBytesValue).Take(s.ByteCount).ToArray();
                 indexValueModels.Add(new PlcComIndexValueModel(Index, db.Index, s.Index, s.BytesToValue(signalValueArray)));
             }
 

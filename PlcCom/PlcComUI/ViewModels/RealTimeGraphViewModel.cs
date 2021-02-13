@@ -33,19 +33,19 @@ namespace PlcComUI.ViewModels
 
             IEventAggregator agg = new EventAggregator();
             PlcComLibrary.Models.PlcComIndexModel indexModel = new PlcComLibrary.Models.PlcComIndexModel(0, 0, 0);
-            Signals.Add(new SignalDisplayModel(indexModel, agg));
-            Signals[0].Name = "Signal 1";
-            Signals.Add(new SignalDisplayModel(indexModel, agg));
-            Signals[1].Name = "Signal 2";
-            Signals.Add(new SignalDisplayModel(indexModel, agg));
-            Signals[2].Name = "Signal 3";
+            //Signals.Add(new ISignalDisplayModel(indexModel, agg));
+            //Signals[0].Name = "Signal 1";
+            //Signals.Add(new ISignalDisplayModel(indexModel, agg));
+            //Signals[1].Name = "Signal 2";
+            //Signals.Add(new SignalDisplayModel(indexModel, agg));
+            //Signals[2].Name = "Signal 3";
 
-            Signals2.Add(new SignalDisplayModel(indexModel, agg));
-            Signals2[0].Name = "Signal2 1";
-            Signals2.Add(new SignalDisplayModel(indexModel, agg));
-            Signals2[1].Name = "Signal2 2";
-            Signals2.Add(new SignalDisplayModel(indexModel, agg));
-            Signals2[2].Name = "Signal2 3";
+            //Signals2.Add(new SignalDisplayModel(indexModel, agg));
+            //Signals2[0].Name = "Signal2 1";
+            //Signals2.Add(new SignalDisplayModel(indexModel, agg));
+            //Signals2[1].Name = "Signal2 2";
+            //Signals2.Add(new SignalDisplayModel(indexModel, agg));
+            //Signals2[2].Name = "Signal2 3";
 
             Controller.DataSeriesCollection.Add(new WpfGraphDataSeries()
             {

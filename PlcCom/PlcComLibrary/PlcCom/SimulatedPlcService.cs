@@ -11,6 +11,7 @@ using static PlcComLibrary.Common.Enums;
 using log4net;
 using System.Threading;
 using System.Diagnostics;
+using PlcComLibrary.Models.Signal;
 
 namespace PlcComLibrary.PlcCom
 {
@@ -99,25 +100,25 @@ namespace PlcComLibrary.PlcCom
 
             for (int i = 0; i < db.Signals.Count; i++)
             {
-                ISignalModel s = db.Signals[i];
+                SignalModel s = db.Signals[i];
 
                 double simValue = 0;
-                if (s.DataType == DataType.Bit)
-                {
-                    bool boolVal = _simulatedSignals[s.Index].RandomBool();
-                    simValue = boolVal == true ? 1.0 : 0.0;
-                }
-                else
-                {
-                    if (i%3 == 0)
-                    {
-                        simValue = _simulatedSignals[s.Index].Sine();
-                    }
-                    else
-                    {
-                        simValue = _simulatedSignals[s.Index].RandomFloat();
-                    }
-                }
+                //if (s.DataType == DataType.Bit)
+                //{
+                //    bool boolVal = _simulatedSignals[s.Index].RandomBool();
+                //    simValue = boolVal == true ? 1.0 : 0.0;
+                //}
+                //else
+                //{
+                //    if (i%3 == 0)
+                //    {
+                //        simValue = _simulatedSignals[s.Index].Sine();
+                //    }
+                //    else
+                //    {
+                //        simValue = _simulatedSignals[s.Index].RandomFloat();
+                //    }
+                //}
                 if (i % 3 == 0)
                 {
                     indexValueModels.Add(new PlcComIndexValueModel(Index, db.Index, s.Index, simValue));
@@ -198,7 +199,7 @@ namespace PlcComLibrary.PlcCom
             if (dbIndex >= 0 && signalIndex >= 0)
             {
                 await DelayAsync(100);
-                if (Datablocks[dbIndex].Signals[signalIndex].Value > 0.0f)
+                if (/*Datablocks[dbIndex].Signals[signalIndex].Value > 0*/ true)
                 {
                    
                     var args = new PlcReadResultEventArgs(new PlcComIndexModel(this.Index, dbIndex, signalIndex), 0.0f);

@@ -31,20 +31,10 @@ namespace PlcComUI.ViewModels
 		{
             _events = events;
             _displayModel = displayModel;
-            //Signals = new ObservableCollection<SignalDisplayModel>(displayModel.Signals);
             Signals = new BindableCollection<SignalDisplayModel>(displayModel.Signals);
             DisplayName = displayModel.Name;
             _events.Subscribe(this);
             IsConnected = isConnected;
-        }
-
-        protected override void OnViewLoaded(object view)
-        {
-            base.OnViewLoaded(view);
-
-            // WriteEnableChecked = Properties.Settings.Default.SettingsMain. WriteEnableChecked;
-
-            
         }
 
         protected override void OnDeactivate(bool close)
@@ -55,7 +45,7 @@ namespace PlcComUI.ViewModels
         public async void EditSignal(object model)
         {
             Debug.Assert(model is SignalDisplayModel);
-            var signalDisplayModel = (SignalDisplayModel)model;
+            var signalDisplayModel = (NumericSignalModel)model;
 
             if (Signals.Contains(model))
             {
@@ -164,7 +154,7 @@ namespace PlcComUI.ViewModels
                 {
                    // Console.Write($" | index {item.SignalIndex} value {item.Value}");
 
-                    Signals[item.SignalIndex].Value = item.Value;
+                    Signals[item.SignalIndex].Value = (double)item.Value;
                 }
             }
             //Console.Write($" | time sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");

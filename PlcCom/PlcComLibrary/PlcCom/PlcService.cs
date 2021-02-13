@@ -13,69 +13,11 @@ using System.Timers;
 
 namespace PlcComLibrary.PlcCom
 {
-    /* https://stackoverflow.com/questions/29831066/public-event-in-abstract-class
-
-     An often used pattern for this is something like the below (you'll see a lot of it 
-    in the classes in the System.Windows.Forms namespace).
-
-    public abstract class MyClass
-    {
-        public event EventHandler MyEvent;
-
-        protected virtual void OnMyEvent(EventArgs e)
-        {
-            if (this.MyEvent != null)
-            {
-                this.MyEvent(this, e);
-            }
-        }
-    }
-
-
-    public sealed class MyOtherClass : MyClass
-    {
-        public int MyState { get; private set; }
-
-        public void DoMyEvent(bool doSomething)
-        {
-            // Custom logic that does whatever you need to do
-            if (doSomething)
-            {
-                OnMyEvent(EventArgs.Empty);
-            }
-        }
-
-        protected override void OnMyEvent(EventArgs e)
-        {
-            // Do some custom logic, then call the base method
-            this.MyState++;
-
-            base.OnMyEvent(e);
-        }
-    }
-     
-     */
-
-    // https://stackoverflow.com/questions/4890915/is-there-a-task-based-replacement-for-system-threading-timer
-    // https://stackoverflow.com/questions/12796148/system-threading-timer-in-c-sharp-it-seems-to-be-not-working-it-runs-very-fast
-    //public class PeriodicTask
-    //{
-    //    public static async Task Run(Action action, TimeSpan period, CancellationToken cancellationToken)
-    //    {
-    //        while (!cancellationToken.IsCancellationRequested)
-    //        {
-    //            await Task.Delay(period, cancellationToken);
-
-    //            if (!cancellationToken.IsCancellationRequested)
-    //                action();
-    //        }
-    //    }
-
-    //    public static Task Run(Action action, TimeSpan period)
-    //    {
-    //        return Run(action, period, CancellationToken.None);
-    //    }
-    //}
+    /* 
+     https://stackoverflow.com/questions/29831066/public-event-in-abstract-class
+     https://stackoverflow.com/questions/4890915/is-there-a-task-based-replacement-for-system-threading-timer
+     https://stackoverflow.com/questions/12796148/system-threading-timer-in-c-sharp-it-seems-to-be-not-working-it-runs-very-fast
+    */
 
     public abstract class PlcService
     {

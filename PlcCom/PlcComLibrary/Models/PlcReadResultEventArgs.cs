@@ -9,7 +9,7 @@ namespace PlcComLibrary.Models
 
     public class PlcReadResultEventArgs : EventArgs
     {
-        public PlcReadResultEventArgs(PlcComIndexModel indexModel, double value)
+        public PlcReadResultEventArgs(PlcComIndexModel indexModel, object value)
         {
             PlcIndexModel = indexModel;
             Value = value;
@@ -25,7 +25,7 @@ namespace PlcComLibrary.Models
 
         public PlcComIndexModel PlcIndexModel { get; private set; }
 
-        public double Value  { get; set; }
+        public object Value  { get; set; }
 
         public List<PlcComIndexValueModel> IndexValueList { get; set; } = new List<PlcComIndexValueModel>();
     }

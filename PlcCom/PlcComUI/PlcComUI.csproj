@@ -186,11 +186,12 @@
     <Compile Include="Converters\ListViewGridViewConverter.cs" />
     <Compile Include="Converters\MathMlpMultipleConverter.cs" />
     <Compile Include="Converters\PlcCmdParameterConverter.cs" />
-    <Compile Include="DataSignalModelTemplateSelector.cs" />
+    <Compile Include="Models\NumericSignalModel.cs" />
+    <Compile Include="Models\SignalDisplayModelTemplateSelector.cs" />
     <Compile Include="Domain\AsyncRelayCommnd.cs" />
     <Compile Include="EventModels\OpenGraphViewEvent.cs" />
+    <Compile Include="Models\BoolSignalDisplayModel.cs" />
     <Compile Include="Styles\CollapseAction.cs" />
-    <Compile Include="Domain\GraphDropHandler.cs" />
     <Compile Include="Domain\RelayCommand.cs" />
     <Compile Include="Domain\SettingBindingExtension.cs" />
     <Compile Include="EventModels\NewDatablockTabEvent.cs" />
@@ -206,7 +207,7 @@
     <Compile Include="Models\CpuDisplayModel.cs" />
     <Compile Include="Models\DatablockDisplayModel.cs" />
     <Compile Include="Models\IDatablockDisplayModel.cs" />
-    <Compile Include="Models\ISignalDisplayModel.cs" />
+    <Compile Include="Models\SignalDisplayModel.cs" />
     <Compile Include="ViewModels\EditSignalViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\SingleGraphCollectionViewModel.cs" />
@@ -274,7 +275,6 @@
   <ItemGroup>
     <Compile Include="Models\InterLayoutClient.cs" />
     <Compile Include="Models\InterTabClient.cs" />
-    <Compile Include="Models\SignalDisplayModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

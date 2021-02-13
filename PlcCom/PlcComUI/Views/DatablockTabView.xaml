@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:PlcComUI"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:models="clr-namespace:PlcComUI.Models"
              xmlns:converters="clr-namespace:PlcComUI.Converters"
@@ -32,10 +31,10 @@
 
             </ResourceDictionary.MergedDictionaries>
 
-            <local:DataSignalModelTemplateSelector x:Key="DataSignalModelTemplateSelector"/>
+            <models:SignalDisplayModelTemplateSelector x:Key="SignalDisplayModelTemplateSelector"/>
             <converters:DatabindingDebugConverter x:Key="debugConverter" />
 
-            <DataTemplate x:Key="DataSignalModelBoolTemplate" DataType="{x:Type models:SignalDisplayModel}">
+            <DataTemplate x:Key="SignalModelBoolTemplate" DataType="{x:Type models:BoolSignalDisplayModel}">
                 <StackPanel Orientation="Horizontal" Margin="0 0 20 0" HorizontalAlignment="Center">
                     <Button 
                         x:Name="pulseBtn" 
@@ -73,7 +72,7 @@
                     </Button>
                 </StackPanel>
             </DataTemplate>
-            <DataTemplate x:Key="DataSignalModelNumericTemplate" DataType="{x:Type models:SignalDisplayModel}">
+            <DataTemplate x:Key="SignalModelNumericTemplate" DataType="{x:Type models:NumericSignalModel}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
@@ -158,7 +157,7 @@
                 <DataGridTextColumn  Header="Name" Binding="{Binding Name}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Address" Binding="{Binding Address}" IsReadOnly="True" />
                 <DataGridTextColumn CanUserSort="False" CanUserReorder="False" Header="Read" IsReadOnly="True" Binding="{Binding ValueStr}" TextElement.FontSize="18" />
-                <DataGridTemplateColumn Header="Write" MinWidth="250" CellTemplateSelector="{StaticResource DataSignalModelTemplateSelector}"/>
+                <DataGridTemplateColumn Header="Write" MinWidth="250" CellTemplateSelector="{StaticResource SignalDisplayModelTemplateSelector}"/>
                 <!-- Visibility="{Binding IsChecked, ElementName=cbWriteEnable, Converter={StaticResource BooleanToVisibilityConverter}}" -->
             </DataGrid.Columns>
 

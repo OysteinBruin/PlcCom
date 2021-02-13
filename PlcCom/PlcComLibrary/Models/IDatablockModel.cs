@@ -1,4 +1,5 @@
 ﻿using PlcComLibrary.Config;
+using PlcComLibrary.Models.Signal;
 using System.Collections.Generic;
 
 namespace PlcComLibrary.Models
@@ -12,6 +13,6 @@ namespace PlcComLibrary.Models
         int FirstByte { get; set; }
         int ByteCount { get; set; }
 
-        List<ISignalModel> Signals { get; set; }
+        List<SignalModel> Signals { get; set; }
     }
 }

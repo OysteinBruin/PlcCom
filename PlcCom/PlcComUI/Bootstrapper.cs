@@ -16,6 +16,7 @@ using PlcComLibrary.PlcCom;
 using AutoMapper;
 using PlcComLibrary.Models;
 using Settings;
+using PlcComLibrary.Models.Signal;
 
 namespace PlcComUI
 {
@@ -32,29 +33,51 @@ namespace PlcComUI
         {
             var config = new MapperConfiguration(cfg => {
 
-                //cfg.CreateMap<ISignalModel, ISignalDisplayModel>()
-                //    .Include<SignalModel, SignalDisplayModel>();
-                //cfg.CreateMap<SignalModel, SignalDisplayModel>();
+                //cfg.CreateMap<ISignalDisplayModel, ISignalModel>()
+                //    .Include<BoolSignalDisplayModel, BoolSignalModel>()
+                //    .Include<NumericSignalModel, Int16SignalModel>()
+                //    .Include<NumericSignalModel, Int32SignalModel>()
+                //    .Include<NumericSignalModel, FloatSignalModel>();
 
-                //cfg.CreateMap<IDatablockModel, IDatablockDisplayModel>()
-                //    .Include<DatablockModel, DatablockDisplayModel>();
-                //cfg.CreateMap<DatablockModel, DatablockDisplayModel>();
+                cfg.CreateMap<SignalModel, SignalDisplayModel>();
+                cfg.CreateMap<BoolSignalModel, BoolSignalDisplayModel>();
+                cfg.CreateMap<Int16SignalModel, NumericSignalModel>();
+                cfg.CreateMap<Int32SignalModel, NumericSignalModel > ();
+                cfg.CreateMap<FloatSignalModel, NumericSignalModel>();
 
-                cfg.CreateMap<ISignalDisplayModel, ISignalModel>()
-                    .Include<SignalDisplayModel, SignalModel>();
-                cfg.CreateMap<SignalDisplayModel, SignalModel>();
+                //.Include<BoolSignalModel, BoolSignalDisplayModel>()
+                //.Include<Int16SignalModel, NumericSignalModel>()
+                //.Include<Int32SignalModel, NumericSignalModel > ()
+                //.Include<FloatSignalModel, NumericSignalModel>();
 
-                cfg.CreateMap<IDatablockDisplayModel, IDatablockModel>()
-                    .Include<DatablockDisplayModel, DatablockModel>();
-                cfg.CreateMap<DatablockDisplayModel, DatablockModel>();
+                //cfg.CreateMap<IDatablockDisplayModel, IDatablockModel>()
+                //    .Include<DatablockDisplayModel, DatablockModel>();
+
+                cfg.CreateMap<IDatablockModel, IDatablockDisplayModel>();
+                cfg.CreateMap<DatablockModel, DatablockDisplayModel>();
+                //.Include<DatablockModel, DatablockDisplayModel>();
+
             });
+
+            try
+            {
+                config.AssertConfigurationIsValid();
+            }
+            catch (AutoMapperConfigurationException ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.InnerException.Message);
+                throw;
+            }
+           
 
             return config.CreateMapper();
         }
 
         protected override void Configure()
         {
-            _container.Instance(ConfigureAutoMapper());
+            var mapper = _container.Instance(ConfigureAutoMapper());
+
             _container.Instance(_container);
 
             _container.Singleton<IWindowManager, WindowManager>()
