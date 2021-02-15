@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using log4net;
 
 namespace PlcComLibrary.Config
 {
@@ -15,6 +16,7 @@ namespace PlcComLibrary.Config
     {
         private IJsonConfigFileParser _configParser;
         private IDatablockParser _dbParser;
+        private static readonly ILog log = LogManager.GetLogger(typeof(ConfigManager));
 
         public event EventHandler ConfigsLoaded;
         public event EventHandler ConfigsLoadingProgressChanged;
@@ -23,75 +25,18 @@ namespace PlcComLibrary.Config
         {
             _configParser = configParser;
             _dbParser = dbParser;
-
         }
-
-
-        /* 
-         
-           Parse json files first, to find saved to json db's, those not found will be parsed here :
-         - Parse 
-
-        S7 datatypes:
-        Bool  1 bool
-        Byte  1 byte
-        Int   2 Int16
-        DInt  4 Int32
-        Word  2 UInt16
-        DWord 4 UInt32
-        Real  4 float
-
-
-
-        public class JsonFileConfig : IJsonFileConfig
-        {
-            public string Name { get; set; }
-
-            public string Ip { get; set; }
-            public int Rack { get; set; }
-            public int Slot { get; set; }
-
-            public string CpuType { get; set; }
-            [JsonProperty("SignalLists")]
-            public List<string> SignalLists { get; set; }
-            [JsonProperty("DiscardKeywords")]
-            public List<string> DiscardKeywords { get; set; }
-        }
-        
-        --  db file:
-
-           STRUCT 
-              NOT_USED_0000_0004 : Array[0..2] of Int;
-              ZMS : Struct   // Begin ZMS struct
-                 RN : Struct   // Begin RN struct
-                    Lock_ACT : Bool;   // ZMS - RN - Lockout from all machines
-                    Dsbl_DW_ACT : Bool;   // ZMS - RN- Zone Management to DW - Disabled
-                    Dsbl_PH_ACT : Bool;   // ZMS - RN- Zone Management to PH - Disabled
-                    Dsbl_MA_ACT : Bool;   // ZMS - RN- Zone Management to MA - Disabled
-                    Dsbl_CW_ACT : Bool;   // ZMS - RN - Zone Management to CW - Disabled
-
-
-        Defined in CPU json:
-
-            SignalLists": [ "2:Test_Data.db","3064:ZmsCSA_HMI_CMD.db", "3071:ZMSRN_HMI_CMD.db", "3070:ZMSRN_HMI_STAT.db" ],
-	        "DiscardKeywords":[ "NOT_USED", "Spare", "STRUCT", "Struct" ]
-        
-        Parse:
-           this class, LoadConfigs:  signals = _dbParser.ParseDb(filePath, dbNumber, jsonConfig.DiscardKeywords);
-
-        
-
-        */
 
         public List<PlcService> LoadConfigs(string path = "")
         {
+            log.Info($"LoadConfigs - path {path}");
             var plcServiceList = new List<PlcService>();
             var signals = new List<SignalModel>();
             
             int totalFilesToLoadCount = 0;
-            List<IJsonFileConfig> jsonConfigs = _configParser.LoadConfigFiles(path);
+            List<ICpuConfigFile> cpuConfigFiles = _configParser.LoadConfigFiles(path);
 
-            foreach (var jsonConfig in jsonConfigs)
+            foreach (var jsonConfig in cpuConfigFiles)
             {
                 totalFilesToLoadCount += jsonConfig.SignalLists.Count;
             }
@@ -100,7 +45,7 @@ namespace PlcComLibrary.Config
             configsProgressEventArgs.ProgressTotal = totalFilesToLoadCount;
             ConfigsLoadingProgressChanged?.Invoke(this, configsProgressEventArgs);
 
-            foreach (var config in jsonConfigs)
+            foreach (var config in cpuConfigFiles)
             {
                 ICpuConfig cpuConfig = new CpuConfig(config);
                 List<IDatablockModel> datablocks = new List<IDatablockModel>();
@@ -121,14 +66,22 @@ namespace PlcComLibrary.Config
 
                     if (dbNumberDbName.Count != 2 || !isParsable)
                     {
-                        throw new FormatException("Invalid file format in Json config! SignalsList must use : as separator between db number and name.");
+                        string errorStr = "Invalid file format in Json config!SignalsList must use : as separator between db number and name.";
+                        log.Error(errorStr);
+                        throw new FormatException(errorStr);
                     }
 
                     string filePath = AppDomain.CurrentDomain.BaseDirectory + Constants.BaseDirectorySubDirs + dbNumberDbName.Last();
+                    var signalContextList = _dbParser.ParseDb(filePath, dbNumber, config.DiscardKeywords);
 
-
-
-                    signals = _dbParser.ParseDb(filePath, dbNumber, config.DiscardKeywords);
+                    for (int i = 0; i < signalContextList.Count; i++)
+                    {
+                        signalContextList[i].CpuIndex = plcServiceList.Count;
+                        signalContextList[i].DbIndex = datablocks.Count;
+                        signalContextList[i].Index = 1;
+                        signalContextList[i].DbNumber = dbNumber;
+                        signals.Add(SignalFactory.Create(signalContextList[i]));
+                    }
 
                     if (signals?.Count > 0)
                     {
@@ -145,8 +98,7 @@ namespace PlcComLibrary.Config
                     Thread.Sleep(250);
                 }
 
-                int plcIndex = plcServiceList.Count;
-                PlcService plcService = PlcServiceFactory.Create(plcIndex, cpuConfig, datablocks);
+                PlcService plcService = PlcServiceFactory.Create(plcServiceList.Count, cpuConfig, datablocks);
                 plcServiceList.Add(plcService);
             }
             Thread.Sleep(2500);

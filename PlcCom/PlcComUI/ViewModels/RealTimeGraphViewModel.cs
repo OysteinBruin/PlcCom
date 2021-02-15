@@ -31,8 +31,8 @@ namespace PlcComUI.ViewModels
             Controller.Range.MaximumX = TimeSpan.FromSeconds(60);
             Controller.Range.AutoY = true;
 
-            IEventAggregator agg = new EventAggregator();
-            PlcComLibrary.Models.PlcComIndexModel indexModel = new PlcComLibrary.Models.PlcComIndexModel(0, 0, 0);
+            //IEventAggregator agg = new EventAggregator();
+            //PlcComLibrary.Models.PlcComIndexModel indexModel = new PlcComLibrary.Models.PlcComIndexModel(0, 0, 0);
             //Signals.Add(new ISignalDisplayModel(indexModel, agg));
             //Signals[0].Name = "Signal 1";
             //Signals.Add(new ISignalDisplayModel(indexModel, agg));

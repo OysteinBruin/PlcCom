@@ -7,7 +7,7 @@ namespace PlcComLibrary
 {
     public interface IDatablockParser
     {
-        List<SignalModel> ParseDb(string path, int dbNumber, List<string> discardKeywords);
+        List<SignalModelContext> ParseDb(string path, int dbNumber, List<string> discardKeywords);
         int FirstByte { get; }
         int ByteCount { get; }
     }

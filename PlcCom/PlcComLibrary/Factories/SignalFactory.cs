@@ -11,7 +11,7 @@ namespace PlcComLibrary.Factories
 {
     public static class SignalFactory
     {
-        public static SignalModel Create(ISignalModelContext context)
+        public static SignalModel Create(SignalModelContext context)
         {
             string typeSpecifier = Constants.S7DataTypeSpecifiers[context.DataTypeStr];
             // DB450.DBD624 
@@ -54,7 +54,6 @@ namespace PlcComLibrary.Factories
 
                 case "Real":
                     return new FloatSignalModel(context);
-
 
                 default:
                     throw new ArgumentException($"Invalid data type: {context.DataTypeStr} " +

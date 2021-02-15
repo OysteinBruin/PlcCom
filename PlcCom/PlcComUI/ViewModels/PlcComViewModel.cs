@@ -138,7 +138,7 @@ namespace PlcComUI.ViewModels
 
             if (!itemExists)
             {
-                bool isConnected = (_plcComManager.PlcServiceList[dbModel.IndexModel.CpuIndex].ComState == ComState.Connected);
+                bool isConnected = (_plcComManager.PlcServiceList[dbModel.CpuIndex].ComState == ComState.Connected);
                 DatablockTabViewModel vm = new DatablockTabViewModel(_events, dbModel, isConnected);
                 Items.Add(vm);
                 ActivateItem(Items.Last());
@@ -245,7 +245,7 @@ namespace PlcComUI.ViewModels
 
         public void Handle(DbMonitoringChangedEvent message)
         {
-            int cpuIndex = message.Datablock.IndexModel.CpuIndex;
+            int cpuIndex = message.Datablock.CpuIndex;
             Debug.Assert(cpuIndex >= 0 && cpuIndex < _plcComManager.PlcServiceList.Count);
             var plc = _plcComManager.PlcServiceList[cpuIndex];
 

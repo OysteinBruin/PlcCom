@@ -7,14 +7,14 @@ namespace PlcComLibrary.Config
 {
     public class CpuConfig : ICpuConfig
     {
-        public CpuConfig(IJsonFileConfig dbConfig)
+        public CpuConfig(ICpuConfigFile configFile)
         {
-            Name = dbConfig.Name;
-            Ip = dbConfig.Ip;
-            Rack = dbConfig.Rack;
-            Slot = dbConfig.Slot;
+            Name = configFile.Name;
+            Ip = configFile.Ip;
+            Rack = configFile.Rack;
+            Slot = configFile.Slot;
             // TODO: Implement a more bullet proof way of parsing S7CpuType
-            CpuType = (S7CpuType)Enum.Parse(typeof(S7CpuType), dbConfig.CpuType);
+            CpuType = (S7CpuType)Enum.Parse(typeof(S7CpuType), configFile.CpuType);
         }
         public string Name { get; set; }
         public string Ip { get; set; }

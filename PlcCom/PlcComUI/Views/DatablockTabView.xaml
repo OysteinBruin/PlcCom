@@ -45,7 +45,7 @@
                                 <i:InvokeCommandAction Command="{Binding PulseCommand}">
                                     <i:InvokeCommandAction.CommandParameter>
                                         <MultiBinding Converter="{StaticResource PlcCmdParameterConverter}">
-                                            <Binding Path="DataContext.IndexModel" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
+                                            <Binding Path="DataContext.CpuIndex" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
                                             <Binding Path="DataContext.Address" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
                                         </MultiBinding>
                                     </i:InvokeCommandAction.CommandParameter>
@@ -62,7 +62,7 @@
                                 <i:InvokeCommandAction Command="{Binding ToggleCommand}">
                                     <i:InvokeCommandAction.CommandParameter>
                                         <MultiBinding Converter="{StaticResource PlcCmdParameterConverter}">
-                                            <Binding Path="DataContext.IndexModel" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
+                                            <Binding Path="DataContext.CpuIndex" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
                                             <Binding Path="DataContext.Address" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
                                         </MultiBinding>
                                     </i:InvokeCommandAction.CommandParameter>
@@ -110,7 +110,7 @@
                                 <i:InvokeCommandAction Command="{Binding SliderCommand}">
                                     <i:InvokeCommandAction.CommandParameter>
                                         <MultiBinding Converter="{StaticResource PlcCmdParameterConverter}">
-                                            <Binding Path="DataContext.IndexModel" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=Grid}" />
+                                            <Binding Path="DataContext.CpuIndex" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=Grid}" />
                                             <Binding Path="DataContext.Address" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=Grid}" />
                                             <Binding ElementName="slider" Path="Value"/>
                                         </MultiBinding>

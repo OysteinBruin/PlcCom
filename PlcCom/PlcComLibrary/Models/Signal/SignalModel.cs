@@ -4,15 +4,20 @@ namespace PlcComLibrary.Models.Signal
 {
     public abstract class SignalModel
     {
-        protected SignalModel(ISignalModelContext ctx)
+        protected SignalModel(SignalModelContext ctx)
         {
             Index = ctx.Index;
+            DbIndex = ctx.DbIndex;
+            CpuIndex = ctx.CpuIndex;
             Name = ctx.Name;
             Address = ctx.Address;
             Db = ctx.DbNumber;
             Description = ctx.Description;
         }
+        public int CpuIndex { get; set; }
+        public int DbIndex { get; set; }
         public int Index { get; set; }
+
         public string Name { get; set; }
         public string Description { get; set; }
         public string Address { get; set; }

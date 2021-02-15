@@ -9,7 +9,7 @@ namespace PlcComLibrary.Models.Signal
 {
     public class BoolSignalModel : SignalModel
     {
-        public BoolSignalModel(ISignalModelContext ctx)
+        public BoolSignalModel(SignalModelContext ctx)
             : base(ctx)
         {
             Bit = ctx.BitNumber;

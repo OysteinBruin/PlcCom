@@ -7,7 +7,7 @@ namespace PlcComLibrary.Models.Signal
 {
     public class FloatSignalModel : SignalModel
     {
-        public FloatSignalModel(ISignalModelContext ctx)
+        public FloatSignalModel(SignalModelContext ctx)
             : base(ctx)
         {
         }

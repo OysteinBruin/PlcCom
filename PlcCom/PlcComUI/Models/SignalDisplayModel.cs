@@ -11,12 +11,13 @@ namespace PlcComUI.Models
     {
         protected IEventAggregator _events;
         private string _valueStr;
-        protected SignalDisplayModel(PlcComIndexModel indexModel, IEventAggregator events)
+        protected SignalDisplayModel(IEventAggregator events)
         {
-            IndexModel = indexModel;
-            Index = indexModel.SignalIndex;
             _events = events;
         }
+
+        public int CpuIndex { get; set; }
+        public int DbIndex { get; set; }
         public int Index { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
@@ -37,7 +38,7 @@ namespace PlcComUI.Models
                 }
             }
         }
-        public PlcComIndexModel IndexModel { get; set; }
+        //public PlcComIndexModel IndexModel { get; set; }
 
         /// <summary>
         /// 
@@ -50,9 +51,9 @@ namespace PlcComUI.Models
             if (other == null)
                 return false;
 
-            return this.IndexModel.Equals(other.IndexModel) &&
-                   this.Name == other.Name &&
-                   this.Address == other.Address;
+            return this.Index.Equals(other.Index) &&
+                   this.Name.Equals(other.Name) &&
+                   this.Address.Equals(other.Address);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

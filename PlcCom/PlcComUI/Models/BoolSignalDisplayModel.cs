@@ -15,11 +15,10 @@ namespace PlcComUI.Models
 {
     public class BoolSignalDisplayModel : SignalDisplayModel
     {
-        private IEventAggregator _events;
         private object _value;
 
-        public BoolSignalDisplayModel(PlcComIndexModel indexModel, IEventAggregator events)
-            : base(indexModel, events)
+        public BoolSignalDisplayModel(IEventAggregator events)
+            : base(events)
         {
             PulseCommand = new RelayCommand<object>(OnPulseCommand);
             ToggleCommand = new RelayCommand<object>(OnToggleCommand);
@@ -39,40 +38,26 @@ namespace PlcComUI.Models
                 OnPropertyChanged(nameof(Value));
             }
         }
-        public string ValueStr { get; set; }
-
 
         public RelayCommand<object> PulseCommand { get; set; }
         public RelayCommand<object> ToggleCommand { get; set; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
 
         private void OnPulseCommand(object parameter)
         {
             var paramArray = (object[])parameter;
             Debug.Assert(paramArray.Length == 2);
-            var indexModel = (PlcComIndexModel)paramArray[0];
+            var cpuIndex = (int)paramArray[0];
             var address = (string)paramArray[1];
-            _events.PublishOnUIThread(new PlcUiCmdEvent(PlcUiCmdEvent.CmdType.ButtonPulse, indexModel.CpuIndex, address));
+            _events.PublishOnUIThread(new PlcUiCmdEvent(PlcUiCmdEvent.CmdType.ButtonPulse, cpuIndex, address));
         }
 
         private void OnToggleCommand(object parameter)
         {
             var paramArray = (object[])parameter;
             Debug.Assert(paramArray.Length == 2);
-            var indexModel = (PlcComIndexModel)paramArray[0];
+            var cpuIndex = (int)paramArray[0];
             var address = (string)paramArray[1];
-            _events.PublishOnUIThread(new PlcUiCmdEvent(PlcUiCmdEvent.CmdType.ButtonToggle, indexModel.CpuIndex, address));
-        }
-        public bool Equals(SignalDisplayModel other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OnPropertyChanged(string propName)
-        {
-            throw new NotImplementedException();
+            _events.PublishOnUIThread(new PlcUiCmdEvent(PlcUiCmdEvent.CmdType.ButtonToggle, cpuIndex, address));
         }
     }
 }

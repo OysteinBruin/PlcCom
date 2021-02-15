@@ -51,39 +51,17 @@ namespace PlcComUI.Models
             Slot = _plcService.Config.Slot;
             SelectedCpuType = _plcService.Config.CpuType;
 
-            foreach (var db in _plcService.Datablocks)
-            {
-                DatablockDisplayModel dbModel = new DatablockDisplayModel(new PlcComIndexModel(_plcService.Index,db.Index, -1));
-                dbModel.Name = db.Name;
-                dbModel.Number = db.Number;
-                dbModel.FirstByte = db.FirstByte;
-                dbModel.ByteCount = db.ByteCount;
-                List<SignalDisplayModel> signalDisplayModels = new List<SignalDisplayModel>();
-                foreach (var sig in db.Signals)
-                {
-                    var sdm = _mapper.Map<SignalDisplayModel>(sig);
+            //foreach (var datablock in _plcService.Datablocks)
+            //{
+            //    IDatablockDisplayModel db
 
-                   
-                    // TODO - Implement IBoolSignalDisplayModel etc, setup automapper
-                    //ISignalDisplayModel sdm = new ISignalDisplayModel(new PlcComIndexModel(_plcService.Index, db.Index, sig.Index), _events);
-                    //sdm.Name = sig.Name;
-                    //sdm.Description = sig.Description;
-                    //sdm.Address = sig.Address;
-                    ////if (sig is Bool)
-                    ////sdm.DataType = sig.DataType;
-                    //sdm.DataTypeStr = sig.DataTypeStr;
-                    //sdm.Db = sig.Db;
-                    ////sdm.Bit = sig.Bit;
-                    ////sdm.Value = sig.Value;
-                    signalDisplayModels.Add(sdm);
-                }
-                dbModel.Signals = signalDisplayModels;
 
-                Datablocks.Add(dbModel);
-            }
+            //    Datablocks.Add
+            //}
+            Datablocks = mapper.Map<List<IDatablockDisplayModel>>(_plcService.Datablocks);
         }
 
-        public List<DatablockDisplayModel> Datablocks { get; set; } = new List<DatablockDisplayModel>();
+        public List<IDatablockDisplayModel> Datablocks { get; set; } = new List<IDatablockDisplayModel>();
         public int Index { get; set; }
         public string Name
         {

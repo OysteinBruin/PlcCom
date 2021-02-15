@@ -8,7 +8,7 @@ namespace PlcComLibrary.Models.Signal
 {
     public class Int32SignalModel : SignalModel
     {
-        public Int32SignalModel(ISignalModelContext ctx)
+        public Int32SignalModel(SignalModelContext ctx)
             : base(ctx)
         {
         }

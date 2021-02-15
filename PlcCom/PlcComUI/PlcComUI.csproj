@@ -217,7 +217,6 @@
       <DependentUpon>EditSignalView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Styles\ScaleHost.cs" />
-    <Compile Include="TmpMain.cs" />
     <Compile Include="UserSettings\Palette\PaletteHelperExtensions.cs" />
     <Compile Include="UserSettings\SettingBindingExtension.cs" />
     <Compile Include="ViewModels\ConnectionsViewModel.cs" />

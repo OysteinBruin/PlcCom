@@ -2,7 +2,7 @@
 
 namespace PlcComLibrary.Config
 {
-    public interface IJsonFileConfig
+    public interface ICpuConfigFile
     {
         string Name { get; set; }
         string Ip { get; set; }

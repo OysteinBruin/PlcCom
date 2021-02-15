@@ -69,7 +69,7 @@
     <Compile Include="Config\ConfigsProgressEventArgs.cs" />
     <Compile Include="Config\JsonFileConfig.cs" />
     <Compile Include="Config\JsonConfigFileParser.cs" />
-    <Compile Include="Config\IJsonFileConfig.cs" />
+    <Compile Include="Config\ICpuConfigFile.cs" />
     <Compile Include="Config\IJsonConfigFileParser.cs" />
     <Compile Include="Config\ICpuConfig.cs" />
     <Compile Include="Config\CpuConfig.cs" />

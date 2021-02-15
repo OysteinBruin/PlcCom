@@ -2,7 +2,7 @@
 using Autofac;
 using Caliburn.Micro;
 using Dragablz;
-using PlcComUI.Properties;
+using log4net;
 using PlcComLibrary;
 using PlcComLibrary.Common;
 using PlcComLibrary.Config;
@@ -23,14 +23,16 @@ namespace PlcComUI
     public class Bootstrapper : BootstrapperBase
 	{
         private SimpleContainer _container = new SimpleContainer();
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Bootstrapper));
 
         public Bootstrapper()
         {
             Initialize();
         }
 
-        private IMapper ConfigureAutoMapper()
+        private IMapper ConfigureAutoMapper(IEventAggregator events)
         {
+            log.Info("ConfigureAutoMapper");
             var config = new MapperConfiguration(cfg => {
 
                 //cfg.CreateMap<ISignalDisplayModel, ISignalModel>()
@@ -39,11 +41,20 @@ namespace PlcComUI
                 //    .Include<NumericSignalModel, Int32SignalModel>()
                 //    .Include<NumericSignalModel, FloatSignalModel>();
 
-                cfg.CreateMap<SignalModel, SignalDisplayModel>();
-                cfg.CreateMap<BoolSignalModel, BoolSignalDisplayModel>();
-                cfg.CreateMap<Int16SignalModel, NumericSignalModel>();
-                cfg.CreateMap<Int32SignalModel, NumericSignalModel > ();
-                cfg.CreateMap<FloatSignalModel, NumericSignalModel>();
+                cfg.CreateMap<SignalModel, SignalDisplayModel>(MemberList.Source)
+                    .ForSourceMember(x => x.ByteCount, opt => opt.DoNotValidate());
+                cfg.CreateMap<BoolSignalModel, BoolSignalDisplayModel>(MemberList.Source)
+                    .ConstructUsing(source => new BoolSignalDisplayModel(events))
+                    .ForSourceMember(x => x.ByteCount, opt => opt.DoNotValidate());
+                cfg.CreateMap<Int16SignalModel, NumericSignalModel>(MemberList.Source)
+                    .ConstructUsing(source => new NumericSignalModel(events))
+                    .ForSourceMember(x => x.ByteCount, opt => opt.DoNotValidate());
+                cfg.CreateMap<Int32SignalModel, NumericSignalModel > (MemberList.Source)
+                    .ConstructUsing(source => new NumericSignalModel(events))
+                    .ForSourceMember(x => x.ByteCount, opt => opt.DoNotValidate());
+                cfg.CreateMap<FloatSignalModel, NumericSignalModel>(MemberList.Source)
+                    .ConstructUsing(source => new NumericSignalModel(events))
+                    .ForSourceMember(x => x.ByteCount, opt => opt.DoNotValidate());
 
                 //.Include<BoolSignalModel, BoolSignalDisplayModel>()
                 //.Include<Int16SignalModel, NumericSignalModel>()
@@ -53,8 +64,8 @@ namespace PlcComUI
                 //cfg.CreateMap<IDatablockDisplayModel, IDatablockModel>()
                 //    .Include<DatablockDisplayModel, DatablockModel>();
 
-                cfg.CreateMap<IDatablockModel, IDatablockDisplayModel>();
-                cfg.CreateMap<DatablockModel, DatablockDisplayModel>();
+                cfg.CreateMap<IDatablockModel, IDatablockDisplayModel>(MemberList.Source);
+                cfg.CreateMap<DatablockModel, DatablockDisplayModel>(MemberList.Source);
                 //.Include<DatablockModel, DatablockDisplayModel>();
 
             });
@@ -65,8 +76,8 @@ namespace PlcComUI
             }
             catch (AutoMapperConfigurationException ex)
             {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.InnerException.Message);
+
+                log.Error("AssertConfigurationIsValid failed", ex);
                 throw;
             }
            
@@ -76,10 +87,6 @@ namespace PlcComUI
 
         protected override void Configure()
         {
-            var mapper = _container.Instance(ConfigureAutoMapper());
-
-            _container.Instance(_container);
-
             _container.Singleton<IWindowManager, WindowManager>()
                       .Singleton<IEventAggregator, EventAggregator>()
                       .Singleton<IUtilities, Utilities>()
@@ -89,6 +96,12 @@ namespace PlcComUI
                       .Singleton<IPlcComManager, PlcComManager>()
                       .Singleton<IInterTabClient, InterTabClient>()
                       .Singleton<IInterLayoutClient, InterLayoutClient>();
+            
+            var mapper = _container.Instance(ConfigureAutoMapper((EventAggregator)_container.GetInstance<EventAggregator>()));
+
+            _container.Instance(_container);
+
+            
             // .Singleton<IDataAccess, SqliteDataAccess>()
 
             //_container.PerRequest<IDataAccess, SqliteDataAccess>();

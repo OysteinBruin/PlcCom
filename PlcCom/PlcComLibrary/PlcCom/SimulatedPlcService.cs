@@ -84,7 +84,7 @@ namespace PlcComLibrary.PlcCom
             if (dbIndex >= 0 && signalIndex >= 0)
             {
                 Datablocks[dbIndex].Signals[signalIndex].Value = 0;
-                PlcReadResultEventArgs args = new PlcReadResultEventArgs(new PlcComIndexModel(this.Index, dbIndex, signalIndex), 0.0f);
+                PlcReadResultEventArgs args = new PlcReadResultEventArgs(new PlcComIndexValueModel(this.Index, dbIndex, signalIndex, 0.0f));
                 RaiseHasNewData(args);
             }
             else
@@ -146,7 +146,7 @@ namespace PlcComLibrary.PlcCom
                 Console.WriteLine($"write value: {Datablocks[dbIndex].Signals[signalIndex].Value}");
                 log.Debug($"write value: {value}");
 
-                PlcReadResultEventArgs args = new PlcReadResultEventArgs(new PlcComIndexModel(this.Index, dbIndex, signalIndex), (double)value);
+                PlcReadResultEventArgs args = new PlcReadResultEventArgs(new PlcComIndexValueModel(this.Index, dbIndex, signalIndex, (double)value));
                 RaiseHasNewData(args);
             }
             else
@@ -169,14 +169,14 @@ namespace PlcComLibrary.PlcCom
             if (dbIndex >= 0 && signalIndex >= 0)
             {
                 
-                var writeHighArgs = new PlcReadResultEventArgs(new PlcComIndexModel(this.Index, dbIndex, signalIndex), 1.0f);
+                var writeHighArgs = new PlcReadResultEventArgs(new PlcComIndexValueModel(this.Index, dbIndex, signalIndex, true));
                 await DelayAsync(100);
                 Datablocks[dbIndex].Signals[signalIndex].Value = 1.0f;
                 RaiseHasNewData(writeHighArgs);
                 await DelayAsync(500);
                 //args.Value = 0.0f;
 
-                var writeLowArgs = new PlcReadResultEventArgs(new PlcComIndexModel(this.Index, dbIndex, signalIndex), 0.0f);
+                var writeLowArgs = new PlcReadResultEventArgs(new PlcComIndexValueModel(this.Index, dbIndex, signalIndex, false));
                 Datablocks[dbIndex].Signals[signalIndex].Value = 0;
                 RaiseHasNewData(writeLowArgs);
             }
@@ -202,13 +202,13 @@ namespace PlcComLibrary.PlcCom
                 if (/*Datablocks[dbIndex].Signals[signalIndex].Value > 0*/ true)
                 {
                    
-                    var args = new PlcReadResultEventArgs(new PlcComIndexModel(this.Index, dbIndex, signalIndex), 0.0f);
+                    var args = new PlcReadResultEventArgs(new PlcComIndexValueModel(this.Index, dbIndex, signalIndex, false));
                     Datablocks[dbIndex].Signals[signalIndex].Value = 0.0f;
                     RaiseHasNewData(args);
                 }
                 else
                 {
-                    var args = new PlcReadResultEventArgs(new PlcComIndexModel(this.Index, dbIndex, signalIndex), 1.0f);
+                    var args = new PlcReadResultEventArgs(new PlcComIndexValueModel(this.Index, dbIndex, signalIndex, true));
                     Datablocks[dbIndex].Signals[signalIndex].Value = 1.0f;
                     RaiseHasNewData(args);
                 }

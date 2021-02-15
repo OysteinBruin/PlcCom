@@ -20,7 +20,7 @@ namespace PlcComUI.ViewModels
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private IEventAggregator _events;
-        private DatablockDisplayModel _displayModel;
+        private DatablockDisplayModel _datablockDisplayModel;
 
         private bool _isConnected;
         private bool _monitorCb;
@@ -30,7 +30,7 @@ namespace PlcComUI.ViewModels
         public DatablockTabViewModel(IEventAggregator events, DatablockDisplayModel displayModel, bool isConnected)
 		{
             _events = events;
-            _displayModel = displayModel;
+            _datablockDisplayModel = displayModel;
             Signals = new BindableCollection<SignalDisplayModel>(displayModel.Signals);
             DisplayName = displayModel.Name;
             _events.Subscribe(this);
@@ -71,27 +71,27 @@ namespace PlcComUI.ViewModels
 
         public string Name
         {
-            get => _displayModel.Name;
+            get => _datablockDisplayModel.Name;
             set
             {
-                _displayModel.Name = value;
+                _datablockDisplayModel.Name = value;
                 NotifyOfPropertyChange(() => Name);
             }
         }
 
         public int Number 
         {
-            get => _displayModel.Number;
+            get => _datablockDisplayModel.Number;
             set
             {
-                _displayModel.Number = value;
+                _datablockDisplayModel.Number = value;
                 NotifyOfPropertyChange(() => Signals);
             }
         }
 
         public string NumberStr
         {
-            get => _displayModel.NumberStr;
+            get => _datablockDisplayModel.NumberStr;
         }
 
         public bool IsConnected
@@ -128,7 +128,7 @@ namespace PlcComUI.ViewModels
                     EnableWriteCb = false;
                 }
 
-                _events.PublishOnUIThread(new DbMonitoringChangedEvent(_displayModel, _monitorCb));
+                _events.PublishOnUIThread(new DbMonitoringChangedEvent(_datablockDisplayModel, _monitorCb));
                 NotifyOfPropertyChange(() => MonitorCb);
             }
         }
@@ -150,7 +150,7 @@ namespace PlcComUI.ViewModels
             //Console.Write('\n');
             foreach (var item in message.Data.IndexValueList)
             {
-                if (item.CpuIndex == _displayModel.IndexModel.CpuIndex && item.DbIndex == _displayModel.IndexModel.DbIndex)
+                if (item.CpuIndex == _datablockDisplayModel.CpuIndex && item.DbIndex == _datablockDisplayModel.Index)
                 {
                    // Console.Write($" | index {item.SignalIndex} value {item.Value}");
 
@@ -162,7 +162,7 @@ namespace PlcComUI.ViewModels
 
         public void Handle(ComStateChangedEvent message)
         {
-            if (message.CpuIndex == _displayModel.IndexModel.CpuIndex )
+            if (message.CpuIndex == _datablockDisplayModel.CpuIndex )
             {
                 if (message.ComState == ComState.Connected)
                 {

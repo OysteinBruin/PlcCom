@@ -25,13 +25,13 @@ namespace PlcComLibrary
         public int FirstByte { get; } = 0;
         public int ByteCount { get; } = 0;
 
-        public List<SignalModel> ParseDb(string path, int dbNumber, List<string> discardKeywords)
+        public List<SignalModelContext> ParseDb(string path, int dbNumber, List<string> discardKeywords)
         {
             log.Info($"DatablockParser.ParseDb path {_path} db {dbNumber}");
             _path = path;
             _dbNumber = dbNumber;
             _discardKeywords = discardKeywords;
-            List<SignalModel> signals = new List<SignalModel>();
+            List<SignalModelContext> signalContextList = new List<SignalModelContext>();
             List<string> fileLines = ReadS7DbFile(_path);
 
 
@@ -39,7 +39,7 @@ namespace PlcComLibrary
             if (fileLines.Count == 0)
             {
                 log.Warn($"DatablockParser.ParseDb return - no lines in file");
-                return signals;
+                return signalContextList;
             }
 
             _bitCounter = 0;
@@ -57,8 +57,8 @@ namespace PlcComLibrary
             {
                 (List<string> splittedLines, bool signalDiscarded) = SplitAndValidateLine(line, _discardKeywords);
 
-                IList<SignalModel> signalsFromUdt = CheckforUDT(splittedLines);
-                signals.AddRange(signalsFromUdt);
+                IList<SignalModelContext> signalsFromUdt = CheckforUDT(splittedLines);
+                signalContextList.AddRange(signalsFromUdt);
 
 
                 if (splittedLines.Count == 1)
@@ -96,23 +96,22 @@ namespace PlcComLibrary
                                 desciption = splittedLines.Last();
                             }
 
-                            SignalModelContext ctx = new SignalModelContext(
-                                signals.Count,
-                                name,
-                                dbNumber,
-                                dataTypeStr,
-                                _byteCounter,
-                                desciption,
-                                _bitCounter);
+                            SignalModelContext ctx = new SignalModelContext {
+                                Name = name,
+                                Description = desciption,
+                                DataTypeStr = dataTypeStr,
+                                ByteIndex = _byteCounter,
+                                BitNumber = _bitCounter
+                            };
 
-                            signals.Add(SignalFactory.Create(ctx));
+                            signalContextList.Add(ctx);
                         }
 
-                        UpdateByteAndBitIndex(dataTypeByteCount, false, dataTypeStr == "Bool", signals.Count == 0);
+                        UpdateByteAndBitIndex(dataTypeByteCount, false, dataTypeStr == "Bool", signalContextList.Count == 0);
                     }
                     else if (dataTypeStr.Contains(Constants.S7DbArrayKeyword))
                     {
-                        UpdateByteAndBitIndex(dataTypeByteCount, true, false, signals.Count == 0);
+                        UpdateByteAndBitIndex(dataTypeByteCount, true, false, signalContextList.Count == 0);
                     }
                     else if (dataTypeStr.Contains(Constants.S7DbStructKeyword))
                     {
@@ -120,8 +119,8 @@ namespace PlcComLibrary
                     }
                 }
             }
-            log.Info($"DatablockParser.ParseDb - parse completed - signal count {signals.Count}");
-            return signals;
+            log.Info($"DatablockParser.ParseDb - parse completed - signal count {signalContextList.Count}");
+            return signalContextList;
         }
 
         /// <summary>
@@ -198,9 +197,9 @@ namespace PlcComLibrary
         /// </summary>
         /// <param name="splittedLines"></param>
         /// <returns></returns>
-        private List<SignalModel> CheckforUDT(List<string> splittedLines)
+        private List<SignalModelContext> CheckforUDT(List<string> splittedLines)
         {
-            List<SignalModel> signals = new List<SignalModel>();
+            List<SignalModelContext> signals = new List<SignalModelContext>();
 
             foreach (var word in splittedLines)
             {

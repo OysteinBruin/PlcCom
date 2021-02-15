@@ -8,12 +8,12 @@ namespace PlcComLibrary.Models.Signal
 {
     public class Int16SignalModel : SignalModel
     {
-        public Int16SignalModel(ISignalModelContext ctx)
+        public Int16SignalModel(SignalModelContext ctx)
             : base(ctx)
         {
         }
 
-        public override int ByteCount => 4;
+        public override int ByteCount => 2;
 
         public override object BytesToValue(byte[] bytes)
         {

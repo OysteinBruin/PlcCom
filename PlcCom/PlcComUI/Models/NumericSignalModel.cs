@@ -18,8 +18,8 @@ namespace PlcComUI.Models
 
         private bool _isUsingFixedRange;
 
-        public NumericSignalModel(PlcComIndexModel indexModel, IEventAggregator events)
-            : base(indexModel, events)
+        public NumericSignalModel(IEventAggregator events)
+            : base(events)
         {
             SliderCommand = new RelayCommand<object>(OnSliderCommand);
 
@@ -100,17 +100,16 @@ namespace PlcComUI.Models
             }
         }
 
-
         public RelayCommand<object> SliderCommand { get; set; }
 
         private void OnSliderCommand(object parameter)
         {
             var paramArray = (object[])parameter;
             Debug.Assert(paramArray.Length == 3);
-            var indexModel = (PlcComIndexModel)paramArray[0];
+            var cpuIndex = (int)paramArray[0];
             var address = (string)paramArray[1];
             var value = (object)paramArray[2];
-            _events.PublishOnUIThread(new PlcUiCmdEvent(PlcUiCmdEvent.CmdType.Slider, indexModel.CpuIndex, address, value));
+            _events.PublishOnUIThread(new PlcUiCmdEvent(PlcUiCmdEvent.CmdType.Slider, cpuIndex, address, value));
         }
     }
 }
