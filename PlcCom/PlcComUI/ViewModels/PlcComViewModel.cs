@@ -160,22 +160,22 @@ namespace PlcComUI.ViewModels
 
         private void OnGraphViewSelected(object sender, EventArgs args)
         {
-            var eventArgs = (OpenGraphViewEvent)args;
-            if (eventArgs != null)
-            {
-                if (eventArgs.ViewType == OpenGraphViewEvent.GraphViewType.MultiGraph)
-                {
-                    var vm = new RealTimeGraphViewModel();
-                    Items.Add(vm);
-                }
-                else
-                {
-                    var vm = new SingleGraphCollectionViewModel();
-                    Items.Add(vm);
-                }
-            }
+            //var eventArgs = (OpenGraphViewEvent)args;
+            //if (eventArgs != null)
+            //{
+            //    if (eventArgs.ViewType == OpenGraphViewEvent.GraphViewType.MultiGraph)
+            //    {
+            //        var vm = new RealTimeGraphViewModel();
+            //        Items.Add(vm);
+            //    }
+            //    else
+            //    {
+            //        var vm = new SingleGraphCollectionViewModel();
+            //        Items.Add(vm);
+            //    }
+            //}
             
-            ActivateItem(Items.Last());
+            //ActivateItem(Items.Last());
 
         }
 
