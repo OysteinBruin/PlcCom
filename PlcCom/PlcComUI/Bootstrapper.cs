@@ -35,38 +35,40 @@ namespace PlcComUI
             log.Info("ConfigureAutoMapper");
             var config = new MapperConfiguration(cfg => {
 
-                //cfg.CreateMap<ISignalDisplayModel, ISignalModel>()
-                //    .Include<BoolSignalDisplayModel, BoolSignalModel>()
-                //    .Include<NumericSignalModel, Int16SignalModel>()
-                //    .Include<NumericSignalModel, Int32SignalModel>()
-                //    .Include<NumericSignalModel, FloatSignalModel>();
+
 
                 cfg.CreateMap<SignalModel, SignalDisplayModel>(MemberList.Source)
                     .ForSourceMember(x => x.ByteCount, opt => opt.DoNotValidate());
                 cfg.CreateMap<BoolSignalModel, BoolSignalDisplayModel>(MemberList.Source)
+                    .IncludeBase<SignalModel, SignalDisplayModel>()
                     .ConstructUsing(source => new BoolSignalDisplayModel(events))
                     .ForSourceMember(x => x.ByteCount, opt => opt.DoNotValidate());
                 cfg.CreateMap<Int16SignalModel, NumericSignalModel>(MemberList.Source)
+                .IncludeBase<SignalModel, SignalDisplayModel>()
                     .ConstructUsing(source => new NumericSignalModel(events))
                     .ForSourceMember(x => x.ByteCount, opt => opt.DoNotValidate());
-                cfg.CreateMap<Int32SignalModel, NumericSignalModel > (MemberList.Source)
+                cfg.CreateMap<Int32SignalModel, NumericSignalModel>(MemberList.Source)
+                .IncludeBase<SignalModel, SignalDisplayModel>()
                     .ConstructUsing(source => new NumericSignalModel(events))
                     .ForSourceMember(x => x.ByteCount, opt => opt.DoNotValidate());
                 cfg.CreateMap<FloatSignalModel, NumericSignalModel>(MemberList.Source)
+                .IncludeBase<SignalModel, SignalDisplayModel>()
                     .ConstructUsing(source => new NumericSignalModel(events))
                     .ForSourceMember(x => x.ByteCount, opt => opt.DoNotValidate());
 
-                //.Include<BoolSignalModel, BoolSignalDisplayModel>()
-                //.Include<Int16SignalModel, NumericSignalModel>()
-                //.Include<Int32SignalModel, NumericSignalModel > ()
-                //.Include<FloatSignalModel, NumericSignalModel>();
+                cfg.CreateMap<SignalDisplayModel, SignalModel>();
+                cfg.CreateMap<BoolSignalDisplayModel, BoolSignalModel>()
+                    .IncludeBase<SignalDisplayModel, SignalModel>();
+                cfg.CreateMap<NumericSignalModel, FloatSignalModel>()
+                    .IncludeBase<SignalDisplayModel, SignalModel>();
 
-                //cfg.CreateMap<IDatablockDisplayModel, IDatablockModel>()
-                //    .Include<DatablockDisplayModel, DatablockModel>();
+
 
                 cfg.CreateMap<IDatablockModel, IDatablockDisplayModel>(MemberList.Source);
                 cfg.CreateMap<DatablockModel, DatablockDisplayModel>(MemberList.Source);
-                //.Include<DatablockModel, DatablockDisplayModel>();
+
+                cfg.CreateMap<IDatablockDisplayModel, IDatablockModel>();
+                cfg.CreateMap<DatablockDisplayModel, DatablockModel>();
 
             });
 

@@ -23,7 +23,7 @@ namespace PlcComLibrary.PlcCom
         private List<IPlcComTask> _collectedPlcTasksToExecute = new List<IPlcComTask>();
 
 
-        public S7PlcService(int index, ICpuConfig config, List<IDatablockModel> datablocks)
+        public S7PlcService(int index, ICpuConfig config, List<DatablockModel> datablocks)
             : base(index, config, datablocks)
         {
             S7.Net.CpuType S7NetCpuType = ConvertCpuType(Config.CpuType);
@@ -88,13 +88,6 @@ namespace PlcComLibrary.PlcCom
             {
                 Console.WriteLine("BEG PlcReadWriteCallback ");
             }
-            
-
-            //foreach (var task in _collectedPlcTasksToExecute)
-            //{
-            //    Console.WriteLine($"\t task.Execute address {task.Address}");
-            //    await task.Execute(_plcReader);
-            //}
 
             if (MonitoredDatablocks.Count > 0)
             {
@@ -110,8 +103,6 @@ namespace PlcComLibrary.PlcCom
             {
                 Console.WriteLine($"END PlcReadWriteCallback elapsed ms {watch.ElapsedMilliseconds}");
             }
-            //_collectedPlcTasksToExecute = _collectedPlcTasks;
-            //_collectedPlcTasks.Clear();
         }
 
         public override async Task ReadSingleAsync(string address)

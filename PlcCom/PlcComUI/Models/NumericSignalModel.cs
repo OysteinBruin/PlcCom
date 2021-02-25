@@ -32,22 +32,22 @@ namespace PlcComUI.Models
             get => _value;
             set
             {
-                _value = value;
+                //_value = value;
 
-                if (!IsUsingFixedRange)
-                {
-                    int val = (int)value;
-                    if (val < RangeFrom)
-                    {
-                        RangeFrom -= 10;
-                    }
-                    else if (val > RangeTo)
-                    {
-                        RangeTo += 10;
-                    }
-                }
-                ValueStr = String.Format("{0:0.00}", _value);
-                OnPropertyChanged(nameof(Value));
+                //if (!IsUsingFixedRange)
+                //{
+                //    int val = (int)value;
+                //    if (val < RangeFrom)
+                //    {
+                //        RangeFrom -= 10;
+                //    }
+                //    else if (val > RangeTo)
+                //    {
+                //        RangeTo += 10;
+                //    }
+                //}
+                //ValueStr = String.Format("{0:0.00}", _value);
+                //OnPropertyChanged(nameof(Value));
             }
         }
 
@@ -109,7 +109,12 @@ namespace PlcComUI.Models
             var cpuIndex = (int)paramArray[0];
             var address = (string)paramArray[1];
             var value = (object)paramArray[2];
-            _events.PublishOnUIThread(new PlcUiCmdEvent(PlcUiCmdEvent.CmdType.Slider, cpuIndex, address, value));
+            _events.PublishOnUIThread(
+                new SliderCmdEvent { 
+                    CpuIndex = cpuIndex,
+                    Address = address,
+                    Value = value
+            });
         }
     }
 }

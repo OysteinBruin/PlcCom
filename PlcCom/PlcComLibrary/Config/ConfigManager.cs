@@ -48,11 +48,11 @@ namespace PlcComLibrary.Config
             foreach (var config in cpuConfigFiles)
             {
                 ICpuConfig cpuConfig = new CpuConfig(config);
-                List<IDatablockModel> datablocks = new List<IDatablockModel>();
+                List<DatablockModel> datablocks = new List<DatablockModel>();
 
                 foreach (var dbNumberDbNameString in config.SignalLists)
                 {
-                    IDatablockModel datablock = new DatablockModel();
+                    DatablockModel datablock = new DatablockModel();
 
                     // signal should contain db number and db name, format : "number:name" e.g "3201:DbName"
                     List<string> dbNumberDbName = dbNumberDbNameString.Split(':').ToList();
@@ -78,13 +78,14 @@ namespace PlcComLibrary.Config
                     {
                         signalContextList[i].CpuIndex = plcServiceList.Count;
                         signalContextList[i].DbIndex = datablocks.Count;
-                        signalContextList[i].Index = 1;
+                        signalContextList[i].Index = i;
                         signalContextList[i].DbNumber = dbNumber;
                         signals.Add(SignalFactory.Create(signalContextList[i]));
                     }
 
                     if (signals?.Count > 0)
                     {
+                        datablock.CpuIndex = plcServiceList.Count;
                         datablock.Index = datablocks.Count;
                         datablock.Signals = signals;
                         datablock.Name = dbNumberDbName.Last();

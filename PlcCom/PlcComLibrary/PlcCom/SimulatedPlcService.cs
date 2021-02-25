@@ -22,7 +22,7 @@ namespace PlcComLibrary.PlcCom
         private List<SimulatedSignal> _simulatedSignals = new List<SimulatedSignal>();
   
 
-        public SimulatedPlcService(int index, ICpuConfig config, List<IDatablockModel> datablocks)
+        public SimulatedPlcService(int index, ICpuConfig config, List<DatablockModel> datablocks)
             : base(index, config, datablocks)
         {
             foreach (var db in datablocks)
@@ -103,22 +103,22 @@ namespace PlcComLibrary.PlcCom
                 SignalModel s = db.Signals[i];
 
                 double simValue = 0;
-                //if (s.DataType == DataType.Bit)
-                //{
-                //    bool boolVal = _simulatedSignals[s.Index].RandomBool();
-                //    simValue = boolVal == true ? 1.0 : 0.0;
-                //}
-                //else
-                //{
-                //    if (i%3 == 0)
-                //    {
-                //        simValue = _simulatedSignals[s.Index].Sine();
-                //    }
-                //    else
-                //    {
-                //        simValue = _simulatedSignals[s.Index].RandomFloat();
-                //    }
-                //}
+                if (s is BoolSignalModel)
+                {
+                    bool boolVal = _simulatedSignals[s.Index].RandomBool();
+                    simValue = boolVal == true ? 1.0 : 0.0;
+                }
+                else
+                {
+                    if (i % 3 == 0)
+                    {
+                        simValue = _simulatedSignals[s.Index].Sine();
+                    }
+                    else
+                    {
+                        simValue = _simulatedSignals[s.Index].RandomFloat();
+                    }
+                }
                 if (i % 3 == 0)
                 {
                     indexValueModels.Add(new PlcComIndexValueModel(Index, db.Index, s.Index, simValue));

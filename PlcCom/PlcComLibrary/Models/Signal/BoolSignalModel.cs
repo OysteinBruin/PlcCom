@@ -9,6 +9,10 @@ namespace PlcComLibrary.Models.Signal
 {
     public class BoolSignalModel : SignalModel
     {
+        public BoolSignalModel()
+        {
+
+        }
         public BoolSignalModel(SignalModelContext ctx)
             : base(ctx)
         {

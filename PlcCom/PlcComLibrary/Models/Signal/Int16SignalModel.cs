@@ -8,6 +8,10 @@ namespace PlcComLibrary.Models.Signal
 {
     public class Int16SignalModel : SignalModel
     {
+        public Int16SignalModel()
+        {
+
+        }
         public Int16SignalModel(SignalModelContext ctx)
             : base(ctx)
         {

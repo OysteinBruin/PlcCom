@@ -15,7 +15,7 @@ using static PlcComLibrary.Common.Enums;
 namespace PlcComUI.ViewModels
 {
     public class PlcComViewModel : Conductor<IScreen>.Collection.OneActive, 
-                                   IHandle<PlcUiCmdEvent>, 
+                                   IHandle<IControlCmdEvent>, 
                                    IHandle<DbMonitoringChangedEvent>
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(PlcComViewModel));
@@ -193,7 +193,7 @@ namespace PlcComUI.ViewModels
             _events.PublishOnUIThread(new PlcReadEvent(eventArgs));
         }
 
-        public async void Handle(PlcUiCmdEvent message)
+        public async void Handle(IControlCmdEvent message)
         {
             //Debug.Assert(message.CpuIndex < _configManager.PlcServiceList.Count);
 
@@ -202,20 +202,18 @@ namespace PlcComUI.ViewModels
 
             try
             {
-                switch (message.CommandType)
+                if (message is ButtonPulseCmdEvent)
                 {
-                    case PlcUiCmdEvent.CmdType.ButtonPulse:
-                        await _plcComManager.PlcServiceList[message.CpuIndex].PulseBitAsync(message.Address);
-                        break;
-                    case PlcUiCmdEvent.CmdType.ButtonToggle:
-                        await _plcComManager.PlcServiceList[message.CpuIndex].ToggleBitAsync(message.Address);
-                        break;
-                    case PlcUiCmdEvent.CmdType.Slider:
-                        Debug.Assert(message.Value != null);
-                        await _plcComManager.PlcServiceList[message.CpuIndex].WriteSingleAsync(message.Address, message.Value);
-                        break;
-                    default:
-                        break;
+                    await _plcComManager.PlcServiceList[message.CpuIndex].PulseBitAsync(message.Address);
+                }
+                else if (message is ButtonToggleCmdEvent)
+                {
+                    await _plcComManager.PlcServiceList[message.CpuIndex].ToggleBitAsync(message.Address);
+                }
+                else if (message is SliderCmdEvent)
+                {
+                    Debug.Assert(message.Value != null);
+                    await _plcComManager.PlcServiceList[message.CpuIndex].WriteSingleAsync(message.Address, message.Value);
                 }
             }
             catch (ArgumentOutOfRangeException ex)
@@ -252,10 +250,10 @@ namespace PlcComUI.ViewModels
             try
             {
                 DatablockDisplayModel ddm = message.Datablock;
-                var mappedDbModel = _mapper.Map(ddm, ddm.GetType(), typeof(IDatablockModel));
+                var mappedDbModel = _mapper.Map(ddm, ddm.GetType(), typeof(DatablockModel));
                 Debug.Assert(mappedDbModel is IDatablockModel);
 
-                plc.AddOrRemoveDb(message.DoMonitor, mappedDbModel as IDatablockModel);
+                plc.AddOrRemoveDb(message.DoMonitor, mappedDbModel as DatablockModel);
             }
             catch (AutoMapperMappingException ex)
             {

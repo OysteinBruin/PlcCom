@@ -185,6 +185,10 @@
     <Compile Include="Converters\ListViewGridViewConverter.cs" />
     <Compile Include="Converters\MathMlpMultipleConverter.cs" />
     <Compile Include="Converters\PlcCmdParameterConverter.cs" />
+    <Compile Include="EventModels\ButtonPulseCmdEvent.cs" />
+    <Compile Include="EventModels\ButtonToggleCmdEvent.cs" />
+    <Compile Include="EventModels\IControlCmdEvent.cs" />
+    <Compile Include="EventModels\SliderCmdEvent.cs" />
     <Compile Include="Models\NumericSignalModel.cs" />
     <Compile Include="Models\SignalDisplayModelTemplateSelector.cs" />
     <Compile Include="Domain\AsyncRelayCommnd.cs" />

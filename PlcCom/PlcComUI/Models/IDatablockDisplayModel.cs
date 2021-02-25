@@ -19,8 +19,8 @@ namespace PlcComUI.Models
         bool IsValid { get; }
         string NumberStr { get; }
 
-        event PropertyChangedEventHandler PropertyChanged;
+        //event PropertyChangedEventHandler PropertyChanged;
 
-        void EmitPropertyChanged(string propName);
+        //void EmitPropertyChanged(string propName);
     }
 }

@@ -20,6 +20,7 @@ namespace PlcComUI.Models
     {
         PlcService _plcService;
         private IMapper _mapper;
+        List<DatablockDisplayModel> _datablocks;
         private string _connectionName;
         private string _ipAddress;
         private int _rack;
@@ -58,10 +59,33 @@ namespace PlcComUI.Models
 
             //    Datablocks.Add
             //}
-            Datablocks = mapper.Map<List<IDatablockDisplayModel>>(_plcService.Datablocks);
+            try
+            {
+                List<SignalDisplayModel> signals = mapper.Map<List<SignalDisplayModel>>(_plcService.Datablocks[0].Signals);
+
+                var db = mapper.Map<List<DatablockDisplayModel>>(_plcService.Datablocks);
+                Datablocks = db;
+            }
+            catch (AutoMapperMappingException ex)
+            {
+                Console.WriteLine(ex.Message);
+
+                if (ex.InnerException != null)
+                    Console.WriteLine(ex.InnerException.Message);
+                throw;
+            }
+            
         }
 
-        public List<IDatablockDisplayModel> Datablocks { get; set; } = new List<IDatablockDisplayModel>();
+        public List<DatablockDisplayModel> Datablocks 
+        {
+            get => _datablocks;
+            set
+            {
+                _datablocks = value;
+                EmitPropertyChanged(nameof(Datablocks));
+            }
+        }
         public int Index { get; set; }
         public string Name
         {

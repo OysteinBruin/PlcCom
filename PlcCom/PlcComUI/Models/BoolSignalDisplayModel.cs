@@ -31,11 +31,11 @@ namespace PlcComUI.Models
             set
             {
 
-                bool val = (bool)value;
-                _value = val;
+                //bool val = (bool)value;
+                //_value = val;
 
-                ValueStr = ((val == true) ? "true" : "false");
-                OnPropertyChanged(nameof(Value));
+                //ValueStr = ((val == true) ? "true" : "false");
+                //OnPropertyChanged(nameof(Value));
             }
         }
 
@@ -48,7 +48,12 @@ namespace PlcComUI.Models
             Debug.Assert(paramArray.Length == 2);
             var cpuIndex = (int)paramArray[0];
             var address = (string)paramArray[1];
-            _events.PublishOnUIThread(new PlcUiCmdEvent(PlcUiCmdEvent.CmdType.ButtonPulse, cpuIndex, address));
+            _events.PublishOnUIThread(
+                new ButtonPulseCmdEvent
+                {
+                    CpuIndex = cpuIndex,
+                    Address = address
+                });
         }
 
         private void OnToggleCommand(object parameter)
@@ -57,7 +62,12 @@ namespace PlcComUI.Models
             Debug.Assert(paramArray.Length == 2);
             var cpuIndex = (int)paramArray[0];
             var address = (string)paramArray[1];
-            _events.PublishOnUIThread(new PlcUiCmdEvent(PlcUiCmdEvent.CmdType.ButtonToggle, cpuIndex, address));
+            _events.PublishOnUIThread(
+               new ButtonToggleCmdEvent
+               {
+                   CpuIndex = cpuIndex,
+                   Address = address
+               });
         }
     }
 }

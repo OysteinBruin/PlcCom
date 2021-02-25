@@ -26,7 +26,7 @@ namespace PlcComLibrary.PlcCom
         protected int _interval = 20;
         
 
-        protected PlcService(int index, ICpuConfig config, List<IDatablockModel> datablocks)
+        protected PlcService(int index, ICpuConfig config, List<DatablockModel> datablocks)
         {
             Index = index;
             Config = config;
@@ -54,9 +54,9 @@ namespace PlcComLibrary.PlcCom
 
         public ICpuConfig Config { get; protected set; }
 
-        public List<IDatablockModel> Datablocks { get; protected set; }
+        public List<DatablockModel> Datablocks { get; protected set; }
 
-        public List<IDatablockModel> MonitoredDatablocks { get; private set; } = new List<IDatablockModel>();
+        public List<DatablockModel> MonitoredDatablocks { get; private set; } = new List<DatablockModel>();
 
         public event EventHandler ComStateChanged;
 
@@ -89,7 +89,7 @@ namespace PlcComLibrary.PlcCom
         /// </summary>
         /// <param name="add"></param>
         /// <param name="dbModel"></param>
-        public virtual void AddOrRemoveDb(bool add, IDatablockModel dbModel)
+        public virtual void AddOrRemoveDb(bool add, DatablockModel dbModel)
         {
             if (dbModel == null)
                 return;
@@ -141,7 +141,7 @@ namespace PlcComLibrary.PlcCom
             return false;
         }
 
-        protected (int dbIndex, int signalIndex) GetIndexFromAddress(string address, List<IDatablockModel> datablocks)
+        protected (int dbIndex, int signalIndex) GetIndexFromAddress(string address, List<DatablockModel> datablocks)
         {
             // Validate address with regular expression
             var regex = new Regex(Constants.SignalAddressRegExp, RegexOptions.IgnoreCase);
@@ -186,7 +186,7 @@ namespace PlcComLibrary.PlcCom
             }
         }
 
-        protected bool VerifyPlcAddressStr(string address, List<IDatablockModel> datablocks)
+        protected bool VerifyPlcAddressStr(string address, List<DatablockModel> datablocks)
         {
             (int dbIndex, int signalIndex) = GetIndexFromAddress(address, datablocks);
 

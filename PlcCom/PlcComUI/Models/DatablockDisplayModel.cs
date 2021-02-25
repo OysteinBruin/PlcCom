@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PlcComUI.Models
 {
-    public class DatablockDisplayModel : INotifyPropertyChanged, IEquatable<DatablockDisplayModel>, IDatablockDisplayModel
+    public class DatablockDisplayModel : /*INotifyPropertyChanged,*/ IEquatable<DatablockDisplayModel>, IDatablockDisplayModel
     {
         public string Name { get; set; }
         public int Index { get; set; }
@@ -37,11 +37,11 @@ namespace PlcComUI.Models
 
         
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void EmitPropertyChanged(string propName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
-        }
+        //public event PropertyChangedEventHandler PropertyChanged;
+        //public void EmitPropertyChanged(string propName)
+        //{
+        //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+        //}
 
         public bool Equals(DatablockDisplayModel other)
         {

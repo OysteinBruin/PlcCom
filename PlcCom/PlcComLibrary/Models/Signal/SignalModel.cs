@@ -4,6 +4,10 @@ namespace PlcComLibrary.Models.Signal
 {
     public abstract class SignalModel
     {
+        protected SignalModel()
+        {
+
+        }
         protected SignalModel(SignalModelContext ctx)
         {
             Index = ctx.Index;
@@ -11,8 +15,10 @@ namespace PlcComLibrary.Models.Signal
             CpuIndex = ctx.CpuIndex;
             Name = ctx.Name;
             Address = ctx.Address;
-            Db = ctx.DbNumber;
             Description = ctx.Description;
+            DataTypeStr = ctx.DataTypeStr;
+            Db = ctx.DbNumber;
+            
         }
         public int CpuIndex { get; set; }
         public int DbIndex { get; set; }
