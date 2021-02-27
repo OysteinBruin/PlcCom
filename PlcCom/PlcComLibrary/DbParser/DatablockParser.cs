@@ -99,7 +99,7 @@ namespace PlcComLibrary.DbParser
 
                         if (!signalDiscarded)
                         {
-                            signalContextList.Add(CreateSignalContextItem(splittedLines, dataTypeStr));
+                            signalContextList.Add(CreateSignalContextItem(splittedLines));
                         }
                     }
                     else if (dataTypeStr.Contains(Constants.S7DbArrayKeyword))
@@ -120,8 +120,11 @@ namespace PlcComLibrary.DbParser
         }
 
         
-        private SignalModelContext CreateSignalContextItem(List<string> splittedLines, string dataTypeStr)
+        private SignalModelContext CreateSignalContextItem(List<string> splittedLines)
         {
+            if (splittedLines.Count < 2)
+                return null;
+
             string name = String.Empty;
             foreach (var structName in _structNames)
             {
@@ -139,7 +142,7 @@ namespace PlcComLibrary.DbParser
             {
                 Name = name,
                 Description = desciption,
-                DataTypeStr = dataTypeStr,
+                DataTypeStr = splittedLines[1],
                 ByteIndex = _bitByteIndexControl.ByteCounter,
                 BitNumber = _bitByteIndexControl.BitCounter
             };
@@ -232,7 +235,6 @@ namespace PlcComLibrary.DbParser
             Debug.Assert(splittedLines.Count == 2);
 
             var output = new List<SignalModelContext>();
-            string name = splittedLines[0]; ;
             string dataTypeStr = splittedLines[1];
 
             // Excepected value of dataTypeStr if array datatype is Int  and size is 3: Array[0..2] of Int
@@ -271,16 +273,16 @@ namespace PlcComLibrary.DbParser
             if (parseOk && byteMultiplier > 0)
             {
                 int arraySize = arrayEnd - arrayBegin + 1;
-
-                splittedLines[1] = dataTypeStr;
+                string name = splittedLines[0];
+                splittedLines[1] = arrayDataTypeStr;
                 for (int i = 0; i < arraySize; i++)
                 {
                     if (!signalDiscarded)
                     {
-
-                        output.Add(CreateSignalContextItem(splittedLines, dataTypeStr));
+                        splittedLines[0] = name + $"[{i}]";
+                        output.Add(CreateSignalContextItem(splittedLines));
                     }
-                    _bitByteIndexControl.Update(byteMultiplier, dataTypeStr == "Bool", false);
+                    _bitByteIndexControl.Update(byteMultiplier, arrayDataTypeStr == "Bool", false);
                 }
             }
             else

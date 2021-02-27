@@ -14,10 +14,12 @@ namespace PlcComUI.ViewModels
 {
 	public class ShellViewModel : Conductor<IScreen>.Collection.OneActive, IHandle<MessageEvent>
     {
-		private IEventAggregator _events;
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(ShellViewModel));
+        private IEventAggregator _events;
         private IPlcComManager _plcComManager;
         private bool _modalViewIsActive = false;
         private System.Windows.WindowState _windowState;
+        private MessageEvent _initAppErrorMessageEvent = null;
 
         public ShellViewModel(IEventAggregator events, IPlcComManager plcComManager)
 		{
@@ -66,6 +68,18 @@ namespace PlcComUI.ViewModels
             }
         }
 
+        protected async override void OnViewLoaded(object view)
+        {
+            base.OnViewLoaded(view);
+
+            if (_initAppErrorMessageEvent != null)
+            {
+                await Task.Delay(1000);
+                await ShowMessageDialog(_initAppErrorMessageEvent);
+            }
+
+        }
+
         protected override void OnDeactivate(bool close)
         {
             if (WindowState == System.Windows.WindowState.Maximized)
@@ -88,7 +102,17 @@ namespace PlcComUI.ViewModels
             }
             catch (Exception ex)
             {
-                throw;
+                log.Error($"Failed to load configs - " +
+                    $"Cpu index {ex.Message} ", ex);
+
+                string innerExptionMsg = String.Empty;
+                if (ex.InnerException != null)
+                {
+                    innerExptionMsg = ex.InnerException.Message;
+                }
+                _initAppErrorMessageEvent = new MessageEvent("Failed to load app config files.",
+                    "Failed to load app config files. Exception: " + ex.Message + " " + innerExptionMsg, 
+                    MessageEvent.Level.Error);
             }
             
         }
@@ -147,16 +171,6 @@ namespace PlcComUI.ViewModels
                 await ShowMessageDialog(message);
             }
         }
-
-        //public bool ShowDrawer
-        //{
-        //    get => _showDrawer; 
-        //    set 
-        //    { 
-        //        _showDrawer = value;
-        //        NotifyOfPropertyChange(() => ShowDrawer);
-        //    }
-        //}
 
         private async Task ShowMessageDialog(MessageEvent ev)
         {
