@@ -33,8 +33,7 @@ namespace PlcComLibrary.Config
         {
             log.Info($"LoadConfigs - path {path}");
             var plcServiceList = new List<PlcService>();
-            var signals = new List<SignalModel>();
-            
+
             int totalFilesToLoadCount = 0;
             List<ICpuConfigFile> cpuConfigFiles = _configParser.LoadConfigFiles(path);
 
@@ -73,12 +72,12 @@ namespace PlcComLibrary.Config
                         throw new FormatException(errorStr);
                     }
 
+                    var signals = new List<SignalModel>();
                     string filePath = AppDomain.CurrentDomain.BaseDirectory + Constants.BaseDirectorySubDirs + dbNumberDbName.Last();
 
                     try
                     {
                         var fileLines = _dbParser.ReadS7DbFile(filePath);
-
                         var signalContextList = _dbParser.ParseDb(fileLines, config.DiscardKeywords);
 
                         for (int i = 0; i < signalContextList.Count; i++)
