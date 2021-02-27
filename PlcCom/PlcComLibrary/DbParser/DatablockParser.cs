@@ -39,8 +39,7 @@ namespace PlcComLibrary.DbParser
             FileInfo fi = new FileInfo(path);
             if (!fi.Exists)
             {
-                Console.WriteLine($"\n\n\t\t{path} NOT found!\n\n ");
-                return fileLines;
+                throw new ArgumentException($"Exception: Could not find file: {path}");
             }
 
             fileLines = File.ReadAllLines(path).ToList();
@@ -50,7 +49,7 @@ namespace PlcComLibrary.DbParser
         public List<SignalModelContext> ParseDb(List<string> fileLines, IList<string> discardKeywords)
         {
             log.Info($"DatablockParser.ParseDb");
-
+            _bitByteIndexControl.Reset();
             _discardKeywords = discardKeywords;
             List<SignalModelContext> signalContextList = new List<SignalModelContext>();
 

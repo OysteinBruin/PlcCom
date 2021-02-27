@@ -12,13 +12,11 @@ namespace PlcComLibrary.DbParser
         private int _byteCouter;
         private int _previousByteCountValue;
         private bool _previousItemWasBool;
+        private int _bytesRemaining = 0;
 
         public BitByteIndexControl()
         {
-            ByteCounter = 0;
-            BitCounter = 0;
-            _previousByteCountValue = 0;
-            _previousItemWasBool = false;
+            Reset();
         }
         
         public int ByteCounter 
@@ -50,9 +48,29 @@ namespace PlcComLibrary.DbParser
             {
                 if (_previousItemWasBool)
                 {
-                    AddedStructCorrection();
+                    BitCounter = 0;
+
+                    if (_previousItemWasBool)
+                    {
+                        if (ByteCounter % 2 == 0)
+                        {
+                            ByteCounter += 2;
+                            _bytesRemaining = byteSize - 2;
+                        }
+                        else
+                        {
+                            ByteCounter += 1;
+                            _bytesRemaining = byteSize - 1;
+                        }
+                    }
                 }
-                else ByteCounter += byteSize;
+                else
+                {
+                    ByteCounter += byteSize;
+                    ByteCounter += _bytesRemaining;
+                    _bytesRemaining = 0;
+                }
+                    
             }
 
             _previousItemWasBool = isBoolType;
@@ -61,12 +79,6 @@ namespace PlcComLibrary.DbParser
 
         public void AddedStructCorrection()
         {
-            if (ByteCounter == 31)
-            {
-
-            }
-
-
             BitCounter = 0;
 
             if (_previousItemWasBool)
@@ -75,8 +87,20 @@ namespace PlcComLibrary.DbParser
                 {
                     ByteCounter += 2;
                 }
-                else ByteCounter += 1;
+                else
+                {
+                    ByteCounter += 1;
+                }
             }
+        }
+
+        public void Reset()
+        {
+            ByteCounter = 0;
+            BitCounter = 0;
+            _previousByteCountValue = 0;
+            _previousItemWasBool = false;
+            _bytesRemaining = 0;
         }
     }
 }

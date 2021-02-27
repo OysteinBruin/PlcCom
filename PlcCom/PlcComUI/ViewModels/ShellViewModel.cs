@@ -9,6 +9,7 @@ using PlcComUI.Views;
 using System.Media;
 using System.ComponentModel;
 using PlcComLibrary.PlcCom;
+using System.Collections.Generic;
 
 namespace PlcComUI.ViewModels
 {
@@ -19,7 +20,7 @@ namespace PlcComUI.ViewModels
         private IPlcComManager _plcComManager;
         private bool _modalViewIsActive = false;
         private System.Windows.WindowState _windowState;
-        private MessageEvent _initAppErrorMessageEvent = null;
+        private IList<string> _initAppErrorMessages = new List<string>();
 
         public ShellViewModel(IEventAggregator events, IPlcComManager plcComManager)
 		{
@@ -72,10 +73,21 @@ namespace PlcComUI.ViewModels
         {
             base.OnViewLoaded(view);
 
-            if (_initAppErrorMessageEvent != null)
+            if (_initAppErrorMessages.Count > 0)
             {
                 await Task.Delay(1000);
-                await ShowMessageDialog(_initAppErrorMessageEvent);
+
+                string message = String.Empty;
+                foreach (var item in _initAppErrorMessages)
+                {
+                    message += item;
+                    message += '\n';
+                }
+
+                var msgEvent = new MessageEvent("Error during application loading", 
+                    message, MessageEvent.Level.Error);
+
+                await ShowMessageDialog(msgEvent);
             }
 
         }
@@ -102,6 +114,8 @@ namespace PlcComUI.ViewModels
             }
             catch (Exception ex)
             {
+                // Fix the system to capture all failed files before throwing - so that a 
+                // list of failed file reads can be presented in the message dialog.
                 log.Error($"Failed to load configs - " +
                     $"Cpu index {ex.Message} ", ex);
 
@@ -110,9 +124,8 @@ namespace PlcComUI.ViewModels
                 {
                     innerExptionMsg = ex.InnerException.Message;
                 }
-                _initAppErrorMessageEvent = new MessageEvent("Failed to load app config files.",
-                    "Failed to load app config files. Exception: " + ex.Message + " " + innerExptionMsg, 
-                    MessageEvent.Level.Error);
+                _initAppErrorMessages.Add("Failed to load app config files. Exception: " 
+                    + ex.Message + " " + innerExptionMsg);
             }
             
         }
