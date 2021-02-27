@@ -17,6 +17,7 @@ using AutoMapper;
 using PlcComLibrary.Models;
 using Settings;
 using PlcComLibrary.Models.Signal;
+using PlcComLibrary.DbParser;
 
 namespace PlcComUI
 {

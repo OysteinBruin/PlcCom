@@ -73,6 +73,7 @@
     <Compile Include="Config\IJsonConfigFileParser.cs" />
     <Compile Include="Config\ICpuConfig.cs" />
     <Compile Include="Config\CpuConfig.cs" />
+    <Compile Include="DbParser\BitByteIndexControl.cs" />
     <Compile Include="Factories\SignalFactory.cs" />
     <Compile Include="Models\Signal\BoolSignalModel.cs" />
     <Compile Include="Models\Signal\Int16SignalModel.cs" />
@@ -81,7 +82,7 @@
     <Compile Include="Models\PlcComIndexValueModel.cs" />
     <Compile Include="Models\PlcReadResultEventArgs.cs" />
     <Compile Include="Models\DatablockModel.cs" />
-    <Compile Include="DatablockParser.cs" />
+    <Compile Include="DbParser\DatablockParser.cs" />
     <Compile Include="Models\Signal\ISignalModelContext.cs" />
     <Compile Include="Models\Signal\SignalModelContext.cs" />
     <Compile Include="PlcCom\IPlcComManager.cs" />
@@ -94,7 +95,7 @@
     <Compile Include="PlcCom\SimulatedPlcService.cs" />
     <Compile Include="Config\IConfigManager.cs" />
     <Compile Include="Models\IDatablockModel.cs" />
-    <Compile Include="IDatablockParser.cs" />
+    <Compile Include="DbParser\IDatablockParser.cs" />
     <Compile Include="Models\Signal\SignalModel.cs" />
     <Compile Include="PlcCom\PlcException.cs" />
     <Compile Include="PlcCom\SimulatedSignal.cs" />

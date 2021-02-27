@@ -34,7 +34,7 @@ namespace PlcComUI.Models
 
         public TabEmptiedResponse TabEmptiedHandler( TabablzControl tabControl, Window window )
         {
-            return TabEmptiedResponse.DoNothing;
+            return TabEmptiedResponse.CloseWindowOrLayoutBranch;
         }
     }
 }

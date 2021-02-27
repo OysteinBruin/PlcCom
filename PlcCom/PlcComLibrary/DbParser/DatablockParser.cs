@@ -4,36 +4,55 @@ using PlcComLibrary.Factories;
 using PlcComLibrary.Models.Signal;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace PlcComLibrary
+namespace PlcComLibrary.DbParser
 {
     public class DatablockParser : IDatablockParser
     {
+        private BitByteIndexControl _bitByteIndexControl;
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private string[] _separatingStrings = { "//", ";", ":" };
         private readonly IList<string> _contentStartKeywords = new List<string> { "STRUCT", "VAR" };
-        private string _path;
-        private int _dbNumber;
-        private List<string> _discardKeywords;
-        private int _bitCounter = 0;
-        private int _byteCounter = 0;
+        private IList<string> _discardKeywords;
+        
         private IList<string> _structNames = new List<string>();
+        
 
-
-        public int FirstByte { get; } = 0;
-        public int ByteCount { get; } = 0;
-
-        public List<SignalModelContext> ParseDb(string path, int dbNumber, List<string> discardKeywords)
+        public DatablockParser()
         {
-            log.Info($"DatablockParser.ParseDb path {_path} db {dbNumber}");
-            _path = path;
-            _dbNumber = dbNumber;
+            _bitByteIndexControl = new BitByteIndexControl();
+        }
+
+        /// <summary>
+        /// Reads all lines of the file
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns> A list of strings containing all lines of the files</returns>
+        /// <exception>ArgumentException</exception>
+        public List<string> ReadS7DbFile(string path)
+        {
+            List<string> fileLines = new List<string>();
+            // TODO: Handle File exceptions instead of:
+            FileInfo fi = new FileInfo(path);
+            if (!fi.Exists)
+            {
+                Console.WriteLine($"\n\n\t\t{path} NOT found!\n\n ");
+                return fileLines;
+            }
+
+            fileLines = File.ReadAllLines(path).ToList();
+            return fileLines;
+        }
+
+        public List<SignalModelContext> ParseDb(List<string> fileLines, IList<string> discardKeywords)
+        {
+            log.Info($"DatablockParser.ParseDb");
+
             _discardKeywords = discardKeywords;
             List<SignalModelContext> signalContextList = new List<SignalModelContext>();
-            List<string> fileLines = ReadS7DbFile(_path);
-
 
             // Return if no data from db file
             if (fileLines.Count == 0)
@@ -41,9 +60,6 @@ namespace PlcComLibrary
                 log.Warn($"DatablockParser.ParseDb return - no lines in file");
                 return signalContextList;
             }
-
-            _bitCounter = 0;
-            _byteCounter = 0;
 
             bool result = RemoveHeaderData(fileLines, _contentStartKeywords);
 
@@ -55,11 +71,10 @@ namespace PlcComLibrary
 
             foreach (var line in fileLines)
             {
-                (List<string> splittedLines, bool signalDiscarded) = SplitAndValidateLine(line, _discardKeywords);
+                (List<string> splittedLines, bool signalDiscarded) = SplitAndValidateLine(line);
 
                 IList<SignalModelContext> signalsFromUdt = CheckforUDT(splittedLines);
                 signalContextList.AddRange(signalsFromUdt);
-
 
                 if (splittedLines.Count == 1)
                 {
@@ -74,48 +89,29 @@ namespace PlcComLibrary
                 {
                     // The datatype kan be struct, Array or one of the target data types (Constants.S7DataTypes)
                     string dataTypeStr = splittedLines[1];
-                    int dataTypeByteCount = -1;
 
                     if (Constants.S7DataTypes.Contains(dataTypeStr))
                     {
-                        dataTypeByteCount = Constants.S7DataTypesByteSize[dataTypeStr];
+                        int byteSize = Constants.S7DataTypesByteSize[dataTypeStr];
+                        bool isBool = (dataTypeStr == "Bool");
+                        bool isFirstItem = (signalContextList.Count == 0);
+                        _bitByteIndexControl.Update(byteSize, isBool, isFirstItem);
 
                         if (!signalDiscarded)
                         {
-
-                            string name = String.Empty;
-                            foreach (var structName in _structNames)
-                            {
-                                name += structName + '.';
-                            }
-                            name += splittedLines[0];
-
-                            string desciption = String.Empty;
-                            if (splittedLines.Count == 3)
-                            {
-                                desciption = splittedLines.Last();
-                            }
-
-                            SignalModelContext ctx = new SignalModelContext {
-                                Name = name,
-                                Description = desciption,
-                                DataTypeStr = dataTypeStr,
-                                ByteIndex = _byteCounter,
-                                BitNumber = _bitCounter
-                            };
-
-                            signalContextList.Add(ctx);
+                            signalContextList.Add(CreateSignalContextItem(splittedLines, dataTypeStr));
                         }
-
-                        UpdateByteAndBitIndex(dataTypeByteCount, false, dataTypeStr == "Bool", signalContextList.Count == 0);
                     }
                     else if (dataTypeStr.Contains(Constants.S7DbArrayKeyword))
                     {
-                        UpdateByteAndBitIndex(dataTypeByteCount, true, false, signalContextList.Count == 0);
+                        signalContextList.AddRange(HandleDatatypeArray(splittedLines, signalDiscarded));
                     }
                     else if (dataTypeStr.Contains(Constants.S7DbStructKeyword))
                     {
                         _structNames.Add(splittedLines[0]);
+
+                        // A struct always increase an odd byte value ( i.e bool
+                        _bitByteIndexControl.AddedStructCorrection();
                     }
                 }
             }
@@ -123,26 +119,32 @@ namespace PlcComLibrary
             return signalContextList;
         }
 
-        /// <summary>
-        /// TODOTODOTODOTODOTODOTODOTODO   TODO: Handle File exceptions
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        private List<string> ReadS7DbFile(string path)
+        
+        private SignalModelContext CreateSignalContextItem(List<string> splittedLines, string dataTypeStr)
         {
-            // Console.WriteLine($"S7DbParser.ReadS7DbFile: {path}");
-            
-            List<string> fileLines = new List<string>();
-            // TODO: Handle File exceptions instead of:
-            FileInfo fi = new FileInfo(path);
-            if (!fi.Exists)
+            string name = String.Empty;
+            foreach (var structName in _structNames)
             {
-                Console.WriteLine($"\n\n\t\t{path} NOT found!\n\n ");
-                return fileLines;
+                name += structName + '.';
+            }
+            name += splittedLines[0];
+
+            string desciption = String.Empty;
+            if (splittedLines.Count == 3)
+            {
+                desciption = splittedLines.Last();
             }
 
-            fileLines = File.ReadAllLines(path).ToList();
-            return fileLines;
+            SignalModelContext ctx = new SignalModelContext
+            {
+                Name = name,
+                Description = desciption,
+                DataTypeStr = dataTypeStr,
+                ByteIndex = _bitByteIndexControl.ByteCounter,
+                BitNumber = _bitByteIndexControl.BitCounter
+            };
+
+            return ctx;
         }
 
         private bool RemoveHeaderData(List<string> fileLines, IList<string> endOfHeaderKeywords)
@@ -173,14 +175,14 @@ namespace PlcComLibrary
             return false;
         }
 
-        (List<string> splittedLines, bool discarded) SplitAndValidateLine(string line, List<string> discardKeywords)
+        (List<string> splittedLines, bool discarded) SplitAndValidateLine(string line)
         {
             List<string> splittedLineStrings = new List<string>();
             splittedLineStrings = line.Split_RemoveWhiteTokens(_separatingStrings).ToList();
 
             bool doDiscardSignal = false;
 
-            foreach (var discardKeyword in discardKeywords)
+            foreach (var discardKeyword in _discardKeywords)
             {
                 List<string> containsDiscardKeywordList = splittedLineStrings.Where(str => str.Contains(discardKeyword)).ToList();
 
@@ -208,44 +210,47 @@ namespace PlcComLibrary
                 {
                     char[] charsToTrim = new char[] { '\\', '/', '\"', ' '};
                     string udtFileName = word.Trim(charsToTrim);
-                    string filePath = AppDomain.CurrentDomain.BaseDirectory + Constants.BaseDirectorySubDirs + udtFileName + Constants.S7UdtExtension;
-                    return ParseDb(filePath, _dbNumber, _discardKeywords);
+                    string filePath = AppDomain.CurrentDomain.BaseDirectory + Constants.BaseDirectorySubDirs + 
+                        udtFileName + Constants.S7UdtExtension;
+
+
+                    var lines = ReadS7DbFile(filePath);
+                    if (lines?.Count == 0)
+                    {
+                        return signals;
+                    }
+
+                    return ParseDb(lines, _discardKeywords);
                 }
             }
 
             return signals;
         }
-        //private List<string> FilterOnKeywords(List<string> splittedLines)
-        //{
-        //    // Check for _dbSectionKeywords
-        //    foreach (var keyword in _dbSectionKeywords)
-        //    {
-        //        if (splittedLines.Contains(keyword))
-        //        {
-        //            splittedLines.Clear();
-        //            return splittedLines;
-        //        }
-        //    }
-        //    return splittedLines;
-        //}
 
-        private int HandleDatatypeArray(string dataTypeStr)
+        private List<SignalModelContext> HandleDatatypeArray(List<string> splittedLines, bool signalDiscarded)
         {
-            // Excepected input string if array is Int type and size is 3: Array[0..2] of Int
+            Debug.Assert(splittedLines.Count == 2);
+
+            var output = new List<SignalModelContext>();
+            string name = splittedLines[0]; ;
+            string dataTypeStr = splittedLines[1];
+
+            // Excepected value of dataTypeStr if array datatype is Int  and size is 3: Array[0..2] of Int
 
             // Array[0..2] of Int   
             // 1. split .. and remove 0, 6 => splitted[0] = lower value
             // splitt on ']' + ' '  =>  splitted.First = upper value,  splitted.First
 
             // Example input string: "Array[0..2] of Int" At least 18 chars and always begins with: Array[
+
+
             if (String.IsNullOrEmpty(dataTypeStr) || dataTypeStr.Count() < 18 || !dataTypeStr.StartsWith("Array["))
             {
                 throw new ArgumentException("Invalid file. Array parse error. Array string: ");
             }
 
-            int arrayByteSize = 0;
-            string arrayBeginStr, arrayEndStr, arrayDataTypeStr;
 
+            string arrayBeginStr, arrayEndStr, arrayDataTypeStr;
 
             // 1. split on .. and remove 0, 6 => splitted[0] == lower value
             List<string> dataTypeStrSplitted = dataTypeStr.Split(new string[] { ".." } , StringSplitOptions.None).ToList();
@@ -255,10 +260,8 @@ namespace PlcComLibrary
             arrayEndStr = splitGetUpperValueAndType.First();
             arrayDataTypeStr = splitGetUpperValueAndType.Last();
 
-
-            bool parseOk;
-            int arrayBegin;
-            int arrayEnd;
+            bool parseOk = false;
+            int arrayBegin, arrayEnd;
             parseOk = Int32.TryParse(arrayBeginStr, out arrayBegin);
             parseOk = Int32.TryParse(arrayEndStr, out arrayEnd);
 
@@ -268,45 +271,25 @@ namespace PlcComLibrary
             if (parseOk && byteMultiplier > 0)
             {
                 int arraySize = arrayEnd - arrayBegin + 1;
-                arrayByteSize = arraySize * byteMultiplier;
+
+                splittedLines[1] = dataTypeStr;
+                for (int i = 0; i < arraySize; i++)
+                {
+                    if (!signalDiscarded)
+                    {
+
+                        output.Add(CreateSignalContextItem(splittedLines, dataTypeStr));
+                    }
+                    _bitByteIndexControl.Update(byteMultiplier, dataTypeStr == "Bool", false);
+                }
             }
             else
             {
                 throw new Exception("Invalid file. Array parse error");
             }
-          
-            return arrayByteSize;
+
+            return output;
         }
 
-        
-
-        private void UpdateByteAndBitIndex(int byteSize, bool isArrayType, bool isBoolType, bool isFirstItem)
-        {
-            if (!isArrayType)
-            {
-
-                if (isBoolType)
-                {
-                    if (!isFirstItem)
-                    {
-                        _bitCounter++;
-                    }
-
-                    if (_bitCounter > Constants.LastBitInByte)
-                    {
-                        _bitCounter = 0;
-                        _byteCounter++;
-                    }
-                }
-                else
-                {
-                    _byteCounter += byteSize;
-                }
-            }
-            else
-            {
-                _byteCounter += byteSize;
-            }
-        }
     }
 }

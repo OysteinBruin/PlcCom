@@ -82,7 +82,15 @@ namespace PlcComUI.ViewModels
 
         private void InitializeApplication(object sender, DoWorkEventArgs e)
         {
-            _plcComManager.LoadConfigs();
+            try
+            {
+                _plcComManager.LoadConfigs();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            
         }
 
         private void InitializationCompleted(object sender, RunWorkerCompletedEventArgs e)

@@ -3,11 +3,13 @@ using PlcComLibrary.PlcCom;
 using PlcComLibrary.Models;
 using PlcComLibrary.Models.Signal;
 using PlcComLibrary.Factories;
+using PlcComLibrary.DbParser;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using log4net;
+
 
 namespace PlcComLibrary.Config
 {
@@ -72,15 +74,26 @@ namespace PlcComLibrary.Config
                     }
 
                     string filePath = AppDomain.CurrentDomain.BaseDirectory + Constants.BaseDirectorySubDirs + dbNumberDbName.Last();
-                    var signalContextList = _dbParser.ParseDb(filePath, dbNumber, config.DiscardKeywords);
 
-                    for (int i = 0; i < signalContextList.Count; i++)
+                    try
                     {
-                        signalContextList[i].CpuIndex = plcServiceList.Count;
-                        signalContextList[i].DbIndex = datablocks.Count;
-                        signalContextList[i].Index = i;
-                        signalContextList[i].DbNumber = dbNumber;
-                        signals.Add(SignalFactory.Create(signalContextList[i]));
+                        var fileLines = _dbParser.ReadS7DbFile(filePath);
+
+                        var signalContextList = _dbParser.ParseDb(fileLines, config.DiscardKeywords);
+
+                        for (int i = 0; i < signalContextList.Count; i++)
+                        {
+                            signalContextList[i].CpuIndex = plcServiceList.Count;
+                            signalContextList[i].DbIndex = datablocks.Count;
+                            signalContextList[i].Index = i;
+                            signalContextList[i].DbNumber = dbNumber;
+                            signals.Add(SignalFactory.Create(signalContextList[i]));
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // TODO - Handle
+                        throw;
                     }
 
                     if (signals?.Count > 0)
