@@ -74,6 +74,7 @@
     <Compile Include="Config\ICpuConfig.cs" />
     <Compile Include="Config\CpuConfig.cs" />
     <Compile Include="DbParser\BitByteIndexControl.cs" />
+    <Compile Include="DbParser\DbFileLineItem.cs" />
     <Compile Include="Factories\SignalFactory.cs" />
     <Compile Include="Models\Signal\BoolSignalModel.cs" />
     <Compile Include="Models\Signal\Int16SignalModel.cs" />

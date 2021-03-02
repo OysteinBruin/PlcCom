@@ -17,7 +17,7 @@ namespace PlcComLibrary.DbParser
         private string[] _separatingStrings = { "//", ";", ":" };
         private readonly IList<string> _contentStartKeywords = new List<string> { "STRUCT", "VAR" };
         private IList<string> _discardKeywords;
-        
+        private List<string> _fileLines;
         private IList<string> _structNames = new List<string>();
         
 
@@ -51,16 +51,21 @@ namespace PlcComLibrary.DbParser
             log.Info($"DatablockParser.ParseDb");
             _bitByteIndexControl.Reset();
             _discardKeywords = discardKeywords;
-            List<SignalModelContext> signalContextList = new List<SignalModelContext>();
+            _fileLines = fileLines;
 
             // Return if no data from db file
-            if (fileLines.Count == 0)
+            if (_fileLines.Count == 0)
             {
                 log.Warn($"DatablockParser.ParseDb return - no lines in file");
-                return signalContextList;
+                return new List<SignalModelContext>();
             }
 
-            bool result = RemoveHeaderData(fileLines, _contentStartKeywords);
+            return ParseDb();
+        }
+
+        private List<SignalModelContext> ParseDb()
+        {
+            bool result = RemoveHeaderData(_fileLines, _contentStartKeywords);
 
             // TODO: HANDLE
             if (!result)
@@ -68,60 +73,90 @@ namespace PlcComLibrary.DbParser
                 throw new Exception("Invalid file. No STRUCT or VAR keyword found.");
             }
 
-            foreach (var line in fileLines)
+            List<SignalModelContext> signalContextList = new List<SignalModelContext>();
+            foreach (var line in _fileLines)
             {
-                (List<string> splittedLines, bool signalDiscarded) = SplitAndValidateLine(line);
+                var lineItem = new DbFileLineItem(line, _discardKeywords);
+                //(List<string> splittedLines, bool signalDiscarded) = SplitAndValidateLine(line);
 
-                IList<SignalModelContext> signalsFromUdt = CheckforUDT(splittedLines);
+                IList<SignalModelContext> signalsFromUdt = CheckforUDT(lineItem);
                 signalContextList.AddRange(signalsFromUdt);
 
-                if (splittedLines.Count == 1)
+                if (lineItem.IsEndOfStruct)
                 {
-                    if (splittedLines[0] == "END_STRUCT")
-                    {
-                        if (_structNames.Count > 0)
-                            _structNames.RemoveAt(_structNames.Count-1);
-                    }
-
-                }  
-                else if (splittedLines.Count >= 2 && splittedLines.Count <= 3)
+                    if (_structNames.Count > 0)
+                        _structNames.RemoveAt(_structNames.Count - 1);
+                }
+                else if (lineItem.IsDataType)
                 {
-                    // The datatype kan be struct, Array or one of the target data types (Constants.S7DataTypes)
-                    string dataTypeStr = splittedLines[1];
+                    int byteSize = Constants.S7DataTypesByteSize[lineItem.DataTypeStr];
+                    bool isFirstItem = (signalContextList.Count == 0);
+                    _bitByteIndexControl.Update(byteSize, lineItem.IsBoolType, isFirstItem);
 
-                    if (Constants.S7DataTypes.Contains(dataTypeStr))
+                    if (!lineItem.IsDiscarded)
                     {
-                        int byteSize = Constants.S7DataTypesByteSize[dataTypeStr];
-                        bool isBool = (dataTypeStr == "Bool");
-                        bool isFirstItem = (signalContextList.Count == 0);
-                        _bitByteIndexControl.Update(byteSize, isBool, isFirstItem);
-
-                        if (!signalDiscarded)
-                        {
-                            signalContextList.Add(CreateSignalContextItem(splittedLines));
-                        }
-                    }
-                    else if (dataTypeStr.Contains(Constants.S7DbArrayKeyword))
-                    {
-                        signalContextList.AddRange(HandleDatatypeArray(splittedLines, signalDiscarded));
-                    }
-                    else if (dataTypeStr.Contains(Constants.S7DbStructKeyword))
-                    {
-                        _structNames.Add(splittedLines[0]);
-
-                        // A struct always increase an odd byte value ( i.e bool
-                        _bitByteIndexControl.AddedStructCorrection();
+                        signalContextList.Add(CreateSignalContextItem(lineItem));
                     }
                 }
+                else if (lineItem.IsArrayType)
+                {
+                    signalContextList.AddRange(HandleDatatypeArray(lineItem));
+                }
+                else if (lineItem.IsStruct)
+                {
+                    _structNames.Add(lineItem.Name);
+
+                    // A struct always increase an odd byte value ( i.e bool
+                    _bitByteIndexControl.AddedStructCorrection();
+                }
+
+                //if (splittedLines.Count == 1)
+                //{
+                //    if (splittedLines[0] == "END_STRUCT")
+                //    {
+                //        if (_structNames.Count > 0)
+                //            _structNames.RemoveAt(_structNames.Count - 1);
+                //    }
+
+                //}
+                //else if (splittedLines.Count >= 2 && splittedLines.Count <= 3)
+                //{
+                //    // The datatype kan be struct, Array or one of the target data types (Constants.S7DataTypes)
+                //    string dataTypeStr = splittedLines[1];
+
+                //    if (Constants.S7DataTypes.Contains(dataTypeStr))
+                //    {
+                //        int byteSize = Constants.S7DataTypesByteSize[dataTypeStr];
+                //        bool isBool = (dataTypeStr == "Bool");
+                //        bool isFirstItem = (signalContextList.Count == 0);
+                //        _bitByteIndexControl.Update(byteSize, isBool, isFirstItem);
+
+                //        if (!signalDiscarded)
+                //        {
+                //            signalContextList.Add(CreateSignalContextItem(splittedLines));
+                //        }
+                //    }
+                //    else if (dataTypeStr.Contains(Constants.S7DbArrayKeyword))
+                //    {
+                //        signalContextList.AddRange(HandleDatatypeArray(splittedLines, signalDiscarded));
+                //    }
+                //    else if (dataTypeStr.Contains(Constants.S7DbStructKeyword))
+                //    {
+                //        _structNames.Add(splittedLines[0]);
+
+                //        // A struct always increase an odd byte value ( i.e bool
+                //        _bitByteIndexControl.AddedStructCorrection();
+                //    }
+                //}
             }
             log.Info($"DatablockParser.ParseDb - parse completed - signal count {signalContextList.Count}");
             return signalContextList;
         }
 
         
-        private SignalModelContext CreateSignalContextItem(List<string> splittedLines)
+        private SignalModelContext CreateSignalContextItem(DbFileLineItem lineItem)
         {
-            if (splittedLines.Count < 2)
+            if (!lineItem.IsDataType)
                 return null;
 
             string name = String.Empty;
@@ -129,19 +164,13 @@ namespace PlcComLibrary.DbParser
             {
                 name += structName + '.';
             }
-            name += splittedLines[0];
-
-            string desciption = String.Empty;
-            if (splittedLines.Count == 3)
-            {
-                desciption = splittedLines.Last();
-            }
+            name += lineItem.Name;
 
             SignalModelContext ctx = new SignalModelContext
             {
                 Name = name,
-                Description = desciption,
-                DataTypeStr = splittedLines[1],
+                Description = lineItem.Description,
+                DataTypeStr = lineItem.DataTypeStr,
                 ByteIndex = _bitByteIndexControl.ByteCounter,
                 BitNumber = _bitByteIndexControl.BitCounter
             };
@@ -164,7 +193,6 @@ namespace PlcComLibrary.DbParser
                         }
                     }
                 }
-
                 fileLines[i].Trim();
             }
 
@@ -177,64 +205,115 @@ namespace PlcComLibrary.DbParser
             return false;
         }
 
-        (List<string> splittedLines, bool discarded) SplitAndValidateLine(string line)
-        {
-            List<string> splittedLineStrings = new List<string>();
-            splittedLineStrings = line.Split_RemoveWhiteTokens(_separatingStrings).ToList();
+        //(List<string> splittedLines, bool discarded) SplitAndValidateLine(string line)
+        //{
+        //    List<string> splittedLineStrings = new List<string>();
 
-            bool doDiscardSignal = false;
+        //    // Remove curly brace content from line
+        //    // e.g: { ExternalAccessible := 'False'; ExternalVisible := 'False'; ExternalWritable := 'False'}
+        //    int beginCurlyIdx = line.IndexOf('{');
+        //    int endCurlyIdx = line.IndexOf('}');
+        //    if (endCurlyIdx > beginCurlyIdx && beginCurlyIdx >= 0)
+        //    {
+        //        string[] separators = { "{", "}" };
+        //        splittedLineStrings = line.Split_RemoveWhiteTokens(separators).ToList();
+                
+        //        if (splittedLineStrings.Count == 3)
+        //        {
+        //            line = splittedLineStrings.First() + splittedLineStrings.Last();
+        //        }
+        //    }
 
-            foreach (var discardKeyword in _discardKeywords)
-            {
-                List<string> containsDiscardKeywordList = splittedLineStrings.Where(str => str.Contains(discardKeyword)).ToList();
+        //    // Separate line into name, datatype and optional description 
+        //    splittedLineStrings = line.Split_RemoveWhiteTokens(_separatingStrings).ToList();
 
-                if (containsDiscardKeywordList.Count > 0)
-                {
-                    doDiscardSignal = true;
-                }
-            }
-            return (splittedLineStrings, doDiscardSignal);
-        }
+        //    bool doDiscardSignal = false;
+
+        //    foreach (var discardKeyword in _discardKeywords)
+        //    {
+        //        List<string> containsDiscardKeywordList = splittedLineStrings.Where(str => str.Contains(discardKeyword)).ToList();
+
+        //        if (containsDiscardKeywordList.Count > 0)
+        //        {
+        //            doDiscardSignal = true;
+        //        }
+        //    }
+        //    return (splittedLineStrings, doDiscardSignal);
+        //}
 
         /// <summary>
         /// Check if the current line is a UDT
         /// </summary>
         /// <param name="splittedLines"></param>
         /// <returns></returns>
-        private List<SignalModelContext> CheckforUDT(List<string> splittedLines)
+        private List<SignalModelContext> CheckforUDT(DbFileLineItem lineItem)
         {
-            List<SignalModelContext> signals = new List<SignalModelContext>();
-
-            foreach (var word in splittedLines)
+            List<string> splittedUdtName = lineItem.DataTypeStr.Split('"').ToList();
+            if (splittedUdtName.Count > 1)
             {
-                List<string> splittedWords = word.Split('"').ToList();
-                if (splittedWords.Count > 1)
-                {
-                    char[] charsToTrim = new char[] { '\\', '/', '\"', ' '};
-                    string udtFileName = word.Trim(charsToTrim);
-                    string filePath = AppDomain.CurrentDomain.BaseDirectory + Constants.BaseDirectorySubDirs + 
+                char[] charsToTrim = new char[] { '\\', '/', '\"', ' ' };
+                string udtFileName = lineItem.DataTypeStr.Trim(charsToTrim);
+
+                string filePath = AppDomain.CurrentDomain.BaseDirectory + Constants.BaseDirectorySubDirs +
                         udtFileName + Constants.S7UdtExtension;
 
-
-                    var lines = ReadS7DbFile(filePath);
-                    if (lines?.Count == 0)
+                FileInfo fileInfo = new FileInfo(filePath);
+                if (fileInfo.Exists)
+                {
+                    _fileLines = ReadS7DbFile(filePath);
+                    if (_fileLines?.Count == 0)
                     {
-                        return signals;
+                        return new List<SignalModelContext>();
                     }
 
-                    return ParseDb(lines, _discardKeywords);
+                    _structNames.Add(udtFileName);
+                    var signals = ParseDb();
+                    if (_structNames.Count > 0)
+                    {
+                        _structNames.RemoveAt(_structNames.Count - 1);
+                    }
+
+                    return signals;
                 }
             }
+            //foreach (var word in splittedLines)
+            //{
+            //    List<string> splittedWords = word.Split('"').ToList();
+            //    if (splittedWords.Count > 1)
+            //    {
+            //        char[] charsToTrim = new char[] { '\\', '/', '\"', ' '};
+            //        string udtFileName = word.Trim(charsToTrim);
 
-            return signals;
+            //        string filePath = AppDomain.CurrentDomain.BaseDirectory + Constants.BaseDirectorySubDirs + 
+            //            udtFileName + Constants.S7UdtExtension;
+
+            //        FileInfo fileInfo = new FileInfo(filePath);
+            //        if (fileInfo.Exists)
+            //        {
+            //            _fileLines = ReadS7DbFile(filePath);
+            //            if (_fileLines?.Count == 0)
+            //            {
+            //                return new List<SignalModelContext>();
+            //            }
+
+            //            _structNames.Add(udtFileName);
+            //            var signals = ParseDb();
+            //            if (_structNames.Count > 0)
+            //            {
+            //                _structNames.RemoveAt(_structNames.Count - 1);
+            //            }
+
+            //            return signals;
+            //        }
+            //    }
+            //}
+            return new List<SignalModelContext>();
         }
 
-        private List<SignalModelContext> HandleDatatypeArray(List<string> splittedLines, bool signalDiscarded)
+        private List<SignalModelContext> HandleDatatypeArray(DbFileLineItem lineItem)
         {
-            Debug.Assert(splittedLines.Count == 2);
-
             var output = new List<SignalModelContext>();
-            string dataTypeStr = splittedLines[1];
+           
 
             // Excepected value of dataTypeStr if array datatype is Int  and size is 3: Array[0..2] of Int
 
@@ -245,7 +324,7 @@ namespace PlcComLibrary.DbParser
             // Example input string: "Array[0..2] of Int" At least 18 chars and always begins with: Array[
 
 
-            if (String.IsNullOrEmpty(dataTypeStr) || dataTypeStr.Count() < 18 || !dataTypeStr.StartsWith("Array["))
+            if (String.IsNullOrEmpty(lineItem.DataTypeStr) || lineItem.DataTypeStr.Count() < 18 || !lineItem.DataTypeStr.StartsWith("Array["))
             {
                 throw new ArgumentException("Invalid file. Array parse error. Array string: ");
             }
@@ -254,7 +333,7 @@ namespace PlcComLibrary.DbParser
             string arrayBeginStr, arrayEndStr, arrayDataTypeStr;
 
             // 1. split on .. and remove 0, 6 => splitted[0] == lower value
-            List<string> dataTypeStrSplitted = dataTypeStr.Split(new string[] { ".." } , StringSplitOptions.None).ToList();
+            List<string> dataTypeStrSplitted = lineItem.DataTypeStr.Split(new string[] { ".." } , StringSplitOptions.None).ToList();
             arrayBeginStr = dataTypeStrSplitted[0].Remove(0, 6);
             
             List<string> splitGetUpperValueAndType = dataTypeStrSplitted[1].Split(new string[] { "]", " " } , StringSplitOptions.None).ToList();
@@ -272,14 +351,14 @@ namespace PlcComLibrary.DbParser
             if (parseOk && byteMultiplier > 0)
             {
                 int arraySize = arrayEnd - arrayBegin + 1;
-                string name = splittedLines[0];
-                splittedLines[1] = arrayDataTypeStr;
+                string name = lineItem.Name;
+                lineItem.DataTypeStr = arrayDataTypeStr;
                 for (int i = 0; i < arraySize; i++)
                 {
-                    if (!signalDiscarded)
+                    if (!lineItem.IsDiscarded)
                     {
-                        splittedLines[0] = name + $"[{i}]";
-                        output.Add(CreateSignalContextItem(splittedLines));
+                        lineItem.Name = name + $"[{i}]";
+                        output.Add(CreateSignalContextItem(lineItem));
                     }
                     _bitByteIndexControl.Update(byteMultiplier, arrayDataTypeStr == "Bool", false);
                 }
