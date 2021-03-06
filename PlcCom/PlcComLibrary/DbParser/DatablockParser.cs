@@ -83,6 +83,8 @@ namespace PlcComLibrary.DbParser
                     IList<SignalModelContext> signalsFromUdt = CheckForUDT(lineItem);
                     signalContextList.AddRange(signalsFromUdt);
 
+                    IList<SignalModelContext> signalsFromArray = CheckForArrayType(lineItem);
+                    signalContextList.AddRange(signalsFromArray);
 
                     _bitByteIndexControl.Update(lineItem);
 
@@ -91,47 +93,6 @@ namespace PlcComLibrary.DbParser
                         signalContextList.Add(CreateSignalContextItem(lineItem));
                     }
                 }
-                //(List<string> splittedLines, bool signalDiscarded) = SplitAndValidateLine(line);
-
-                
-
-                //if (lineItem.IsEndOfStruct)
-                //{
-                //    if (_structNames.Count > 0)
-                //        _structNames.RemoveAt(_structNames.Count - 1);
-                //}
-                //else if (lineItem.IsDataType)
-                //{
-                //    int byteSize = Constants.S7DataTypesByteSize[lineItem.DataTypeStr];
-                //    //if (lineItem.Name.Contains("ActivePipeType") && _bitByteIndexControl.ByteCounter > 110)
-                //    //{ }
-
-                //    if (lineItem.Name.Contains("MB") && _bitByteIndexControl.ByteCounter > 0)
-                //    { }
-
-                //    _bitByteIndexControl.Update(byteSize, lineItem.IsBoolType);
-
-
-
-                //    if (!lineItem.IsDiscarded)
-                //    {
-                //        signalContextList.Add(CreateSignalContextItem(lineItem));
-                //    }
-                //}
-                //else if (lineItem.IsArrayType)
-                //{
-                //    signalContextList.AddRange(HandleDatatypeArray(lineItem));
-                //}
-                //else if (lineItem.IsStruct)
-                //{
-                //    if (_bitByteIndexControl.ByteCounter > 69)
-                //    { }
-
-                //    _structNames.Add(lineItem.Name);
-
-                //    // A struct always increase an odd byte value ( i.e bool
-                //    _bitByteIndexControl.NewSectionCorrection();
-                //}
             }
             log.Info($"DatablockParser.ParseDb - parse completed - signal count {signalContextList.Count}");
             return signalContextList;
@@ -189,42 +150,6 @@ namespace PlcComLibrary.DbParser
             return false;
         }
 
-        //(List<string> splittedLines, bool discarded) SplitAndValidateLine(string line)
-        //{
-        //    List<string> splittedLineStrings = new List<string>();
-
-        //    // Remove curly brace content from line
-        //    // e.g: { ExternalAccessible := 'False'; ExternalVisible := 'False'; ExternalWritable := 'False'}
-        //    int beginCurlyIdx = line.IndexOf('{');
-        //    int endCurlyIdx = line.IndexOf('}');
-        //    if (endCurlyIdx > beginCurlyIdx && beginCurlyIdx >= 0)
-        //    {
-        //        string[] separators = { "{", "}" };
-        //        splittedLineStrings = line.Split_RemoveWhiteTokens(separators).ToList();
-                
-        //        if (splittedLineStrings.Count == 3)
-        //        {
-        //            line = splittedLineStrings.First() + splittedLineStrings.Last();
-        //        }
-        //    }
-
-        //    // Separate line into name, datatype and optional description 
-        //    splittedLineStrings = line.Split_RemoveWhiteTokens(_separatingStrings).ToList();
-
-        //    bool doDiscardSignal = false;
-
-        //    foreach (var discardKeyword in _discardKeywords)
-        //    {
-        //        List<string> containsDiscardKeywordList = splittedLineStrings.Where(str => str.Contains(discardKeyword)).ToList();
-
-        //        if (containsDiscardKeywordList.Count > 0)
-        //        {
-        //            doDiscardSignal = true;
-        //        }
-        //    }
-        //    return (splittedLineStrings, doDiscardSignal);
-        //}
-
         /// <summary>
         /// Check if the current line is a UDT
         /// </summary>
@@ -265,7 +190,7 @@ namespace PlcComLibrary.DbParser
             return new List<SignalModelContext>();
         }
 
-        private List<SignalModelContext> HandleDatatypeArray(DbFileLineItem lineItem)
+        private List<SignalModelContext> CheckForArrayType(DbFileLineItem lineItem)
         {
             var output = new List<SignalModelContext>();
            
@@ -279,9 +204,9 @@ namespace PlcComLibrary.DbParser
             // Example input string: "Array[0..2] of Int" At least 18 chars and always begins with: Array[
 
 
-            if (String.IsNullOrEmpty(lineItem.DataTypeStr) || lineItem.DataTypeStr.Count() < 18 || !lineItem.DataTypeStr.StartsWith("Array["))
+            if (String.IsNullOrEmpty(lineItem.DataTypeStr) || lineItem.DataTypeStr.Count() < 18 || !lineItem.DataTypeStr.Contains("Array["))
             {
-                throw new ArgumentException("Invalid file. Array parse error. Array string: ");
+                return output;
             }
 
 
