@@ -17,6 +17,9 @@ namespace PlcComLibrary.DbParser
 
         public DbFileLineItem(string line, IList<string> _discardKeywords)
         {
+            if (line == null || _discardKeywords == null)
+                return;
+
             List<string> lineStrings = new List<string>();
 
             // Remove curly brace content from line
@@ -65,8 +68,12 @@ namespace PlcComLibrary.DbParser
                 {
                     IsStruct = true;
                 }
+                else if(DataTypeStr.Split('"').ToList().Count > 1)
+                {
+                    IsUdp = true;
+                }
             }
-                
+
             // Check if signal is to be disacrded
             foreach (var discardKeyword in _discardKeywords)
             {
@@ -76,6 +83,16 @@ namespace PlcComLibrary.DbParser
                 {
                     IsDiscarded = true;
                 }
+            }
+
+            if (!IsDataType)
+            {
+                IsDiscarded = true;
+            }
+
+            if (IsDataType || IsEndOfStruct || IsArrayType || IsBoolType || IsUdp)
+            {
+                IsValid = true;
             }
         }
 
@@ -87,6 +104,8 @@ namespace PlcComLibrary.DbParser
         public bool IsEndOfStruct { get; set; } = false;
         public bool IsArrayType { get; set; } = false;
         public bool IsBoolType { get; set; } = false;
+        public bool IsUdp { get; set; } = false;
         public bool IsDiscarded { get; set; } = false;
+        public bool IsValid { get; set; } = false;
     }
 }

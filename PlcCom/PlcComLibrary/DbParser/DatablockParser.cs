@@ -49,7 +49,7 @@ namespace PlcComLibrary.DbParser
         public List<SignalModelContext> ParseDb(List<string> fileLines, IList<string> discardKeywords)
         {
             log.Info($"DatablockParser.ParseDb");
-            _bitByteIndexControl.Reset();
+            //_bitByteIndexControl.Reset();
             _discardKeywords = discardKeywords;
             _fileLines = fileLines;
 
@@ -77,48 +77,61 @@ namespace PlcComLibrary.DbParser
             foreach (var line in _fileLines)
             {
                 var lineItem = new DbFileLineItem(line, _discardKeywords);
-                //(List<string> splittedLines, bool signalDiscarded) = SplitAndValidateLine(line);
 
-                IList<SignalModelContext> signalsFromUdt = CheckForUDT(lineItem);
-                signalContextList.AddRange(signalsFromUdt);
-
-                if (lineItem.IsEndOfStruct)
+                if (lineItem.IsValid)
                 {
-                    if (_structNames.Count > 0)
-                        _structNames.RemoveAt(_structNames.Count - 1);
-                }
-                else if (lineItem.IsDataType)
-                {
-                    int byteSize = Constants.S7DataTypesByteSize[lineItem.DataTypeStr];
-                    //if (lineItem.Name.Contains("ActivePipeType") && _bitByteIndexControl.ByteCounter > 110)
-                    //{ }
+                    IList<SignalModelContext> signalsFromUdt = CheckForUDT(lineItem);
+                    signalContextList.AddRange(signalsFromUdt);
 
-                    if (lineItem.Name.Contains("MB") && _bitByteIndexControl.ByteCounter > 0)
-                    { }
 
-                    _bitByteIndexControl.Update(byteSize, lineItem.IsBoolType);
+                    _bitByteIndexControl.Update(lineItem);
 
-                    
-
-                    if (!lineItem.IsDiscarded)
+                    if (!lineItem.IsDiscarded )
                     {
                         signalContextList.Add(CreateSignalContextItem(lineItem));
                     }
                 }
-                else if (lineItem.IsArrayType)
-                {
-                    signalContextList.AddRange(HandleDatatypeArray(lineItem));
-                }
-                else if (lineItem.IsStruct)
-                {
-                    if (_bitByteIndexControl.ByteCounter > 69)
-                    { }
+                //(List<string> splittedLines, bool signalDiscarded) = SplitAndValidateLine(line);
 
-                    _structNames.Add(lineItem.Name);
+                
 
-                    // A struct always increase an odd byte value ( i.e bool
-                    _bitByteIndexControl.NewSectionCorrection();
-                }
+                //if (lineItem.IsEndOfStruct)
+                //{
+                //    if (_structNames.Count > 0)
+                //        _structNames.RemoveAt(_structNames.Count - 1);
+                //}
+                //else if (lineItem.IsDataType)
+                //{
+                //    int byteSize = Constants.S7DataTypesByteSize[lineItem.DataTypeStr];
+                //    //if (lineItem.Name.Contains("ActivePipeType") && _bitByteIndexControl.ByteCounter > 110)
+                //    //{ }
+
+                //    if (lineItem.Name.Contains("MB") && _bitByteIndexControl.ByteCounter > 0)
+                //    { }
+
+                //    _bitByteIndexControl.Update(byteSize, lineItem.IsBoolType);
+
+
+
+                //    if (!lineItem.IsDiscarded)
+                //    {
+                //        signalContextList.Add(CreateSignalContextItem(lineItem));
+                //    }
+                //}
+                //else if (lineItem.IsArrayType)
+                //{
+                //    signalContextList.AddRange(HandleDatatypeArray(lineItem));
+                //}
+                //else if (lineItem.IsStruct)
+                //{
+                //    if (_bitByteIndexControl.ByteCounter > 69)
+                //    { }
+
+                //    _structNames.Add(lineItem.Name);
+
+                //    // A struct always increase an odd byte value ( i.e bool
+                //    _bitByteIndexControl.NewSectionCorrection();
+                //}
             }
             log.Info($"DatablockParser.ParseDb - parse completed - signal count {signalContextList.Count}");
             return signalContextList;
@@ -239,7 +252,7 @@ namespace PlcComLibrary.DbParser
                     }
 
                     _structNames.Add(lineItem.Name);
-                    _bitByteIndexControl.NewSectionCorrection();
+                    //_bitByteIndexControl.NewSectionCorrection();
                     var signals = ParseDb();
                     if (_structNames.Count > 0)
                     {
@@ -297,7 +310,7 @@ namespace PlcComLibrary.DbParser
                 lineItem.DataTypeStr = arrayDataTypeStr;
                 for (int i = 0; i < arraySize; i++)
                 {
-                    _bitByteIndexControl.Update(byteMultiplier, arrayDataTypeStr == "Bool");
+                    _bitByteIndexControl.Update(lineItem);
                     if (!lineItem.IsDiscarded)
                     {
                         lineItem.Name = name + $"[{i}]";

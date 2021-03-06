@@ -9,127 +9,250 @@ namespace PlcComLibrary.DbParser
 {
     public class BitByteIndexControl
     {
-        private int _byteCouter;
-        private int _previousByteCountValue;
-        private int _previousByteSize;
-        private bool _previousItemWasBool;
-        private int _bytesRemaining = 0;
-        private int _previousNewSectionByteCount = 0;
-        private bool _previousIterationWasNewSection = false;
+        //private int _byteCouter;
+        //private int _previousByteCountValue;
+        //private int _previousByteSize;
+        //private bool _previousItemWasBool;
+        //private int _bytesRemaining = 0;
+        //private int _previousNewSectionByteCount = 0;
+        //private bool _previousIterationWasNewSection = false;
+
+        private DbFileLineItem _previousLineItem;
+        private DbFileLineItem _previousDataTypeLineItem;
 
         public BitByteIndexControl()
         {
-            Reset();
+            // Reset();
+            _previousDataTypeLineItem = new DbFileLineItem();
         }
         
-        public int ByteCounter 
-        { 
-            get => _byteCouter;
-            private set
-            {
-                _byteCouter = value;
-            }
-        }
+        public int ByteCounter { get; private set; }
+    
         public int BitCounter { get; private set; }
 
-        public void Update(int byteSize, bool isBoolType)
+
+        public void Update(DbFileLineItem lineItem)
         {
-            if (isBoolType)
+            if (lineItem.Name.Contains("ParkedPos") )
             {
-                if (!_previousIterationWasNewSection && _previousItemWasBool/* && _previousByteCountValue == ByteCounter*/)
+
+            }
+            if (_previousLineItem != null && _previousLineItem.Name.Contains("SpinO"))
+            {
+
+            }
+            if (_previousLineItem != null && _previousLineItem.IsBoolType && lineItem.DataTypeStr == "Real")
+            {
+
+            }
+
+            if (_previousLineItem == null)
+            {
+                BitCounter = 0;
+                ByteCounter = 0;
+            }
+            else
+            {
+                if (lineItem.IsDataType)
+                {
+                    if (lineItem.IsBoolType)
+                    {
+                        HandleBooleanType();
+                    }
+                    else
+                    {
+                        HandleNumericType();
+                    }
+                }
+            }
+
+           
+             _previousLineItem = lineItem;
+
+            if (lineItem.IsDataType)
+            {
+                _previousDataTypeLineItem = lineItem;
+            }
+        }
+
+        private void HandleBooleanType()
+        {
+
+
+
+            if (_previousLineItem.IsDataType)
+            {
+                if (_previousLineItem.IsBoolType)
                 {
                     BitCounter++;
+                    if (BitCounter > Constants.LastBitInByte)
+                    {
+                        BitCounter = 0;
+                        ByteCounter++;
+                    }
                 }
-
-                if (BitCounter > Constants.LastBitInByte)
+                else
                 {
                     BitCounter = 0;
-                    ByteCounter++;
-                }
-
-                if (!_previousItemWasBool)
-                {
-                    ByteCounter += _previousByteSize;
+                    ByteCounter += Constants.S7DataTypesByteSize[_previousLineItem.DataTypeStr];
                 }
             }
             else
             {
-                if (_previousItemWasBool)
+                BitCounter = 0;
+                if (_previousDataTypeLineItem.IsDataType)
                 {
-                    BitCounter = 0;
+                    int previousDataTypeLineItemBytesize = Constants.S7DataTypesByteSize[_previousDataTypeLineItem.DataTypeStr];
 
-                    if (!_previousIterationWasNewSection)
+                    ByteCounter += previousDataTypeLineItemBytesize;
+
+                    if (ByteCounter % 2 != 0)
                     {
-                        if (ByteCounter % 2 == 0)
-                        {
-                            ByteCounter += 2;
-                            _bytesRemaining = byteSize - 2;
-
-                            //_bytesRemaining = byteSize;
-                        }
-                        else
-                        {
-                            ByteCounter += 1;
-                            _bytesRemaining = byteSize - 1;
-
-                            //_bytesRemaining = byteSize + 1;
-                        }
+                        ByteCounter += 1;
                     }
                 }
                 else
                 {
-                    if (!_previousIterationWasNewSection)
-                    {
-                        if (byteSize > 2)
-                        {
-                            ByteCounter += 2;
-                        }
-                        else ByteCounter += byteSize;
-
-                        ByteCounter += _bytesRemaining;
-                        _bytesRemaining = 0;
-
-                        //ByteCounter += _bytesRemaining;
-                        //_bytesRemaining = byteSize;
-                    }
+                    ByteCounter += (ByteCounter % 2 == 0 ? 2 : 1);
                 }
+                
             }
-
-            _previousByteSize = byteSize;
-            _previousItemWasBool = isBoolType;
-            _previousByteCountValue = ByteCounter;
-            _previousIterationWasNewSection = false;
         }
 
-        public void NewSectionCorrection()
+        private void HandleNumericType()
         {
             BitCounter = 0;
 
-            if (_previousItemWasBool && _previousNewSectionByteCount != ByteCounter)
+            if (_previousLineItem.IsDataType)
             {
-                if (ByteCounter % 2 == 0)
+                if (_previousLineItem.IsBoolType)
                 {
-                    ByteCounter += 2;
+                    ByteCounter += (ByteCounter % 2 == 0 ? 2 : 1);
                 }
                 else
                 {
-                    ByteCounter += 1;
+                    ByteCounter += Constants.S7DataTypesByteSize[_previousLineItem.DataTypeStr];
                 }
             }
+            else
+            {
+                // Add 
+                if (_previousDataTypeLineItem.IsDataType)
+                {
+                    int previousDataTypeLineItemBytesize = Constants.S7DataTypesByteSize[_previousDataTypeLineItem.DataTypeStr];
 
-            _previousIterationWasNewSection = true;
-            _previousNewSectionByteCount = ByteCounter;
+                    ByteCounter += previousDataTypeLineItemBytesize;
+
+                    if (ByteCounter % 2 != 0)
+                    {
+                        ByteCounter += 1;
+                    }
+                }
+                else
+                {
+                    ByteCounter += (ByteCounter % 2 == 0 ? 2 : 1);
+                }
+            }
         }
 
-        public void Reset()
-        {
-            ByteCounter = 0;
-            BitCounter = 0;
-            _previousByteCountValue = 0;
-            _previousItemWasBool = false;
-            _bytesRemaining = 0;
-            _previousIterationWasNewSection = false;
+        //public void Update(int byteSize, bool isBoolType)
+        //{
+        //    if (isBoolType)
+        //    {
+        //        if (!_previousIterationWasNewSection && _previousItemWasBool/* && _previousByteCountValue == ByteCounter*/)
+        //        {
+        //            BitCounter++;
+        //        }
 
-        }
+        //        if (BitCounter > Constants.LastBitInByte)
+        //        {
+        //            BitCounter = 0;
+        //            ByteCounter++;
+        //        }
+
+        //        if (!_previousItemWasBool)
+        //        {
+        //            ByteCounter += _previousByteSize;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (_previousItemWasBool)
+        //        {
+        //            BitCounter = 0;
+
+        //            if (!_previousIterationWasNewSection)
+        //            {
+        //                if (ByteCounter % 2 == 0)
+        //                {
+        //                    ByteCounter += 2;
+        //                    _bytesRemaining = byteSize - 2;
+
+        //                    //_bytesRemaining = byteSize;
+        //                }
+        //                else
+        //                {
+        //                    ByteCounter += 1;
+        //                    _bytesRemaining = byteSize - 1;
+
+        //                    //_bytesRemaining = byteSize + 1;
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (!_previousIterationWasNewSection)
+        //            {
+        //                if (byteSize > 2)
+        //                {
+        //                    ByteCounter += 2;
+        //                }
+        //                else ByteCounter += byteSize;
+
+        //                ByteCounter += _bytesRemaining;
+        //                _bytesRemaining = 0;
+
+        //                //ByteCounter += _bytesRemaining;
+        //                //_bytesRemaining = byteSize;
+        //            }
+        //        }
+        //    }
+
+        //    _previousByteSize = byteSize;
+        //    _previousItemWasBool = isBoolType;
+        //    _previousByteCountValue = ByteCounter;
+        //    _previousIterationWasNewSection = false;
+        //}
+
+        //public void NewSectionCorrection()
+        //{
+        //    BitCounter = 0;
+
+        //    if (_previousItemWasBool && _previousNewSectionByteCount != ByteCounter)
+        //    {
+        //        if (ByteCounter % 2 == 0)
+        //        {
+        //            ByteCounter += 2;
+        //        }
+        //        else
+        //        {
+        //            ByteCounter += 1;
+        //        }
+        //    }
+
+        //    _previousIterationWasNewSection = true;
+        //    _previousNewSectionByteCount = ByteCounter;
+        //}
+
+        //public void Reset()
+        //{
+        //    ByteCounter = 0;
+        //    BitCounter = 0;
+        //    _previousByteCountValue = 0;
+        //    _previousItemWasBool = false;
+        //    _bytesRemaining = 0;
+        //    _previousIterationWasNewSection = false;
+
+        //}
     }
 }
