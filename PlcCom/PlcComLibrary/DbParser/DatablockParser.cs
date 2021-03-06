@@ -79,7 +79,7 @@ namespace PlcComLibrary.DbParser
                 var lineItem = new DbFileLineItem(line, _discardKeywords);
                 //(List<string> splittedLines, bool signalDiscarded) = SplitAndValidateLine(line);
 
-                IList<SignalModelContext> signalsFromUdt = CheckforUDT(lineItem);
+                IList<SignalModelContext> signalsFromUdt = CheckForUDT(lineItem);
                 signalContextList.AddRange(signalsFromUdt);
 
                 if (lineItem.IsEndOfStruct)
@@ -90,8 +90,15 @@ namespace PlcComLibrary.DbParser
                 else if (lineItem.IsDataType)
                 {
                     int byteSize = Constants.S7DataTypesByteSize[lineItem.DataTypeStr];
-                    bool isFirstItem = (signalContextList.Count == 0);
-                    _bitByteIndexControl.Update(byteSize, lineItem.IsBoolType, isFirstItem);
+                    //if (lineItem.Name.Contains("ActivePipeType") && _bitByteIndexControl.ByteCounter > 110)
+                    //{ }
+
+                    if (lineItem.Name.Contains("MB") && _bitByteIndexControl.ByteCounter > 0)
+                    { }
+
+                    _bitByteIndexControl.Update(byteSize, lineItem.IsBoolType);
+
+                    
 
                     if (!lineItem.IsDiscarded)
                     {
@@ -104,50 +111,14 @@ namespace PlcComLibrary.DbParser
                 }
                 else if (lineItem.IsStruct)
                 {
+                    if (_bitByteIndexControl.ByteCounter > 69)
+                    { }
+
                     _structNames.Add(lineItem.Name);
 
                     // A struct always increase an odd byte value ( i.e bool
-                    _bitByteIndexControl.AddedStructCorrection();
+                    _bitByteIndexControl.NewSectionCorrection();
                 }
-
-                //if (splittedLines.Count == 1)
-                //{
-                //    if (splittedLines[0] == "END_STRUCT")
-                //    {
-                //        if (_structNames.Count > 0)
-                //            _structNames.RemoveAt(_structNames.Count - 1);
-                //    }
-
-                //}
-                //else if (splittedLines.Count >= 2 && splittedLines.Count <= 3)
-                //{
-                //    // The datatype kan be struct, Array or one of the target data types (Constants.S7DataTypes)
-                //    string dataTypeStr = splittedLines[1];
-
-                //    if (Constants.S7DataTypes.Contains(dataTypeStr))
-                //    {
-                //        int byteSize = Constants.S7DataTypesByteSize[dataTypeStr];
-                //        bool isBool = (dataTypeStr == "Bool");
-                //        bool isFirstItem = (signalContextList.Count == 0);
-                //        _bitByteIndexControl.Update(byteSize, isBool, isFirstItem);
-
-                //        if (!signalDiscarded)
-                //        {
-                //            signalContextList.Add(CreateSignalContextItem(splittedLines));
-                //        }
-                //    }
-                //    else if (dataTypeStr.Contains(Constants.S7DbArrayKeyword))
-                //    {
-                //        signalContextList.AddRange(HandleDatatypeArray(splittedLines, signalDiscarded));
-                //    }
-                //    else if (dataTypeStr.Contains(Constants.S7DbStructKeyword))
-                //    {
-                //        _structNames.Add(splittedLines[0]);
-
-                //        // A struct always increase an odd byte value ( i.e bool
-                //        _bitByteIndexControl.AddedStructCorrection();
-                //    }
-                //}
             }
             log.Info($"DatablockParser.ParseDb - parse completed - signal count {signalContextList.Count}");
             return signalContextList;
@@ -246,7 +217,7 @@ namespace PlcComLibrary.DbParser
         /// </summary>
         /// <param name="splittedLines"></param>
         /// <returns></returns>
-        private List<SignalModelContext> CheckforUDT(DbFileLineItem lineItem)
+        private List<SignalModelContext> CheckForUDT(DbFileLineItem lineItem)
         {
             List<string> splittedUdtName = lineItem.DataTypeStr.Split('"').ToList();
             if (splittedUdtName.Count > 1)
@@ -257,6 +228,7 @@ namespace PlcComLibrary.DbParser
                 string filePath = AppDomain.CurrentDomain.BaseDirectory + Constants.BaseDirectorySubDirs +
                         udtFileName + Constants.S7UdtExtension;
 
+
                 FileInfo fileInfo = new FileInfo(filePath);
                 if (fileInfo.Exists)
                 {
@@ -266,7 +238,8 @@ namespace PlcComLibrary.DbParser
                         return new List<SignalModelContext>();
                     }
 
-                    _structNames.Add(udtFileName);
+                    _structNames.Add(lineItem.Name);
+                    _bitByteIndexControl.NewSectionCorrection();
                     var signals = ParseDb();
                     if (_structNames.Count > 0)
                     {
@@ -276,37 +249,6 @@ namespace PlcComLibrary.DbParser
                     return signals;
                 }
             }
-            //foreach (var word in splittedLines)
-            //{
-            //    List<string> splittedWords = word.Split('"').ToList();
-            //    if (splittedWords.Count > 1)
-            //    {
-            //        char[] charsToTrim = new char[] { '\\', '/', '\"', ' '};
-            //        string udtFileName = word.Trim(charsToTrim);
-
-            //        string filePath = AppDomain.CurrentDomain.BaseDirectory + Constants.BaseDirectorySubDirs + 
-            //            udtFileName + Constants.S7UdtExtension;
-
-            //        FileInfo fileInfo = new FileInfo(filePath);
-            //        if (fileInfo.Exists)
-            //        {
-            //            _fileLines = ReadS7DbFile(filePath);
-            //            if (_fileLines?.Count == 0)
-            //            {
-            //                return new List<SignalModelContext>();
-            //            }
-
-            //            _structNames.Add(udtFileName);
-            //            var signals = ParseDb();
-            //            if (_structNames.Count > 0)
-            //            {
-            //                _structNames.RemoveAt(_structNames.Count - 1);
-            //            }
-
-            //            return signals;
-            //        }
-            //    }
-            //}
             return new List<SignalModelContext>();
         }
 
@@ -355,12 +297,12 @@ namespace PlcComLibrary.DbParser
                 lineItem.DataTypeStr = arrayDataTypeStr;
                 for (int i = 0; i < arraySize; i++)
                 {
+                    _bitByteIndexControl.Update(byteMultiplier, arrayDataTypeStr == "Bool");
                     if (!lineItem.IsDiscarded)
                     {
                         lineItem.Name = name + $"[{i}]";
                         output.Add(CreateSignalContextItem(lineItem));
                     }
-                    _bitByteIndexControl.Update(byteMultiplier, arrayDataTypeStr == "Bool", false);
                 }
             }
             else

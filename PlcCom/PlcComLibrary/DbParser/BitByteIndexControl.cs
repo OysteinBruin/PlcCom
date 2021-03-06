@@ -11,8 +11,11 @@ namespace PlcComLibrary.DbParser
     {
         private int _byteCouter;
         private int _previousByteCountValue;
+        private int _previousByteSize;
         private bool _previousItemWasBool;
         private int _bytesRemaining = 0;
+        private int _previousNewSectionByteCount = 0;
+        private bool _previousIterationWasNewSection = false;
 
         public BitByteIndexControl()
         {
@@ -29,11 +32,11 @@ namespace PlcComLibrary.DbParser
         }
         public int BitCounter { get; private set; }
 
-        public void Update(int byteSize, bool isBoolType, bool isFirstItem)
+        public void Update(int byteSize, bool isBoolType)
         {
             if (isBoolType)
             {
-                if (!isFirstItem/* && _previousByteCountValue == ByteCounter*/)
+                if (!_previousIterationWasNewSection && _previousItemWasBool/* && _previousByteCountValue == ByteCounter*/)
                 {
                     BitCounter++;
                 }
@@ -43,6 +46,11 @@ namespace PlcComLibrary.DbParser
                     BitCounter = 0;
                     ByteCounter++;
                 }
+
+                if (!_previousItemWasBool)
+                {
+                    ByteCounter += _previousByteSize;
+                }
             }
             else
             {
@@ -50,38 +58,54 @@ namespace PlcComLibrary.DbParser
                 {
                     BitCounter = 0;
 
-                    if (_previousItemWasBool)
+                    if (!_previousIterationWasNewSection)
                     {
                         if (ByteCounter % 2 == 0)
                         {
                             ByteCounter += 2;
                             _bytesRemaining = byteSize - 2;
+
+                            //_bytesRemaining = byteSize;
                         }
                         else
                         {
                             ByteCounter += 1;
                             _bytesRemaining = byteSize - 1;
+
+                            //_bytesRemaining = byteSize + 1;
                         }
                     }
                 }
                 else
                 {
-                    ByteCounter += byteSize;
-                    ByteCounter += _bytesRemaining;
-                    _bytesRemaining = 0;
+                    if (!_previousIterationWasNewSection)
+                    {
+                        if (byteSize > 2)
+                        {
+                            ByteCounter += 2;
+                        }
+                        else ByteCounter += byteSize;
+
+                        ByteCounter += _bytesRemaining;
+                        _bytesRemaining = 0;
+
+                        //ByteCounter += _bytesRemaining;
+                        //_bytesRemaining = byteSize;
+                    }
                 }
-                    
             }
 
+            _previousByteSize = byteSize;
             _previousItemWasBool = isBoolType;
             _previousByteCountValue = ByteCounter;
+            _previousIterationWasNewSection = false;
         }
 
-        public void AddedStructCorrection()
+        public void NewSectionCorrection()
         {
             BitCounter = 0;
 
-            if (_previousItemWasBool)
+            if (_previousItemWasBool && _previousNewSectionByteCount != ByteCounter)
             {
                 if (ByteCounter % 2 == 0)
                 {
@@ -92,6 +116,9 @@ namespace PlcComLibrary.DbParser
                     ByteCounter += 1;
                 }
             }
+
+            _previousIterationWasNewSection = true;
+            _previousNewSectionByteCount = ByteCounter;
         }
 
         public void Reset()
@@ -101,6 +128,8 @@ namespace PlcComLibrary.DbParser
             _previousByteCountValue = 0;
             _previousItemWasBool = false;
             _bytesRemaining = 0;
+            _previousIterationWasNewSection = false;
+
         }
     }
 }
