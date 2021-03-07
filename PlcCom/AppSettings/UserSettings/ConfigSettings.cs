@@ -9,6 +9,6 @@ namespace Settings.UserSettings
     [Serializable]
     public class ConfigSettings
     {
-
+        public string ConfigFilesPath { get; set; }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Caliburn.Micro;
 using MaterialDesignThemes.Wpf;
-using Dragablz;
 using PlcComLibrary.Config;
 using System;
 using System.Threading.Tasks;
@@ -10,7 +9,6 @@ using System.Media;
 using System.ComponentModel;
 using PlcComLibrary.PlcCom;
 using System.Collections.Generic;
-using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace PlcComUI.ViewModels
 {
@@ -146,20 +144,7 @@ namespace PlcComUI.ViewModels
             ActivateHomeView();
         }
 
-        public void LoadConfigFiles()
-        {
-            // https://stackoverflow.com/questions/1922204/open-directory-dialog
-            using (var dialog = new CommonOpenFileDialog())
-            {
-                dialog.IsFolderPicker = true;
-                CommonFileDialogResult result = dialog.ShowDialog();
-
-                if (result == CommonFileDialogResult.Ok)
-                {
-                    string selectedFolder = dialog.FileName;
-                }
-            }
-        }
+        
 
         private void OnConfigLoadingProgressChanged(object sender, EventArgs args)
         {
