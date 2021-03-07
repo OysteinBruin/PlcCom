@@ -49,7 +49,7 @@ namespace PlcComLibrary.DbParser
         public List<SignalModelContext> ParseDb(List<string> fileLines, IList<string> discardKeywords)
         {
             log.Info($"DatablockParser.ParseDb");
-            //_bitByteIndexControl.Reset();
+            _bitByteIndexControl.Reset();
             _discardKeywords = discardKeywords;
             _fileLines = fileLines;
 
@@ -70,7 +70,7 @@ namespace PlcComLibrary.DbParser
             // TODO: HANDLE
             if (!result)
             {
-                throw new Exception("Invalid file. No STRUCT or VAR keyword found.");
+                throw new Exception("Exception: Invalid file. No STRUCT or VAR keyword found.");
             }
 
             List<SignalModelContext> signalContextList = new List<SignalModelContext>();
@@ -80,6 +80,11 @@ namespace PlcComLibrary.DbParser
 
                 if (lineItem.IsValid)
                 {
+                    if (lineItem.IsStruct)
+                    {
+                        _structNames.Add(lineItem.Name);
+                    }
+
                     IList<SignalModelContext> signalsFromUdt = CheckForUDT(lineItem);
                     signalContextList.AddRange(signalsFromUdt);
 

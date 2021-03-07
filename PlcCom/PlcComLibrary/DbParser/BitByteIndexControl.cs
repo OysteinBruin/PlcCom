@@ -9,27 +9,16 @@ namespace PlcComLibrary.DbParser
 {
     public class BitByteIndexControl
     {
-        //private int _byteCouter;
-        //private int _previousByteCountValue;
-        //private int _previousByteSize;
-        //private bool _previousItemWasBool;
-        //private int _bytesRemaining = 0;
-        //private int _previousNewSectionByteCount = 0;
-        //private bool _previousIterationWasNewSection = false;
-
         private DbFileLineItem _previousLineItem;
         private DbFileLineItem _previousDataTypeLineItem;
 
         public BitByteIndexControl()
         {
-            // Reset();
-            _previousDataTypeLineItem = new DbFileLineItem();
+            Reset();
         }
         
         public int ByteCounter { get; private set; }
-    
         public int BitCounter { get; private set; }
-
 
         public void Update(DbFileLineItem lineItem)
         {
@@ -59,6 +48,14 @@ namespace PlcComLibrary.DbParser
             {
                 _previousDataTypeLineItem = lineItem;
             }
+        }
+
+        public void Reset()
+        {
+            BitCounter = 0;
+            ByteCounter = 0;
+            _previousDataTypeLineItem = new DbFileLineItem();
+            _previousLineItem = null;
         }
 
         private void HandleBooleanType()

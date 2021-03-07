@@ -49,22 +49,33 @@ namespace PlcComUI.ViewModels
         protected override void OnInitialize()
         {
             base.OnInitialize();
-            List<CpuDisplayModel> cpuList = new List<CpuDisplayModel>();
 
-            foreach (var plc in _plcComManager.PlcServiceList)
+            try
             {
-                CpuDisplayModel cpuDisplayModel = new CpuDisplayModel(plc, _mapper, _events);
-                cpuList.Add(cpuDisplayModel);
+                List<CpuDisplayModel> cpuList = new List<CpuDisplayModel>();
 
-                plc.ComStateChanged += OnPlcComStateChanged;
-                plc.HasNewData += OnPlcHasNewData;
+                foreach (var plc in _plcComManager.PlcServiceList)
+                {
+                    CpuDisplayModel cpuDisplayModel = new CpuDisplayModel(plc, _mapper, _events);
+                    cpuList.Add(cpuDisplayModel);
+
+                    plc.ComStateChanged += OnPlcComStateChanged;
+                    plc.HasNewData += OnPlcHasNewData;
+                }
+
+                this.ConnectionsViewModel.CpuList = cpuList;
+                this.SignalSelectionViewModel.CpuList = cpuList;
+
+                WelcomeTabViewModel welcomeModel = new WelcomeTabViewModel();
+                Items.Add(welcomeModel);
+            }
+            catch (Exception)
+            {
+                _events.PublishOnUIThread(new MessageEvent("Unknown error occured during app startup",
+                    "Unknown error occured during app startup", MessageEvent.Level.Warn));
             }
 
-            this.ConnectionsViewModel.CpuList = cpuList;
-            this.SignalSelectionViewModel.CpuList = cpuList;
-
-            WelcomeTabViewModel welcomeModel = new WelcomeTabViewModel();
-            Items.Add(welcomeModel);
+            
         }
 
         //ItemActionCallback

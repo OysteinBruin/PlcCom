@@ -74,7 +74,15 @@ namespace PlcComUI.Models
                     Console.WriteLine(ex.InnerException.Message);
                 throw;
             }
-            
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+
+                if (ex.InnerException != null)
+                    Console.WriteLine(ex.InnerException.Message);
+                throw;
+            }
+
         }
 
         public List<DatablockDisplayModel> Datablocks 

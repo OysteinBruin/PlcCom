@@ -176,6 +176,11 @@ namespace PlcComUI.ViewModels
             ActivateItem(Items[1]);
         }
 
+        public void ReloadConfigs()
+        {
+            _plcComManager.ConfigManager.LoadConfigs();
+        }
+
         public async void Handle(MessageEvent message)
         {
             if (!_modalViewIsActive)

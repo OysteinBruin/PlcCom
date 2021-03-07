@@ -62,6 +62,7 @@ namespace PlcComLibrary.DbParser
                 }
                 else if (DataTypeStr.Contains(Constants.S7DbArrayKeyword))
                 {
+                    IsDataType = true;
                     IsArrayType = true;
                 }
                 else if (DataTypeStr.Contains(Constants.S7DbStructKeyword))
