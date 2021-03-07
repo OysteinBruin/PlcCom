@@ -9,26 +9,18 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <dragablz:TabablzControl Style="{StaticResource MaterialDesignTabablzControlStyle}"  Margin="0 0 5 0">
-            <TabItem Header="Configs">
-                <Grid>
-                    <StackPanel Orientation="Horizontal" Margin="10">
-                        <TextBox Text="Path"></TextBox>
-                        <TextBlock Text="g"></TextBlock>
-                    </StackPanel>
-                </Grid>
+            <TabItem Header="App Palette">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <ContentControl x:Name="PaletteSelectorViewModel"/>
+                </ScrollViewer>
             </TabItem>
             <TabItem Header="Logging">
                 <Grid>
                     <StackPanel Orientation="Horizontal">
                         <TextBox Text="Path"></TextBox>
-                        <TextBlock Text="g"></TextBlock>
+                        <TextBlock Text="Not implemented yet"></TextBlock>
                     </StackPanel>
                 </Grid>
-            </TabItem>
-            <TabItem Header="App Palette">
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                    <ContentControl x:Name="PaletteSelectorViewModel"/>
-                </ScrollViewer>
             </TabItem>
         </dragablz:TabablzControl>
     </Grid>

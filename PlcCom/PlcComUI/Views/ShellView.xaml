@@ -48,9 +48,8 @@
             <wpf:PopupBox Style="{StaticResource WindowCommandsPopupBoxStyle}">
                 <StackPanel>
                     <Button cal:Message.Attach="ActivateHomeView" Content="Home"/>
+                    <Button cal:Message.Attach="ActivateConfigFilesView" Content="Config Files"/>
                     <Button cal:Message.Attach="ActivateSettingsView" Content="Settings"/>
-                    <Button cal:Message.Attach="ReloadConfigs" Content="Reload Configs"/>
-                    
                 </StackPanel>
             </wpf:PopupBox>
         </controls:WindowCommands>

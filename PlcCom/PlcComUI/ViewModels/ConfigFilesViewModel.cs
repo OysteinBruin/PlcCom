@@ -1,14 +1,13 @@
-﻿using System;
+﻿using Caliburn.Micro;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppSettings
+namespace PlcComUI.ViewModels
 {
-    [Serializable]
-    public class ConfigSettings
+    public class ConfigFilesViewModel : Screen
     {
-
     }
 }

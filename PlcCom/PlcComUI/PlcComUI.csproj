@@ -89,6 +89,12 @@
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WindowsAPICodePack-Core.1.1.1\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WindowsAPICodePack-Shell.1.1.1\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.19\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
     </Reference>
@@ -211,9 +217,13 @@
     <Compile Include="Models\DatablockDisplayModel.cs" />
     <Compile Include="Models\IDatablockDisplayModel.cs" />
     <Compile Include="Models\SignalDisplayModel.cs" />
+    <Compile Include="ViewModels\ConfigFilesViewModel.cs" />
     <Compile Include="ViewModels\EditSignalViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\WelcomeTabViewModel.cs" />
+    <Compile Include="Views\ConfigFilesView.xaml.cs">
+      <DependentUpon>ConfigFilesView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\EditSignalView.xaml.cs">
       <DependentUpon>EditSignalView.xaml</DependentUpon>
     </Compile>
@@ -299,6 +309,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Styles\CollapsableGridSplitterStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ConfigFilesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -10,6 +10,7 @@ using System.Media;
 using System.ComponentModel;
 using PlcComLibrary.PlcCom;
 using System.Collections.Generic;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace PlcComUI.ViewModels
 {
@@ -32,6 +33,7 @@ namespace PlcComUI.ViewModels
                 plc.ComStateChanged += OnPlcComStateChanged;
             }
             Items.Add(IoC.Get<PlcComViewModel>());
+            Items.Add(IoC.Get<ConfigFilesViewModel>());
             Items.Add(IoC.Get<SettingsViewModel>());
             _events.Subscribe(this);
 
@@ -124,10 +126,9 @@ namespace PlcComUI.ViewModels
                 {
                     innerExptionMsg = ex.InnerException.Message;
                 }
-                _initAppErrorMessages.Add("Failed to load app config files. Exception: " 
+                _initAppErrorMessages.Add("Failed to load app config files. Exception: "
                     + ex.Message + " " + innerExptionMsg);
             }
-            
         }
 
         private void InitializationCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -143,6 +144,21 @@ namespace PlcComUI.ViewModels
                 WindowState = System.Windows.WindowState.Normal;
             }
             ActivateHomeView();
+        }
+
+        public void LoadConfigFiles()
+        {
+            // https://stackoverflow.com/questions/1922204/open-directory-dialog
+            using (var dialog = new CommonOpenFileDialog())
+            {
+                dialog.IsFolderPicker = true;
+                CommonFileDialogResult result = dialog.ShowDialog();
+
+                if (result == CommonFileDialogResult.Ok)
+                {
+                    string selectedFolder = dialog.FileName;
+                }
+            }
         }
 
         private void OnConfigLoadingProgressChanged(object sender, EventArgs args)
@@ -166,20 +182,17 @@ namespace PlcComUI.ViewModels
             ActivateItem(Items[0]);
         }
 
-        //public void ActivatePaletteSelectorView()
-        //{
-        //    ActivateItem(Items[1]);
-        //}
-
-        public void ActivateSettingsView()
+        public void ActivateConfigFilesView()
         {
             ActivateItem(Items[1]);
         }
 
-        public void ReloadConfigs()
+        public void ActivateSettingsView()
         {
-            _plcComManager.ConfigManager.LoadConfigs();
+            ActivateItem(Items[2]);
         }
+
+
 
         public async void Handle(MessageEvent message)
         {
