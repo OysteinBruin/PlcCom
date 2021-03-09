@@ -13,7 +13,7 @@
         xmlns:dockablz="clr-namespace:Dragablz.Dockablz;assembly=Dragablz"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="PlcCom" 
+        Title="PLC COM" 
         WindowTitleBrush="{DynamicResource MaterialDesignDarkBackground}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
@@ -48,8 +48,8 @@
             <wpf:PopupBox Style="{StaticResource WindowCommandsPopupBoxStyle}">
                 <StackPanel>
                     <Button cal:Message.Attach="ActivateHomeView" Content="Home"/>
-                    <Button cal:Message.Attach="ActivateConfigFilesView" Content="Config Files"/>
                     <Button cal:Message.Attach="ActivateSettingsView" Content="Settings"/>
+                    <Button cal:Message.Attach="ReloadConfigFiles" Content="Reload Config Files"/>
                 </StackPanel>
             </wpf:PopupBox>
         </controls:WindowCommands>

@@ -13,11 +13,16 @@ namespace PlcComUI.ViewModels
     {
         private string _directoryPath;
 
+        public ConfigFilesViewModel()
+        {
+            DirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
+        }
+
         public string DirectoryPath
         {
             get => _directoryPath;
-            set 
-            { 
+            set
+            {
                 if (Equals(_directoryPath, value))
                     return;
 

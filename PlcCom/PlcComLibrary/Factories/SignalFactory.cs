@@ -42,14 +42,19 @@ namespace PlcComLibrary.Factories
 
                 case "Int":
                     return new Int16SignalModel(context);
+                case "UInt":
+                    return new Int16SignalModel(context);
 
                 case "DInt":
+                    return new Int32SignalModel(context);
+                case "UDInt":
                     return new Int32SignalModel(context);
 
                 case "Word":
                     return new Int16SignalModel(context);
 
                 case "DWord":
+
                     return new Int32SignalModel(context);
 
                 case "Real":

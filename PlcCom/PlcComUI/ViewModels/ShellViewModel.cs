@@ -31,7 +31,6 @@ namespace PlcComUI.ViewModels
                 plc.ComStateChanged += OnPlcComStateChanged;
             }
             Items.Add(IoC.Get<PlcComViewModel>());
-            Items.Add(IoC.Get<ConfigFilesViewModel>());
             Items.Add(IoC.Get<SettingsViewModel>());
             _events.Subscribe(this);
 
@@ -57,16 +56,10 @@ namespace PlcComUI.ViewModels
         protected override void OnInitialize()
 		{
 			base.OnInitialize();
+            RunLoadConfigsWorker();
 
             var windowManager = new WindowManager();
-            using (BackgroundWorker bw = new BackgroundWorker())
-            {
-                bw.DoWork += InitializeApplication;
-                bw.RunWorkerCompleted += InitializationCompleted;
-                bw.RunWorkerAsync();
-                
-                windowManager.ShowDialog(new SplashViewModel(_events));
-            }
+            windowManager.ShowDialog(new SplashViewModel(_events));
         }
 
         protected async override void OnViewLoaded(object view)
@@ -106,7 +99,16 @@ namespace PlcComUI.ViewModels
 
         }
 
-        private void InitializeApplication(object sender, DoWorkEventArgs e)
+        private void RunLoadConfigsWorker()
+        {
+            using (BackgroundWorker bw = new BackgroundWorker())
+            {
+                bw.DoWork += LoadConfigFiles;
+                bw.RunWorkerCompleted += LoadingConfigFilesCompleted;
+                bw.RunWorkerAsync();
+            }
+        }
+        private void LoadConfigFiles(object sender, DoWorkEventArgs e)
         {
             try
             {
@@ -129,7 +131,7 @@ namespace PlcComUI.ViewModels
             }
         }
 
-        private void InitializationCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void LoadingConfigFilesCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             _events.PublishOnUIThread(new SplashStatusChangedEvent(true));
             
@@ -167,14 +169,20 @@ namespace PlcComUI.ViewModels
             ActivateItem(Items[0]);
         }
 
-        public void ActivateConfigFilesView()
+        public void ActivateSettingsView()
         {
             ActivateItem(Items[1]);
         }
 
-        public void ActivateSettingsView()
+        public async Task ReloadConfigFiles()
         {
-            ActivateItem(Items[2]);
+            if (!_modalViewIsActive)
+            {
+                _modalViewIsActive = true;
+                await ShowReloadConfigDialog();
+            }
+
+            // RunLoadConfigsWorker();
         }
 
 
@@ -207,6 +215,13 @@ namespace PlcComUI.ViewModels
 
             _modalViewIsActive = false;
             // https://stackoverflow.com/questions/49965223/how-to-open-a-material-design-dialog-from-the-code-xaml-cs
+        }
+
+        private async Task ShowReloadConfigDialog()
+        {
+            var view = new ErrorMessageView();
+            await DialogHost.Show(view, "MainDialogHost");
+            _modalViewIsActive = false;
         }
 
         //public List<>

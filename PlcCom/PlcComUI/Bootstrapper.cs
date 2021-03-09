@@ -99,10 +99,14 @@ namespace PlcComUI
                       .Singleton<IPlcComManager, PlcComManager>()
                       .Singleton<IInterTabClient, InterTabClient>()
                       .Singleton<IInterLayoutClient, InterLayoutClient>();
-            
-            var mapper = _container.Instance(ConfigureAutoMapper((EventAggregator)_container.GetInstance<EventAggregator>()));
 
             _container.Instance(_container);
+            //container.Instance<IEventAggregator>();
+
+            //ar eventAggregator = (EventAggregator)_container.GetInstance<EventAggregator>();
+            var mapper = _container.Instance(ConfigureAutoMapper(IoC.Get<IEventAggregator>()));
+
+           
 
             
             // .Singleton<IDataAccess, SqliteDataAccess>()

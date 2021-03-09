@@ -21,8 +21,6 @@ namespace PlcComUI.ViewModels
         {
             base.OnInitialize();
             LightDarkThemeToggle(true);
-
-
         }
 
         public IEnumerable<Swatch> Swatches { get; }

@@ -12,7 +12,10 @@ namespace PlcComUI.ViewModels
         public SettingsViewModel()
         {
             this.PaletteSelectorViewModel = new PaletteSelectorViewModel();
+            this.ConfigFilesViewModel = new ConfigFilesViewModel();
         }
         public PaletteSelectorViewModel PaletteSelectorViewModel { get; set; }
+
+        public ConfigFilesViewModel ConfigFilesViewModel { get; set; }
     }
 }

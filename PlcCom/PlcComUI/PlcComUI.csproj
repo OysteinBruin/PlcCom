@@ -200,6 +200,7 @@
     <Compile Include="Domain\AsyncRelayCommnd.cs" />
     <Compile Include="EventModels\OpenGraphViewEvent.cs" />
     <Compile Include="Models\BoolSignalDisplayModel.cs" />
+    <Compile Include="SignalModelTemplateSelector.cs" />
     <Compile Include="Styles\CollapseAction.cs" />
     <Compile Include="Domain\RelayCommand.cs" />
     <Compile Include="Domain\SettingBindingExtension.cs" />
@@ -210,7 +211,6 @@
     <Compile Include="EventModels\ComStateChangedEvent.cs" />
     <Compile Include="EventModels\PlcConnectionCmdEvent.cs" />
     <Compile Include="EventModels\PlcReadEvent.cs" />
-    <Compile Include="EventModels\PlcUiCmdEvent.cs" />
     <Compile Include="EventModels\SignalSelectedEvent.cs" />
     <Compile Include="EventModels\SplashStatusChangedEvent.cs" />
     <Compile Include="Models\CpuDisplayModel.cs" />

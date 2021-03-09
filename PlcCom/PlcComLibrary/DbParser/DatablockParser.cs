@@ -85,18 +85,24 @@ namespace PlcComLibrary.DbParser
                         _structNames.Add(lineItem.Name);
                     }
 
+                    int currentByteCount = _bitByteIndexControl.ByteCounter;
                     IList<SignalModelContext> signalsFromUdt = CheckForUDT(lineItem);
                     signalContextList.AddRange(signalsFromUdt);
 
                     IList<SignalModelContext> signalsFromArray = CheckForArrayType(lineItem);
                     signalContextList.AddRange(signalsFromArray);
 
-                    _bitByteIndexControl.Update(lineItem);
 
-                    if (!lineItem.IsDiscarded )
+                    if (currentByteCount == _bitByteIndexControl.ByteCounter)
                     {
-                        signalContextList.Add(CreateSignalContextItem(lineItem));
+                        _bitByteIndexControl.Update(lineItem);
+
+                        if (!lineItem.IsDiscarded)
+                        {
+                            signalContextList.Add(CreateSignalContextItem(lineItem));
+                        }
                     }
+
                 }
             }
             log.Info($"DatablockParser.ParseDb - parse completed - signal count {signalContextList.Count}");
@@ -182,7 +188,6 @@ namespace PlcComLibrary.DbParser
                     }
 
                     _structNames.Add(lineItem.Name);
-                    //_bitByteIndexControl.NewSectionCorrection();
                     var signals = ParseDb();
                     if (_structNames.Count > 0)
                     {
