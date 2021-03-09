@@ -103,8 +103,11 @@ namespace PlcComUI
             _container.Instance(_container);
             //container.Instance<IEventAggregator>();
 
+         
+            var eventAggregator = _container.GetInstance<IEventAggregator>();
+
             //ar eventAggregator = (EventAggregator)_container.GetInstance<EventAggregator>();
-            var mapper = _container.Instance(ConfigureAutoMapper(IoC.Get<IEventAggregator>()));
+            var mapper = _container.Instance(ConfigureAutoMapper(eventAggregator));
 
            
 
