@@ -154,7 +154,7 @@ namespace PlcComUI.ViewModels
                 {
                    // Console.Write($" | index {item.SignalIndex} value {item.Value}");
 
-                    Signals[item.SignalIndex].Value = (double)item.Value;
+                    Signals[item.SignalIndex].Value = item.Value;
                 }
             }
             //Console.Write($" | time sec {System.DateTime.Now.Second} ms {System.DateTime.Now.Millisecond}");

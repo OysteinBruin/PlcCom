@@ -22,6 +22,17 @@ namespace PlcComLibrary.PlcCom
             PlcServiceList = _configManager.LoadConfigs();
         }
 
+        public bool GetIsAnyServicesBusy()
+        {
+            bool output = true;
+
+            foreach (var plcService in PlcServiceList)
+            {
+                output = (plcService.MonitoredDatablocks.Count == 0);
+            }
+            return output;
+        }
+
         public List<PlcService> PlcServiceList { get; set; } = new List<PlcService>();
     }
 }

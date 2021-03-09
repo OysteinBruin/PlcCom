@@ -36,8 +36,6 @@ namespace PlcComUI
             log.Info("ConfigureAutoMapper");
             var config = new MapperConfiguration(cfg => {
 
-
-
                 cfg.CreateMap<SignalModel, SignalDisplayModel>(MemberList.Source)
                     .ForSourceMember(x => x.ByteCount, opt => opt.DoNotValidate());
                 cfg.CreateMap<BoolSignalModel, BoolSignalDisplayModel>(MemberList.Source)
@@ -80,7 +78,7 @@ namespace PlcComUI
             catch (AutoMapperConfigurationException ex)
             {
 
-                log.Error("AssertConfigurationIsValid failed", ex);
+                log.Error("AutoMapper AssertConfigurationIsValid failed", ex);
                 throw;
             }
            
@@ -101,20 +99,8 @@ namespace PlcComUI
                       .Singleton<IInterLayoutClient, InterLayoutClient>();
 
             _container.Instance(_container);
-            //container.Instance<IEventAggregator>();
-
-         
             var eventAggregator = _container.GetInstance<IEventAggregator>();
-
-            //ar eventAggregator = (EventAggregator)_container.GetInstance<EventAggregator>();
             var mapper = _container.Instance(ConfigureAutoMapper(eventAggregator));
-
-           
-
-            
-            // .Singleton<IDataAccess, SqliteDataAccess>()
-
-            //_container.PerRequest<IDataAccess, SqliteDataAccess>();
 
             GetType().Assembly.GetTypes()
                 .Where(type => type.IsClass)

@@ -117,9 +117,7 @@ namespace PlcComLibrary.PlcCom
         }
 
         protected abstract Task ReadDbAsync(IDatablockModel db);
-
         public abstract Task WriteSingleAsync(string address, object value);
-
         public abstract Task PulseBitAsync(string address);
         public abstract Task ToggleBitAsync(string address);
 

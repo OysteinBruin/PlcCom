@@ -56,7 +56,8 @@
                     </Button>
                     <Button 
                         x:Name="toggleBtn" 
-                        Content="Toggle" IsEnabled="{Binding ElementName=EnableWriteCb, Path=IsChecked}"
+                        Content="Toggle" 
+                        IsEnabled="{Binding ElementName=EnableWriteCb, Path=IsChecked}"
                         FontSize="10" Height="20" Margin="0 0 20 0">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="Click">
@@ -76,7 +77,13 @@
             <DataTemplate x:Key="DataSignalModelNumericTemplate" DataType="{x:Type models:SignalDisplayModel}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="0" Margin="10 5 10 5"/>
-                    <Slider  x:Name="slider" Value="50" Minimum="0" Maximum="200" MinWidth="150" VerticalAlignment="Center">
+                    <Slider  
+                        x:Name="slider" 
+                        IsEnabled="{Binding ElementName=EnableWriteCb, Path=IsChecked}"
+                        Value="50" 
+                        Minimum="0" Maximum="200" 
+                        MinWidth="150" 
+                        VerticalAlignment="Center">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="ValueChanged">
                                 <i:InvokeCommandAction Command="{Binding SliderCommand}">
@@ -96,54 +103,54 @@
                     <TextBlock Text="100" Margin="10 5 10 5"/>
                 </StackPanel>
             </DataTemplate>
-
         </ResourceDictionary>
 
     </UserControl.Resources>
-    <StackPanel>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal" Margin="10">
             <TextBlock Text="{Binding Name}" Margin="0 0 30 0" />
-            <CheckBox x:Name="MonitorCb"  Content="Monitor" Margin="0 0 30 0" />
-            <CheckBox x:Name="EnableWriteCb" Content="Enable Write" Margin="0 0 30 0" />
+            <CheckBox x:Name="MonitorCb"  Content="Monitor" Margin="0 0 30 0" IsEnabled="{Binding IsConnected}"/>
+            <CheckBox x:Name="EnableWriteCb" Content="Enable Write" Margin="0 0 30 0" IsEnabled="{Binding MonitorCb}"/>
         </StackPanel>
+        
+        <DataGrid       
+            Grid.Row="1"
+            ItemsSource="{Binding Signals}"
+            CanUserSortColumns="True"
+            CanUserResizeRows="False"
+            CanUserAddRows="False"
+            AutoGenerateColumns="False"
+            HeadersVisibility="All" 
+            VerticalScrollBarVisibility="Auto"
+             Margin="5 20 5 5">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True" />
+                <DataGridTextColumn Header="Address" Binding="{Binding Address}" IsReadOnly="True" />
+                <DataGridTextColumn CanUserSort="False" CanUserReorder="False" Header="Read" IsReadOnly="True" Binding="{Binding ValueStr}" />
+                <DataGridTemplateColumn Header="Write" MinWidth="250" CellTemplateSelector="{StaticResource SignalModelTemplateSelector}"/>
+                <!-- Visibility="{Binding IsChecked, ElementName=cbWriteEnable, Converter={StaticResource BooleanToVisibilityConverter}}" -->
+            </DataGrid.Columns>
 
-        <Grid>
-
-
-            <DataGrid
-        ItemsSource="{Binding Signals}"
-        CanUserSortColumns="True"
-        CanUserResizeRows="False"
-        CanUserAddRows="False"
-        AutoGenerateColumns="False"
-        HeadersVisibility="All" 
-        VerticalScrollBarVisibility="Auto"
-         Margin="5 20 5 5">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Address" Binding="{Binding Address}" IsReadOnly="True" />
-                    <DataGridTextColumn CanUserSort="False" CanUserReorder="False" Header="Read" IsReadOnly="True" Binding="{Binding ValueStr}" />
-                    <DataGridTemplateColumn Header="Write" MinWidth="250" CellTemplateSelector="{StaticResource SignalModelTemplateSelector}"/>
-                    <!-- Visibility="{Binding IsChecked, ElementName=cbWriteEnable, Converter={StaticResource BooleanToVisibilityConverter}}" -->
-                </DataGrid.Columns>
-
-                <DataGrid.ItemContainerStyle>
-                    <!--  https://stackoverflow.com/questions/42348574/caliburn-micro-action-inside-itemcontainerstyle-no-target-found-for-method/42349127 -->
-                    <Style TargetType="DataGridRow" BasedOn="{StaticResource MaterialDesignDataGridRow}">
-                        <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}}" />
-                        <Setter Property="ContextMenu">
-                            <Setter.Value>
-                                <ContextMenu>
-                                    <MenuItem Header="Edit Signal"
-                                        cal:Action.TargetWithoutContext="{Binding Path=PlacementTarget.Tag.DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}"
-                                         cal:Message.Attach="[Event Click] = [Action EditSignal($dataContext)]"/>
-                                </ContextMenu>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </DataGrid.ItemContainerStyle>
-            </DataGrid>
-        </Grid>
-    </StackPanel>
+            <DataGrid.ItemContainerStyle>
+                <!--  https://stackoverflow.com/questions/42348574/caliburn-micro-action-inside-itemcontainerstyle-no-target-found-for-method/42349127 -->
+                <Style TargetType="DataGridRow" BasedOn="{StaticResource MaterialDesignDataGridRow}">
+                    <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+                    <Setter Property="ContextMenu">
+                        <Setter.Value>
+                            <ContextMenu>
+                                <MenuItem Header="Edit Signal"
+                                    cal:Action.TargetWithoutContext="{Binding Path=PlacementTarget.Tag.DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}"
+                                        cal:Message.Attach="[Event Click] = [Action EditSignal($dataContext)]"/>
+                            </ContextMenu>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </DataGrid.ItemContainerStyle>
+        </DataGrid>
+    </Grid>
 </UserControl>

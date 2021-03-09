@@ -9,5 +9,7 @@ namespace PlcComLibrary.PlcCom
         List<PlcService> PlcServiceList { get; set; }
 
         void LoadConfigs();
+
+        bool GetIsAnyServicesBusy();
     }
 }
