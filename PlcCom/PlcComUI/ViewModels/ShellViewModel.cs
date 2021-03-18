@@ -10,6 +10,8 @@ using System.ComponentModel;
 using PlcComLibrary.PlcCom;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using Squirrel;
 
 namespace PlcComUI.ViewModels
 {
@@ -140,7 +142,7 @@ namespace PlcComUI.ViewModels
         private void LoadingConfigFilesCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             _events.PublishOnUIThread(new ProgressInfoChangedEvent(true));
-            
+
             //if (Properties.Settings.Default.SettingsMain.MainWindow.IsWindowStateMaximized)
             //{
             //    WindowState = System.Windows.WindowState.Maximized;
@@ -150,6 +152,8 @@ namespace PlcComUI.ViewModels
             //    WindowState = System.Windows.WindowState.Normal;
             //}
             //ActivateHomeView();
+
+            CheckForUpdates();
         }
 
         
@@ -243,28 +247,27 @@ namespace PlcComUI.ViewModels
             callback(true);
         }
 
-        // TODO: add Squirrel installer
-        //private async Task CheckForUpdates()
-        //{
-        //    string devPath = @"C:\dev\C#\Releases\PlcUnitTest";//@"C:\dev\C#\Releases\PlcUnitTest";
-        //    string prodPath = @"T:\Plc UnitTest\Releases";//@"T:\Plc UnitTest\Releases";
+        private async Task CheckForUpdates()
+        {
+            string devPath = @"C:\dev\C#\Releases\PlcUnitTest";//@"C:\dev\C#\Releases\PlcUnitTest";
+            string prodPath = @"T:\Plc UnitTest\Releases";//@"T:\Plc UnitTest\Releases";
 
-        //    if (Directory.Exists(devPath))
-        //    {
-        //        Console.WriteLine($"ShellViewModel.Ctor - CheckForUpdates() - from prod dir {devPath}");
-        //        using (var manager = new UpdateManager(devPath))
-        //        {
-        //            await manager.UpdateApp();
-        //        }
-        //    }
-        //    else if (Directory.Exists(prodPath))
-        //    {
-        //        Console.WriteLine($"ShellViewModel.Ctor - CheckForUpdates() - from prod dir {prodPath}");
-        //        using (var manager = new UpdateManager(prodPath))
-        //        {
-        //            await manager.UpdateApp();
-        //        }
-        //    }
-        //}
+            if (Directory.Exists(devPath))
+            {
+                Console.WriteLine($"ShellViewModel.Ctor - CheckForUpdates() - from prod dir {devPath}");
+                using (var manager = new UpdateManager(devPath))
+                {
+                    await manager.UpdateApp();
+                }
+            }
+            else if (Directory.Exists(prodPath))
+            {
+                Console.WriteLine($"ShellViewModel.Ctor - CheckForUpdates() - from prod dir {prodPath}");
+                using (var manager = new UpdateManager(prodPath))
+                {
+                    await manager.UpdateApp();
+                }
+            }
+        }
     }
 }
