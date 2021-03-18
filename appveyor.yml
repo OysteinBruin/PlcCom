@@ -60,7 +60,7 @@ deploy:
    storage_access_key:
      secure: npIfGLaoEsRVM/xDLLe7oP2f5Ow6OyWOY904hUcKXDdz7KYJBxF6zWOH+pdOZo+9Vflu2oyKikV6MCaVh3gNKs1jfZFCxMUrzj3qL7BbdcmhVHFVUxU+Yx+HRbcztG+S
    container: releases
-   folder: $(APPVEYOR_PROJECT_SLUG)\$(APPVEYOR_BUILD_VERSION)
+   remove_files: true
 
 # Uncomment below to retrive access to AppVeyor build worker VM. https://www.appveyor.com/docs/how-to/rdp-to-build-worker/
 
