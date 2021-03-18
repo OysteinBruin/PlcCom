@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:PlcComUI"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:local="clr-namespace:PlcComUI"
              xmlns:models="clr-namespace:PlcComUI.Models"
              xmlns:converters="clr-namespace:PlcComUI.Converters"
              xmlns:cal="http://www.caliburnproject.org"
@@ -32,11 +32,11 @@
 
             </ResourceDictionary.MergedDictionaries>
 
-            <local:DataSignalModelTemplateSelector x:Key="DataSignalModelTemplateSelector"/>
+            <local:SignalModelTemplateSelector x:Key="SignalModelTemplateSelector"/>
             <converters:DatabindingDebugConverter x:Key="debugConverter" />
 
             <DataTemplate x:Key="DataSignalModelBoolTemplate" DataType="{x:Type models:SignalDisplayModel}">
-                <StackPanel Orientation="Horizontal" Margin="0 0 20 0" HorizontalAlignment="Center">
+                <StackPanel Orientation="Horizontal" Margin="0 0 20 0">
                     <Button 
                         x:Name="pulseBtn" 
                         Content="Pulse" IsEnabled="{Binding ElementName=EnableWriteCb, Path=IsChecked}"
@@ -46,7 +46,7 @@
                                 <i:InvokeCommandAction Command="{Binding PulseCommand}">
                                     <i:InvokeCommandAction.CommandParameter>
                                         <MultiBinding Converter="{StaticResource PlcCmdParameterConverter}">
-                                            <Binding Path="DataContext.IndexModel" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
+                                            <Binding Path="DataContext.CpuIndex" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
                                             <Binding Path="DataContext.Address" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
                                         </MultiBinding>
                                     </i:InvokeCommandAction.CommandParameter>
@@ -56,14 +56,15 @@
                     </Button>
                     <Button 
                         x:Name="toggleBtn" 
-                        Content="Toggle" IsEnabled="{Binding ElementName=EnableWriteCb, Path=IsChecked}"
+                        Content="Toggle" 
+                        IsEnabled="{Binding ElementName=EnableWriteCb, Path=IsChecked}"
                         FontSize="10" Height="20" Margin="0 0 20 0">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="Click">
                                 <i:InvokeCommandAction Command="{Binding ToggleCommand}">
                                     <i:InvokeCommandAction.CommandParameter>
                                         <MultiBinding Converter="{StaticResource PlcCmdParameterConverter}">
-                                            <Binding Path="DataContext.IndexModel" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
+                                            <Binding Path="DataContext.CpuIndex" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
                                             <Binding Path="DataContext.Address" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
                                         </MultiBinding>
                                     </i:InvokeCommandAction.CommandParameter>
@@ -74,45 +75,22 @@
                 </StackPanel>
             </DataTemplate>
             <DataTemplate x:Key="DataSignalModelNumericTemplate" DataType="{x:Type models:SignalDisplayModel}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-
-
-                    <!--<StackPanel>
-                    <StackPanel Orientation="Horizontal">-->
-                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Text="{Binding RangeFrom}" Margin="10 0 10 0"/>
-
-                    <ProgressBar
-                        Grid.Row="0" Grid.Column="1"
-                        Margin="0"
-                        Height="8"
-                        Background="{StaticResource MaterialDesignPaper}"
-                        Style="{StaticResource MaterialDesignLinearProgressBar}"
-                        Value="{Binding Value}" Minimum="{Binding RangeFrom}" Maximum="{Binding RangeTo}"
-                        
-                        />
-                    <Slider  x:Name="slider" 
-                             Grid.Row="1" Grid.Column="1"
-                             Margin="0"
-                             
-                             IsEnabled="{Binding ElementName=EnableWriteCb, Path=IsChecked}"
-                             Minimum="{Binding RangeFrom}" Maximum="{Binding RangeTo}" MinWidth="150" VerticalAlignment="Center">
-
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="0" Margin="10 5 10 5"/>
+                    <Slider  
+                        x:Name="slider" 
+                        IsEnabled="{Binding ElementName=EnableWriteCb, Path=IsChecked}"
+                        Value="50" 
+                        Minimum="0" Maximum="200" 
+                        MinWidth="150" 
+                        VerticalAlignment="Center">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="ValueChanged">
                                 <i:InvokeCommandAction Command="{Binding SliderCommand}">
                                     <i:InvokeCommandAction.CommandParameter>
                                         <MultiBinding Converter="{StaticResource PlcCmdParameterConverter}">
-                                            <Binding Path="DataContext.IndexModel" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=Grid}" />
-                                            <Binding Path="DataContext.Address" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=Grid}" />
+                                            <Binding Path="DataContext.CpuIndex" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
+                                            <Binding Path="DataContext.Address" RelativeSource="{RelativeSource AncestorLevel=1, AncestorType=StackPanel}" />
                                             <Binding ElementName="slider" Path="Value"/>
                                         </MultiBinding>
 
@@ -122,13 +100,9 @@
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                     </Slider>
-                    <TextBlock Grid.Row="0" Grid.Column="2"  Grid.RowSpan="2" Text="{Binding ElementName=slider, Path=Maximum}" Margin="10 0 10 0"/>
-                    <!--</StackPanel>
-                    
-                </StackPanel>-->
-                </Grid>
+                    <TextBlock Text="100" Margin="10 5 10 5"/>
+                </StackPanel>
             </DataTemplate>
-
         </ResourceDictionary>
 
     </UserControl.Resources>
@@ -140,25 +114,25 @@
 
         <StackPanel Orientation="Horizontal" Margin="10">
             <TextBlock Text="{Binding Name}" Margin="0 0 30 0" />
-            <CheckBox x:Name="MonitorCb" IsEnabled="{Binding IsConnected}"  Content="Monitor" Margin="0 0 30 0" />
-            <CheckBox x:Name="EnableWriteCb" IsEnabled="{Binding ElementName=MonitorCb, Path=IsChecked}" Content="Enable Write" Margin="0 0 30 0" />
+            <CheckBox x:Name="MonitorCb"  Content="Monitor" Margin="0 0 30 0" IsEnabled="{Binding IsConnected}"/>
+            <CheckBox x:Name="EnableWriteCb" Content="Enable Write" Margin="0 0 30 0" IsEnabled="{Binding MonitorCb}"/>
         </StackPanel>
-
-        <DataGrid
-        Grid.Row="1"
-        ItemsSource="{Binding Signals}"
-        CanUserSortColumns="True"
-        CanUserResizeRows="False"
-        CanUserAddRows="False"
-        AutoGenerateColumns="False"
-        HeadersVisibility="All" 
-        VerticalScrollBarVisibility="Auto"
-         Margin="5 20 5 5">
+        
+        <DataGrid       
+            Grid.Row="1"
+            ItemsSource="{Binding Signals}"
+            CanUserSortColumns="True"
+            CanUserResizeRows="False"
+            CanUserAddRows="False"
+            AutoGenerateColumns="False"
+            HeadersVisibility="All" 
+            VerticalScrollBarVisibility="Auto"
+             Margin="5 20 5 5">
             <DataGrid.Columns>
-                <DataGridTextColumn  Header="Name" Binding="{Binding Name}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True" />
                 <DataGridTextColumn Header="Address" Binding="{Binding Address}" IsReadOnly="True" />
-                <DataGridTextColumn CanUserSort="False" CanUserReorder="False" Header="Read" IsReadOnly="True" Binding="{Binding ValueStr}" TextElement.FontSize="18" />
-                <DataGridTemplateColumn Header="Write" MinWidth="250" CellTemplateSelector="{StaticResource DataSignalModelTemplateSelector}"/>
+                <DataGridTextColumn CanUserSort="False" CanUserReorder="False" Header="Read" IsReadOnly="True" Binding="{Binding ValueStr}" />
+                <DataGridTemplateColumn Header="Write" MinWidth="250" CellTemplateSelector="{StaticResource SignalModelTemplateSelector}"/>
                 <!-- Visibility="{Binding IsChecked, ElementName=cbWriteEnable, Converter={StaticResource BooleanToVisibilityConverter}}" -->
             </DataGrid.Columns>
 
@@ -170,8 +144,8 @@
                         <Setter.Value>
                             <ContextMenu>
                                 <MenuItem Header="Edit Signal"
-                                        cal:Action.TargetWithoutContext="{Binding Path=PlacementTarget.Tag.DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}"
-                                         cal:Message.Attach="[Event Click] = [Action EditSignal($dataContext)]"/>
+                                    cal:Action.TargetWithoutContext="{Binding Path=PlacementTarget.Tag.DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}"
+                                        cal:Message.Attach="[Event Click] = [Action EditSignal($dataContext)]"/>
                             </ContextMenu>
                         </Setter.Value>
                     </Setter>

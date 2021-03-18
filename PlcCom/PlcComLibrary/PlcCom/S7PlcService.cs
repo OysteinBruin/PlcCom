@@ -1,6 +1,7 @@
 ﻿using PlcComLibrary.Common;
 using PlcComLibrary.Config;
 using PlcComLibrary.Models;
+using PlcComLibrary.Models.Signal;
 using S7.Net;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace PlcComLibrary.PlcCom
         private List<IPlcComTask> _collectedPlcTasksToExecute = new List<IPlcComTask>();
 
 
-        public S7PlcService(int index, ICpuConfig config, List<IDatablockModel> datablocks)
+        public S7PlcService(int index, ICpuConfig config, List<DatablockModel> datablocks)
             : base(index, config, datablocks)
         {
             S7.Net.CpuType S7NetCpuType = ConvertCpuType(Config.CpuType);
@@ -87,13 +88,6 @@ namespace PlcComLibrary.PlcCom
             {
                 Console.WriteLine("BEG PlcReadWriteCallback ");
             }
-            
-
-            //foreach (var task in _collectedPlcTasksToExecute)
-            //{
-            //    Console.WriteLine($"\t task.Execute address {task.Address}");
-            //    await task.Execute(_plcReader);
-            //}
 
             if (MonitoredDatablocks.Count > 0)
             {
@@ -109,8 +103,6 @@ namespace PlcComLibrary.PlcCom
             {
                 Console.WriteLine($"END PlcReadWriteCallback elapsed ms {watch.ElapsedMilliseconds}");
             }
-            //_collectedPlcTasksToExecute = _collectedPlcTasks;
-            //_collectedPlcTasks.Clear();
         }
 
         public override async Task ReadSingleAsync(string address)
@@ -149,9 +141,10 @@ namespace PlcComLibrary.PlcCom
             List<PlcComIndexValueModel> indexValueModels = new List<PlcComIndexValueModel>();
             for (int i = 0; i < db.Signals.Count; i++)
             {
-                ISignalModel s = db.Signals[i];
-                int signalByteCount = s.ByteCount();
-                byte[] signalValueArray = dbBytes.Skip(s.DbByteIndex - db.FirstByte).Take(s.ByteCount()).ToArray();
+                SignalModel s = db.Signals[i];
+                int signalByteCount = s.ByteCount;
+                int skipBytesValue = s.DbByteIndex() - db.FirstByte;
+                byte[] signalValueArray = dbBytes.Skip(skipBytesValue).Take(s.ByteCount).ToArray();
                 indexValueModels.Add(new PlcComIndexValueModel(Index, db.Index, s.Index, s.BytesToValue(signalValueArray)));
             }
 

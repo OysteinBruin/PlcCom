@@ -17,11 +17,9 @@ namespace PlcComLibrary.PlcCom
 
         public async Task Execute(S7.Net.Plc plc)
         {
-            Console.WriteLine("BEG PlcPulseBitTask");
             await plc.WriteAsync(Address, true);
-            await Task.Delay(100);
+            await Task.Delay(100);  // TODO - make param configurable from file or UI 
             await plc.WriteAsync(Address, false);
-            Console.WriteLine("END PlcPulseBitTask");
         }
     }
 }

@@ -5,6 +5,6 @@ namespace PlcComLibrary.Config
     public interface IJsonConfigFileParser
     {
         int GetConfigFilesCount(string path = "");
-        List<IJsonFileConfig> LoadConfigFiles(string path = "");
+        List<ICpuConfigFile> LoadConfigFiles(string path = "");
     }
 }

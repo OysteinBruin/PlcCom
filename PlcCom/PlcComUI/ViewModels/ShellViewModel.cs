@@ -1,6 +1,5 @@
 ﻿using Caliburn.Micro;
 using MaterialDesignThemes.Wpf;
-using Dragablz;
 using PlcComLibrary.Config;
 using System;
 using System.Threading.Tasks;
@@ -9,27 +8,27 @@ using PlcComUI.Views;
 using System.Media;
 using System.ComponentModel;
 using PlcComLibrary.PlcCom;
+using System.Collections.Generic;
 
 namespace PlcComUI.ViewModels
 {
 	public class ShellViewModel : Conductor<IScreen>.Collection.OneActive, IHandle<MessageEvent>
     {
-		private IEventAggregator _events;
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(ShellViewModel));
+        private IEventAggregator _events;
         private IPlcComManager _plcComManager;
         private bool _modalViewIsActive = false;
         private System.Windows.WindowState _windowState;
+        private IList<string> _initAppErrorMessages = new List<string>();
 
         public ShellViewModel(IEventAggregator events, IPlcComManager plcComManager)
 		{
 			_events = events;
             _plcComManager = plcComManager;
             _plcComManager.ConfigManager.ConfigsLoadingProgressChanged += OnConfigLoadingProgressChanged;
-            foreach (var plc in _plcComManager.PlcServiceList)
-            {
-                plc.ComStateChanged += OnPlcComStateChanged;
-            }
+
             Items.Add(IoC.Get<PlcComViewModel>());
-            Items.Add(IoC.Get<PaletteSelectorViewModel>());
+            Items.Add(IoC.Get<SettingsViewModel>());
             _events.Subscribe(this);
 
             PaletteHelper paletteHelper = new PaletteHelper();
@@ -54,16 +53,33 @@ namespace PlcComUI.ViewModels
         protected override void OnInitialize()
 		{
 			base.OnInitialize();
+            RunLoadConfigsWorker();
 
             var windowManager = new WindowManager();
-            using (BackgroundWorker bw = new BackgroundWorker())
+            windowManager.ShowDialog(new ProgressInfoViewModel(_events));
+        }
+
+        protected async override void OnViewLoaded(object view)
+        {
+            base.OnViewLoaded(view);
+
+            if (_initAppErrorMessages.Count > 0)
             {
-                bw.DoWork += InitializeApplication;
-                bw.RunWorkerCompleted += InitializationCompleted;
-                bw.RunWorkerAsync();
-                
-                windowManager.ShowDialog(new SplashViewModel(_events));
+                await Task.Delay(1000);
+
+                string message = String.Empty;
+                foreach (var item in _initAppErrorMessages)
+                {
+                    message += item;
+                    message += '\n';
+                }
+
+                var msgEvent = new MessageEvent("Error during application loading", 
+                    message, MessageEvent.Level.Error);
+
+                await ShowMessageDialog(msgEvent);
             }
+
         }
 
         protected override void OnDeactivate(bool close)
@@ -80,40 +96,69 @@ namespace PlcComUI.ViewModels
 
         }
 
-        private void InitializeApplication(object sender, DoWorkEventArgs e)
+        private void RunLoadConfigsWorker()
         {
-            _plcComManager.LoadConfigs();
+            using (BackgroundWorker bw = new BackgroundWorker())
+            {
+                bw.DoWork += LoadConfigFiles;
+                bw.RunWorkerCompleted += LoadingConfigFilesCompleted;
+                bw.RunWorkerAsync();
+            }
+        }
+        private void LoadConfigFiles(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                _plcComManager.LoadConfigs();
+            }
+            catch (Exception ex)
+            {
+                // Fix the system to capture all failed files before throwing - so that a 
+                // list of failed file reads can be presented in the message dialog.
+                log.Error($"Failed to load configs - " +
+                    $"Cpu index {ex.Message} ", ex);
+
+                string innerExptionMsg = String.Empty;
+                if (ex.InnerException != null)
+                {
+                    innerExptionMsg = ex.InnerException.Message;
+                }
+                _initAppErrorMessages.Add("Failed to load app config files. Exception: "
+                    + ex.Message + " " + innerExptionMsg);
+            }
         }
 
-        private void InitializationCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void LoadingConfigFilesCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            _events.PublishOnUIThread(new SplashStatusChangedEvent(true));
+            _events.PublishOnUIThread(new ProgressInfoChangedEvent(true));
             
-            if (Properties.Settings.Default.SettingsMain.MainWindow.IsWindowStateMaximized)
-            {
-                WindowState = System.Windows.WindowState.Maximized;
-            }
-            else
-            {
-                WindowState = System.Windows.WindowState.Normal;
-            }
-            ActivateHomeView();
+            //if (Properties.Settings.Default.SettingsMain.MainWindow.IsWindowStateMaximized)
+            //{
+            //    WindowState = System.Windows.WindowState.Maximized;
+            //}
+            //else
+            //{
+            //    WindowState = System.Windows.WindowState.Normal;
+            //}
+            //ActivateHomeView();
         }
+
+        
 
         private void OnConfigLoadingProgressChanged(object sender, EventArgs args)
         {
             ConfigsProgressEventArgs configArgs = (ConfigsProgressEventArgs)args;
-            string splashContent;
+            string content;
 
             if (configArgs.ProgressInput == configArgs.ProgressTotal)
             {
-                splashContent = "Loading finished. Starting main appplication";
+                content = "Loading finished";
             }
             else
             {
-                splashContent = $"Loading configs {configArgs.ProgressInput} of {configArgs.ProgressTotal}";
+                content = $"Loading configs {configArgs.ProgressInput} of {configArgs.ProgressTotal}";
             }
-            _events.PublishOnUIThread(new SplashStatusChangedEvent(splashContent, configArgs.ProgressInput, configArgs.ProgressTotal));
+            _events.PublishOnUIThread(new ProgressInfoChangedEvent(content, configArgs.ProgressInput, configArgs.ProgressTotal));
         }
 
         public void ActivateHomeView()
@@ -121,15 +166,23 @@ namespace PlcComUI.ViewModels
             ActivateItem(Items[0]);
         }
 
-        //public void ActivatePaletteSelectorView()
-        //{
-        //    ActivateItem(Items[1]);
-        //}
-
         public void ActivateSettingsView()
         {
             ActivateItem(Items[1]);
         }
+
+        public async Task ReloadConfigFiles()
+        {
+            if (!_modalViewIsActive)
+            {
+                _modalViewIsActive = true;
+                await ShowReloadConfigDialog();
+            }
+
+            RunLoadConfigsWorker();
+        }
+
+
 
         public async void Handle(MessageEvent message)
         {
@@ -139,16 +192,6 @@ namespace PlcComUI.ViewModels
                 await ShowMessageDialog(message);
             }
         }
-
-        //public bool ShowDrawer
-        //{
-        //    get => _showDrawer; 
-        //    set 
-        //    { 
-        //        _showDrawer = value;
-        //        NotifyOfPropertyChange(() => ShowDrawer);
-        //    }
-        //}
 
         private async Task ShowMessageDialog(MessageEvent ev)
         {
@@ -171,11 +214,15 @@ namespace PlcComUI.ViewModels
             // https://stackoverflow.com/questions/49965223/how-to-open-a-material-design-dialog-from-the-code-xaml-cs
         }
 
-        //public List<>
-
-        private void OnPlcComStateChanged(object sender, EventArgs e)
+        private async Task ShowReloadConfigDialog()
         {
-            throw new NotImplementedException();
+            if (_plcComManager.GetIsAnyServicesBusy())
+            {
+
+            }
+            var view = new ErrorMessageView();
+            await DialogHost.Show(view, "MainDialogHost");
+            _modalViewIsActive = false;
         }
 
         // TODO: Implement can close check

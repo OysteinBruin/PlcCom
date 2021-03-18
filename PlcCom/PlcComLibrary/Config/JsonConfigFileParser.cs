@@ -28,9 +28,9 @@ namespace PlcComLibrary.Config
             return output;
         }
 
-        public List<IJsonFileConfig> LoadConfigFiles(string path)
+        public List<ICpuConfigFile> LoadConfigFiles(string path)
         {
-            List<IJsonFileConfig> output = new List<IJsonFileConfig>();
+            List<ICpuConfigFile> output = new List<ICpuConfigFile>();
             foreach (string fileName in _utils.LoadAppConfigFiles(path))
             {
                 if (fileName.EndsWith(Constants.JsonExtension))

@@ -15,7 +15,7 @@ using static PlcComLibrary.Common.Enums;
 namespace PlcComUI.ViewModels
 {
     public class PlcComViewModel : Conductor<IScreen>.Collection.OneActive, 
-                                   IHandle<PlcUiCmdEvent>, 
+                                   IHandle<IControlCmdEvent>, 
                                    IHandle<DbMonitoringChangedEvent>
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(PlcComViewModel));
@@ -36,6 +36,9 @@ namespace PlcComUI.ViewModels
             InterTabClient = interTabClient;
             InterLayoutClient = interLayoutClient;
 
+            _plcComManager.AboutToLoadConfigs += OnConfigsAboutToBeLoaded;
+            _plcComManager.ConfigsLoaded += OnConfigsLoaded;
+
             this.ConnectionsViewModel = new ConnectionsViewModel(_events);
             this.SignalSelectionViewModel = new SignalSelectionViewModel(_events);
 
@@ -49,22 +52,8 @@ namespace PlcComUI.ViewModels
         protected override void OnInitialize()
         {
             base.OnInitialize();
-            List<CpuDisplayModel> cpuList = new List<CpuDisplayModel>();
 
-            foreach (var plc in _plcComManager.PlcServiceList)
-            {
-                CpuDisplayModel cpuDisplayModel = new CpuDisplayModel(plc, _events);
-                cpuList.Add(cpuDisplayModel);
-
-                plc.ComStateChanged += OnPlcComStateChanged;
-                plc.HasNewData += OnPlcHasNewData;
-            }
-
-            this.ConnectionsViewModel.CpuList = cpuList;
-            this.SignalSelectionViewModel.CpuList = cpuList;
-
-            WelcomeTabViewModel welcomeModel = new WelcomeTabViewModel();
-            Items.Add(welcomeModel);
+            // OnConfigsLoaded();
         }
 
         //ItemActionCallback
@@ -114,6 +103,50 @@ namespace PlcComUI.ViewModels
             }
         }
 
+        private void OnConfigsAboutToBeLoaded(object sender, EventArgs e)
+        {
+            FixedTabHeaderCount = 0;
+            for (int i = 0; i < Items.Count; i++)
+            {
+                if (Items.Count >= i)
+                {
+                    Items.Remove(Items[i]);
+                }
+            }
+
+
+        }
+
+        private void OnConfigsLoaded(object sender = null, EventArgs e = null)
+        {
+            try
+            {
+                
+                var cpuList = new List<CpuDisplayModel>();
+                //this.SignalSelectionViewModel.CpuList = cpuList;
+                //this.ConnectionsViewModel.CpuList = cpuList;
+
+                foreach (var plc in _plcComManager.PlcServiceList)
+                {
+                    CpuDisplayModel cpuDisplayModel = new CpuDisplayModel(plc, _mapper, _events);
+                    cpuList.Add(cpuDisplayModel);
+
+                    plc.ComStateChanged += OnPlcComStateChanged;
+                    plc.HasNewData += OnPlcHasNewData;
+                }
+
+                this.ConnectionsViewModel.CpuList = cpuList;
+                this.SignalSelectionViewModel.CpuList = cpuList;
+
+                WelcomeTabViewModel welcomeModel = new WelcomeTabViewModel();
+                Items.Add(welcomeModel);
+            }
+            catch (Exception)
+            {
+                _events.PublishOnUIThread(new MessageEvent("Unknown error occured during app startup",
+                    "Unknown error occured during app startup", MessageEvent.Level.Warn));
+            }
+        }
 
         /// <summary>
         /// Adds the selcted 
@@ -122,6 +155,7 @@ namespace PlcComUI.ViewModels
         /// <param name="args"></param>
         private void OnDatablockSelected(object sender, EventArgs args)
         {
+            
             var eventArgs = (NewDatablockTabEvent)args;
             DatablockDisplayModel dbModel = eventArgs.DatablockSelected;
 
@@ -138,7 +172,7 @@ namespace PlcComUI.ViewModels
 
             if (!itemExists)
             {
-                bool isConnected = (_plcComManager.PlcServiceList[dbModel.IndexModel.CpuIndex].ComState == ComState.Connected);
+                bool isConnected = (_plcComManager.PlcServiceList[dbModel.CpuIndex].ComState == ComState.Connected);
                 DatablockTabViewModel vm = new DatablockTabViewModel(_events, dbModel, isConnected);
                 Items.Add(vm);
                 ActivateItem(Items.Last());
@@ -160,22 +194,22 @@ namespace PlcComUI.ViewModels
 
         private void OnGraphViewSelected(object sender, EventArgs args)
         {
-            var eventArgs = (OpenGraphViewEvent)args;
-            if (eventArgs != null)
-            {
-                if (eventArgs.ViewType == OpenGraphViewEvent.GraphViewType.MultiGraph)
-                {
-                    var vm = new RealTimeGraphViewModel();
-                    Items.Add(vm);
-                }
-                else
-                {
-                    var vm = new SingleGraphCollectionViewModel();
-                    Items.Add(vm);
-                }
-            }
+            //var eventArgs = (OpenGraphViewEvent)args;
+            //if (eventArgs != null)
+            //{
+            //    if (eventArgs.ViewType == OpenGraphViewEvent.GraphViewType.MultiGraph)
+            //    {
+            //        var vm = new RealTimeGraphViewModel();
+            //        Items.Add(vm);
+            //    }
+            //    else
+            //    {
+            //        var vm = new SingleGraphCollectionViewModel();
+            //        Items.Add(vm);
+            //    }
+            //}
             
-            ActivateItem(Items.Last());
+            //ActivateItem(Items.Last());
 
         }
 
@@ -193,7 +227,7 @@ namespace PlcComUI.ViewModels
             _events.PublishOnUIThread(new PlcReadEvent(eventArgs));
         }
 
-        public async void Handle(PlcUiCmdEvent message)
+        public async void Handle(IControlCmdEvent message)
         {
             //Debug.Assert(message.CpuIndex < _configManager.PlcServiceList.Count);
 
@@ -202,20 +236,18 @@ namespace PlcComUI.ViewModels
 
             try
             {
-                switch (message.CommandType)
+                if (message is ButtonPulseCmdEvent)
                 {
-                    case PlcUiCmdEvent.CmdType.ButtonPulse:
-                        await _plcComManager.PlcServiceList[message.CpuIndex].PulseBitAsync(message.Address);
-                        break;
-                    case PlcUiCmdEvent.CmdType.ButtonToggle:
-                        await _plcComManager.PlcServiceList[message.CpuIndex].ToggleBitAsync(message.Address);
-                        break;
-                    case PlcUiCmdEvent.CmdType.Slider:
-                        Debug.Assert(message.Value != null);
-                        await _plcComManager.PlcServiceList[message.CpuIndex].WriteSingleAsync(message.Address, message.Value);
-                        break;
-                    default:
-                        break;
+                    await _plcComManager.PlcServiceList[message.CpuIndex].PulseBitAsync(message.Address);
+                }
+                else if (message is ButtonToggleCmdEvent)
+                {
+                    await _plcComManager.PlcServiceList[message.CpuIndex].ToggleBitAsync(message.Address);
+                }
+                else if (message is SliderCmdEvent)
+                {
+                    Debug.Assert(message.Value != null);
+                    await _plcComManager.PlcServiceList[message.CpuIndex].WriteSingleAsync(message.Address, message.Value);
                 }
             }
             catch (ArgumentOutOfRangeException ex)
@@ -245,17 +277,17 @@ namespace PlcComUI.ViewModels
 
         public void Handle(DbMonitoringChangedEvent message)
         {
-            int cpuIndex = message.Datablock.IndexModel.CpuIndex;
+            int cpuIndex = message.Datablock.CpuIndex;
             Debug.Assert(cpuIndex >= 0 && cpuIndex < _plcComManager.PlcServiceList.Count);
             var plc = _plcComManager.PlcServiceList[cpuIndex];
 
             try
             {
                 DatablockDisplayModel ddm = message.Datablock;
-                var mappedDbModel = _mapper.Map(ddm, ddm.GetType(), typeof(IDatablockModel));
+                var mappedDbModel = _mapper.Map(ddm, ddm.GetType(), typeof(DatablockModel));
                 Debug.Assert(mappedDbModel is IDatablockModel);
 
-                plc.AddOrRemoveDb(message.DoMonitor, mappedDbModel as IDatablockModel);
+                plc.AddOrRemoveDb(message.DoMonitor, mappedDbModel as DatablockModel);
             }
             catch (AutoMapperMappingException ex)
             {

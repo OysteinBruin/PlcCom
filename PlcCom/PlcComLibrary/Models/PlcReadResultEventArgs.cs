@@ -9,23 +9,19 @@ namespace PlcComLibrary.Models
 
     public class PlcReadResultEventArgs : EventArgs
     {
-        public PlcReadResultEventArgs(PlcComIndexModel indexModel, double value)
-        {
-            PlcIndexModel = indexModel;
-            Value = value;
+        public PlcReadResultEventArgs(PlcComIndexValueModel model)
+        {  
+            if (model == null)
+                throw new ArgumentException("PlcComIndexValueModel can not be null"); 
 
             IndexValueList.Clear();
-            IndexValueList.Add(new PlcComIndexValueModel(indexModel.CpuIndex, indexModel.DbIndex, indexModel.SignalIndex, value));
+            IndexValueList.Add(model);
         }
 
         public PlcReadResultEventArgs(List<PlcComIndexValueModel> models)
         {
             IndexValueList = models;
         }
-
-        public PlcComIndexModel PlcIndexModel { get; private set; }
-
-        public double Value  { get; set; }
 
         public List<PlcComIndexValueModel> IndexValueList { get; set; } = new List<PlcComIndexValueModel>();
     }

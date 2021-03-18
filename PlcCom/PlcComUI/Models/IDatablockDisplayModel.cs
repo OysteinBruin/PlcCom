@@ -6,17 +6,21 @@ namespace PlcComUI.Models
 {
     public interface IDatablockDisplayModel
     {
-        int Index { get; set; }
-        PlcComIndexModel IndexModel { get; set; }
         string Name { get; set; }
+        int Index { get; set; }
+        int CpuIndex { get; set; }
+        
         int Number { get; set; }
-        string NumberStr { get; }
+        
         int FirstByte { get; set; }
         int ByteCount { get; set; }
         List<SignalDisplayModel> Signals { get; set; }
 
-        event PropertyChangedEventHandler PropertyChanged;
+        bool IsValid { get; }
+        string NumberStr { get; }
 
-        void EmitPropertyChanged(string propName);
+        //event PropertyChangedEventHandler PropertyChanged;
+
+        //void EmitPropertyChanged(string propName);
     }
 }

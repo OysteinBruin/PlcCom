@@ -1,0 +1,68 @@
+#---------------------------------#
+#      general configuration      #
+#---------------------------------#
+
+version: 1.0.{build}-{branch}
+
+branches:
+  only:
+   - main
+ 
+
+#---------------------------------#
+#    test configuration           #
+#---------------------------------#
+test: off
+  # only assemblies to test
+ # assemblies:
+ #   only:
+        
+
+#---------------------------------#
+#    environment configuration    #
+#---------------------------------#
+
+clone_depth: 1
+
+image: Visual Studio 2019
+
+assembly_info:
+  patch: true
+  file: AssemblyInfo.*
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  
+#---------------------------------#
+#       build configuration       #
+#---------------------------------#
+
+platform: Any CPU
+
+configuration: Release
+
+build_script:
+  - ps: .\build.ps1 --solutionPath="./PlcCom/PlcCom.sln" --buildPath="./PlcCom/PlcComUI/bin/Release" --appId="PlcCom" --appVersion=$env:APPVEYOR_BUILD_VERSION
+       
+#---------------------------------#
+#      artifacts configuration    #
+#---------------------------------#
+
+after_build:
+  - ps: Get-ChildItem .\releases | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+  
+#---------------------------------#
+#     deployment configuration    #
+#---------------------------------#
+
+deploy:
+-  provider: AzureBlob
+   storage_account_name: plccom
+   storage_access_key:
+     secure: npIfGLaoEsRVM/xDLLe7oP2f5Ow6OyWOY904hUcKXDdz7KYJBxF6zWOH+pdOZo+9Vflu2oyKikV6MCaVh3gNKs1jfZFCxMUrzj3qL7BbdcmhVHFVUxU+Yx+HRbcztG+S
+   container: releases
+   folder: $(APPVEYOR_PROJECT_SLUG)\$(APPVEYOR_BUILD_VERSION)
+
+# Uncomment below to retrive access to AppVeyor build worker VM. https://www.appveyor.com/docs/how-to/rdp-to-build-worker/
+
+# on_finish:
+#  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1')) 

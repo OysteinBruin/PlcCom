@@ -89,6 +89,12 @@
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.WindowsAPICodePack-Core.1.1.0.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WindowsAPICodePack-Shell.1.1.1\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.19\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
     </Reference>
@@ -173,7 +179,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bootstrapper.cs" />
-    <Compile Include="Controls\RealTimeGraph\WpfGraphControl.cs" />
     <Compile Include="Converters\BooleanGreenGrayColorConverter.cs" />
     <Compile Include="Converters\BooleanGreenRedColorConverter.cs" />
     <Compile Include="Converters\BooleanToWindowStateConverter.cs" />
@@ -186,11 +191,17 @@
     <Compile Include="Converters\ListViewGridViewConverter.cs" />
     <Compile Include="Converters\MathMlpMultipleConverter.cs" />
     <Compile Include="Converters\PlcCmdParameterConverter.cs" />
-    <Compile Include="DataSignalModelTemplateSelector.cs" />
+    <Compile Include="EventModels\ButtonPulseCmdEvent.cs" />
+    <Compile Include="EventModels\ButtonToggleCmdEvent.cs" />
+    <Compile Include="EventModels\IControlCmdEvent.cs" />
+    <Compile Include="EventModels\SliderCmdEvent.cs" />
+    <Compile Include="Models\NumericSignalModel.cs" />
+    <Compile Include="Models\SignalDisplayModelTemplateSelector.cs" />
     <Compile Include="Domain\AsyncRelayCommnd.cs" />
     <Compile Include="EventModels\OpenGraphViewEvent.cs" />
+    <Compile Include="Models\BoolSignalDisplayModel.cs" />
+    <Compile Include="SignalModelTemplateSelector.cs" />
     <Compile Include="Styles\CollapseAction.cs" />
-    <Compile Include="Domain\GraphDropHandler.cs" />
     <Compile Include="Domain\RelayCommand.cs" />
     <Compile Include="Domain\SettingBindingExtension.cs" />
     <Compile Include="EventModels\NewDatablockTabEvent.cs" />
@@ -200,32 +211,32 @@
     <Compile Include="EventModels\ComStateChangedEvent.cs" />
     <Compile Include="EventModels\PlcConnectionCmdEvent.cs" />
     <Compile Include="EventModels\PlcReadEvent.cs" />
-    <Compile Include="EventModels\PlcUiCmdEvent.cs" />
     <Compile Include="EventModels\SignalSelectedEvent.cs" />
-    <Compile Include="EventModels\SplashStatusChangedEvent.cs" />
+    <Compile Include="EventModels\ProgressInfoChangedEvent.cs" />
     <Compile Include="Models\CpuDisplayModel.cs" />
     <Compile Include="Models\DatablockDisplayModel.cs" />
     <Compile Include="Models\IDatablockDisplayModel.cs" />
-    <Compile Include="Models\ISignalDisplayModel.cs" />
+    <Compile Include="Models\SignalDisplayModel.cs" />
+    <Compile Include="ViewModels\ConfigFilesViewModel.cs" />
     <Compile Include="ViewModels\EditSignalViewModel.cs" />
-    <Compile Include="ViewModels\SingleGraphCollectionViewModel.cs" />
-    <Compile Include="ViewModels\SingleGraphViewModel.cs" />
+    <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\WelcomeTabViewModel.cs" />
+    <Compile Include="Views\ConfigFilesView.xaml.cs">
+      <DependentUpon>ConfigFilesView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\EditSignalView.xaml.cs">
       <DependentUpon>EditSignalView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Styles\ScaleHost.cs" />
-    <Compile Include="TmpMain.cs" />
     <Compile Include="UserSettings\Palette\PaletteHelperExtensions.cs" />
     <Compile Include="UserSettings\SettingBindingExtension.cs" />
     <Compile Include="ViewModels\ConnectionsViewModel.cs" />
     <Compile Include="ViewModels\ErrorDialogViewModel.cs" />
     <Compile Include="ViewModels\PaletteSelectorViewModel.cs" />
     <Compile Include="ViewModels\PlcComViewModel.cs" />
-    <Compile Include="ViewModels\RealTimeGraphViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\SignalSelectionViewModel.cs" />
-    <Compile Include="ViewModels\SplashViewModel.cs" />
+    <Compile Include="ViewModels\ProgressInfoViewModel.cs" />
     <Compile Include="ViewModels\TabablzViewModel.cs" />
     <Compile Include="ViewModels\DatablockTabViewModel.cs" />
     <Compile Include="ViewModels\TearedViewModel.cs" />
@@ -244,21 +255,15 @@
     <Compile Include="Views\PlcComView.xaml.cs">
       <DependentUpon>PlcComView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\RealTimeGraphView.xaml.cs">
-      <DependentUpon>RealTimeGraphView.xaml</DependentUpon>
+    <Compile Include="Views\SettingsView.xaml.cs">
+      <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellView.xaml.cs" />
     <Compile Include="Views\SignalSelectionView.xaml.cs">
       <DependentUpon>SignalSelectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SingleGraphCollectionView.xaml.cs">
-      <DependentUpon>SingleGraphCollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SingleGraphView.xaml.cs">
-      <DependentUpon>SingleGraphView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SplashView.xaml.cs">
-      <DependentUpon>SplashView.xaml</DependentUpon>
+    <Compile Include="Views\ProgressInfoView.xaml.cs">
+      <DependentUpon>ProgressInfoView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TabablzView.xaml.cs" />
     <Compile Include="Views\DatablockTabView.xaml.cs" />
@@ -270,7 +275,6 @@
   <ItemGroup>
     <Compile Include="Models\InterLayoutClient.cs" />
     <Compile Include="Models\InterTabClient.cs" />
-    <Compile Include="Models\SignalDisplayModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -305,6 +309,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Styles\CollapsableGridSplitterStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ConfigFilesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -348,7 +356,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\RealTimeGraphView.xaml">
+    <Page Include="Views\SettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -360,15 +368,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\SingleGraphCollectionView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\SingleGraphView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\SplashView.xaml">
+    <Page Include="Views\ProgressInfoView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -398,14 +398,6 @@
       <Project>{58e3c7fe-804d-4811-a28e-a7d327a9f330}</Project>
       <Name>PlcComLibrary</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RealTimeGraphX.WPF\RealTimeGraphX.WPF.csproj">
-      <Project>{6b9774f7-960d-438e-ad81-c6b9be328d50}</Project>
-      <Name>RealTimeGraphX.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RealTimeGraphX\RealTimeGraphX.csproj">
-      <Project>{7c62ee10-dd2c-4762-a876-10b918a8bda6}</Project>
-      <Name>RealTimeGraphX</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\Images\splash.png">
@@ -419,6 +411,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\Images\GraphInDevMode01.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controls\RealTimeGraph\" />
+    <Folder Include="libs\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MaterialDesignThemes.3.2.0\build\MaterialDesignThemes.targets" Condition="Exists('..\packages\MaterialDesignThemes.3.2.0\build\MaterialDesignThemes.targets')" />

@@ -2,7 +2,7 @@
 using Autofac;
 using Caliburn.Micro;
 using Dragablz;
-using PlcComUI.Properties;
+using log4net;
 using PlcComLibrary;
 using PlcComLibrary.Common;
 using PlcComLibrary.Config;
@@ -16,47 +16,78 @@ using PlcComLibrary.PlcCom;
 using AutoMapper;
 using PlcComLibrary.Models;
 using Settings;
+using PlcComLibrary.Models.Signal;
+using PlcComLibrary.DbParser;
 
 namespace PlcComUI
 {
     public class Bootstrapper : BootstrapperBase
 	{
         private SimpleContainer _container = new SimpleContainer();
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Bootstrapper));
 
         public Bootstrapper()
         {
             Initialize();
         }
 
-        private IMapper ConfigureAutoMapper()
+        private IMapper ConfigureAutoMapper(IEventAggregator events)
         {
+            log.Info("ConfigureAutoMapper");
             var config = new MapperConfiguration(cfg => {
 
-                //cfg.CreateMap<ISignalModel, ISignalDisplayModel>()
-                //    .Include<SignalModel, SignalDisplayModel>();
-                //cfg.CreateMap<SignalModel, SignalDisplayModel>();
+                cfg.CreateMap<SignalModel, SignalDisplayModel>(MemberList.Source)
+                    .ForSourceMember(x => x.ByteCount, opt => opt.DoNotValidate());
+                cfg.CreateMap<BoolSignalModel, BoolSignalDisplayModel>(MemberList.Source)
+                    .IncludeBase<SignalModel, SignalDisplayModel>()
+                    .ConstructUsing(source => new BoolSignalDisplayModel(events))
+                    .ForSourceMember(x => x.ByteCount, opt => opt.DoNotValidate());
+                cfg.CreateMap<Int16SignalModel, NumericSignalModel>(MemberList.Source)
+                .IncludeBase<SignalModel, SignalDisplayModel>()
+                    .ConstructUsing(source => new NumericSignalModel(events))
+                    .ForSourceMember(x => x.ByteCount, opt => opt.DoNotValidate());
+                cfg.CreateMap<Int32SignalModel, NumericSignalModel>(MemberList.Source)
+                .IncludeBase<SignalModel, SignalDisplayModel>()
+                    .ConstructUsing(source => new NumericSignalModel(events))
+                    .ForSourceMember(x => x.ByteCount, opt => opt.DoNotValidate());
+                cfg.CreateMap<FloatSignalModel, NumericSignalModel>(MemberList.Source)
+                .IncludeBase<SignalModel, SignalDisplayModel>()
+                    .ConstructUsing(source => new NumericSignalModel(events))
+                    .ForSourceMember(x => x.ByteCount, opt => opt.DoNotValidate());
 
-                //cfg.CreateMap<IDatablockModel, IDatablockDisplayModel>()
-                //    .Include<DatablockModel, DatablockDisplayModel>();
-                //cfg.CreateMap<DatablockModel, DatablockDisplayModel>();
-
-                cfg.CreateMap<ISignalDisplayModel, ISignalModel>()
-                    .Include<SignalDisplayModel, SignalModel>();
                 cfg.CreateMap<SignalDisplayModel, SignalModel>();
+                cfg.CreateMap<BoolSignalDisplayModel, BoolSignalModel>()
+                    .IncludeBase<SignalDisplayModel, SignalModel>();
+                cfg.CreateMap<NumericSignalModel, FloatSignalModel>()
+                    .IncludeBase<SignalDisplayModel, SignalModel>();
 
-                cfg.CreateMap<IDatablockDisplayModel, IDatablockModel>()
-                    .Include<DatablockDisplayModel, DatablockModel>();
+
+
+                cfg.CreateMap<IDatablockModel, IDatablockDisplayModel>(MemberList.Source);
+                cfg.CreateMap<DatablockModel, DatablockDisplayModel>(MemberList.Source);
+
+                cfg.CreateMap<IDatablockDisplayModel, IDatablockModel>();
                 cfg.CreateMap<DatablockDisplayModel, DatablockModel>();
+
             });
+
+            try
+            {
+                config.AssertConfigurationIsValid();
+            }
+            catch (AutoMapperConfigurationException ex)
+            {
+
+                log.Error("AutoMapper AssertConfigurationIsValid failed", ex);
+                throw;
+            }
+           
 
             return config.CreateMapper();
         }
 
         protected override void Configure()
         {
-            _container.Instance(ConfigureAutoMapper());
-            _container.Instance(_container);
-
             _container.Singleton<IWindowManager, WindowManager>()
                       .Singleton<IEventAggregator, EventAggregator>()
                       .Singleton<IUtilities, Utilities>()
@@ -66,9 +97,10 @@ namespace PlcComUI
                       .Singleton<IPlcComManager, PlcComManager>()
                       .Singleton<IInterTabClient, InterTabClient>()
                       .Singleton<IInterLayoutClient, InterLayoutClient>();
-            // .Singleton<IDataAccess, SqliteDataAccess>()
 
-            //_container.PerRequest<IDataAccess, SqliteDataAccess>();
+            _container.Instance(_container);
+            var eventAggregator = _container.GetInstance<IEventAggregator>();
+            var mapper = _container.Instance(ConfigureAutoMapper(eventAggregator));
 
             GetType().Assembly.GetTypes()
                 .Where(type => type.IsClass)

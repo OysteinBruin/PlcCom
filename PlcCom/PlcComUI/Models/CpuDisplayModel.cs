@@ -1,4 +1,5 @@
-﻿using Caliburn.Micro;
+﻿using AutoMapper;
+using Caliburn.Micro;
 using PlcComLibrary.Models;
 using PlcComLibrary.PlcCom;
 using PlcComUI.Domain;
@@ -18,22 +19,25 @@ namespace PlcComUI.Models
     public class CpuDisplayModel : INotifyPropertyChanged
     {
         PlcService _plcService;
+        private IMapper _mapper;
+        List<DatablockDisplayModel> _datablocks;
         private string _connectionName;
         private string _ipAddress;
         private int _rack;
         private int _slot;
-        private S7CpuType _selectedCpuType;
+        private readonly S7CpuType _selectedCpuType;
         private IEventAggregator _events;
         private bool _isConnecting;
         private bool _isConnected;
         private System.Timers.Timer _connectButtonStateTimer;
         private string _connectButtonText = "CONNECT";
 
-        public CpuDisplayModel(PlcService plcService, IEventAggregator events)
+        public CpuDisplayModel(PlcService plcService, IMapper mapper, IEventAggregator events)
         {
             _plcService = plcService;
             _plcService.ComStateChanged += OnPlcComStateChanged;
             Index = _plcService.Index;
+            _mapper = mapper;
             _events = events;
             S7CpuType = Enum.GetValues(typeof(S7CpuType)).Cast<S7CpuType>().ToList();
             PlcConnectionCmd = new AsyncCommand<object>(OnPlcConnectionCmd);
@@ -48,36 +52,48 @@ namespace PlcComUI.Models
             Slot = _plcService.Config.Slot;
             SelectedCpuType = _plcService.Config.CpuType;
 
-            foreach (var db in _plcService.Datablocks)
-            {
-                DatablockDisplayModel dbModel = new DatablockDisplayModel(new PlcComIndexModel(_plcService.Index,db.Index, -1));
-                dbModel.Name = db.Name;
-                dbModel.Number = db.Number;
-                dbModel.FirstByte = db.FirstByte;
-                dbModel.ByteCount = db.ByteCount;
-                List<SignalDisplayModel> signalDisplayModels = new List<SignalDisplayModel>();
-                foreach (var sig in db.Signals)
-                {
-                    //
-                    SignalDisplayModel sdm = new SignalDisplayModel(new PlcComIndexModel(_plcService.Index, db.Index, sig.Index), _events);
-                    sdm.Name = sig.Name;
-                    sdm.Description = sig.Description;
-                    sdm.Address = sig.Address;
-                    sdm.DataType = sig.DataType;
-                    sdm.DataTypeStr = sig.DataTypeStr;
-                    sdm.Db = sig.Db;
-                    sdm.DbByteIndex = sig.DbByteIndex;
-                    sdm.Bit = sig.Bit;
-                    sdm.Value = sig.Value;
-                    signalDisplayModels.Add(sdm);
-                }
-                dbModel.Signals = signalDisplayModels;
+            //foreach (var datablock in _plcService.Datablocks)
+            //{
+            //    IDatablockDisplayModel db
 
-                Datablocks.Add(dbModel);
+
+            //    Datablocks.Add
+            //}
+            try
+            {
+                List<SignalDisplayModel> signals = mapper.Map<List<SignalDisplayModel>>(_plcService.Datablocks[0].Signals);
+
+                var db = mapper.Map<List<DatablockDisplayModel>>(_plcService.Datablocks);
+                Datablocks = db;
             }
+            catch (AutoMapperMappingException ex)
+            {
+                Console.WriteLine(ex.Message);
+
+                if (ex.InnerException != null)
+                    Console.WriteLine(ex.InnerException.Message);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+
+                if (ex.InnerException != null)
+                    Console.WriteLine(ex.InnerException.Message);
+                throw;
+            }
+
         }
 
-        public List<DatablockDisplayModel> Datablocks { get; set; } = new List<DatablockDisplayModel>();
+        public List<DatablockDisplayModel> Datablocks 
+        {
+            get => _datablocks;
+            set
+            {
+                _datablocks = value;
+                EmitPropertyChanged(nameof(Datablocks));
+            }
+        }
         public int Index { get; set; }
         public string Name
         {

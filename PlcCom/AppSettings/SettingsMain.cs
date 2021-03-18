@@ -1,4 +1,5 @@
 ﻿using Settings.AppSettings;
+using Settings.UserSettings;
 using System;
 
 // https://stackoverflow.com/questions/8148473/convention-in-caliburn-micro-for-radio-buttons
@@ -11,6 +12,7 @@ namespace Settings
     {
         public MainWindowSettings MainWindow { get; set; }
         public SplashWindowSettings SplashWindow { get; set; }
+        public ConfigSettings Config { get; set; }
         public SettingsMain()
         {
             MainWindow = new MainWindowSettings();
@@ -20,6 +22,9 @@ namespace Settings
             SplashWindow = new SplashWindowSettings();
             SplashWindow.Height = 450;
             SplashWindow.Width = 1000;
+
+            Config = new ConfigSettings();
+            Config.ConfigFilesPath = AppDomain.CurrentDomain.BaseDirectory;
         }
     }
 }

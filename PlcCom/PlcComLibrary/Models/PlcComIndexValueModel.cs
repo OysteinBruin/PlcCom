@@ -6,14 +6,19 @@ using System.Threading.Tasks;
 
 namespace PlcComLibrary.Models
 {
-    public class PlcComIndexValueModel : PlcComIndexModel
+    public class PlcComIndexValueModel
     {
-        public PlcComIndexValueModel(int cpuIndex, int dbIndex, int signalIndex, double value)  
-            : base(cpuIndex, dbIndex, signalIndex)
+        public PlcComIndexValueModel(int cpuIndex, int dbIndex, int signalIndex, object value)  
         {
+            CpuIndex = cpuIndex;
+            DbIndex = dbIndex;
+            SignalIndex = signalIndex;
             Value = value;
         }
 
-        public double Value { get; set; }
+        public int CpuIndex { get; set; }
+        public int DbIndex { get; set; }
+        public int SignalIndex { get; set; }
+        public object Value { get; set; }
     }
 }

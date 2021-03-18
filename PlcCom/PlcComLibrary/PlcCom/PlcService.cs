@@ -13,69 +13,11 @@ using System.Timers;
 
 namespace PlcComLibrary.PlcCom
 {
-    /* https://stackoverflow.com/questions/29831066/public-event-in-abstract-class
-
-     An often used pattern for this is something like the below (you'll see a lot of it 
-    in the classes in the System.Windows.Forms namespace).
-
-    public abstract class MyClass
-    {
-        public event EventHandler MyEvent;
-
-        protected virtual void OnMyEvent(EventArgs e)
-        {
-            if (this.MyEvent != null)
-            {
-                this.MyEvent(this, e);
-            }
-        }
-    }
-
-
-    public sealed class MyOtherClass : MyClass
-    {
-        public int MyState { get; private set; }
-
-        public void DoMyEvent(bool doSomething)
-        {
-            // Custom logic that does whatever you need to do
-            if (doSomething)
-            {
-                OnMyEvent(EventArgs.Empty);
-            }
-        }
-
-        protected override void OnMyEvent(EventArgs e)
-        {
-            // Do some custom logic, then call the base method
-            this.MyState++;
-
-            base.OnMyEvent(e);
-        }
-    }
-     
-     */
-
-    // https://stackoverflow.com/questions/4890915/is-there-a-task-based-replacement-for-system-threading-timer
-    // https://stackoverflow.com/questions/12796148/system-threading-timer-in-c-sharp-it-seems-to-be-not-working-it-runs-very-fast
-    //public class PeriodicTask
-    //{
-    //    public static async Task Run(Action action, TimeSpan period, CancellationToken cancellationToken)
-    //    {
-    //        while (!cancellationToken.IsCancellationRequested)
-    //        {
-    //            await Task.Delay(period, cancellationToken);
-
-    //            if (!cancellationToken.IsCancellationRequested)
-    //                action();
-    //        }
-    //    }
-
-    //    public static Task Run(Action action, TimeSpan period)
-    //    {
-    //        return Run(action, period, CancellationToken.None);
-    //    }
-    //}
+    /* 
+     https://stackoverflow.com/questions/29831066/public-event-in-abstract-class
+     https://stackoverflow.com/questions/4890915/is-there-a-task-based-replacement-for-system-threading-timer
+     https://stackoverflow.com/questions/12796148/system-threading-timer-in-c-sharp-it-seems-to-be-not-working-it-runs-very-fast
+    */
 
     public abstract class PlcService
     {
@@ -84,7 +26,7 @@ namespace PlcComLibrary.PlcCom
         protected int _interval = 20;
         
 
-        protected PlcService(int index, ICpuConfig config, List<IDatablockModel> datablocks)
+        protected PlcService(int index, ICpuConfig config, List<DatablockModel> datablocks)
         {
             Index = index;
             Config = config;
@@ -112,9 +54,9 @@ namespace PlcComLibrary.PlcCom
 
         public ICpuConfig Config { get; protected set; }
 
-        public List<IDatablockModel> Datablocks { get; protected set; }
+        public List<DatablockModel> Datablocks { get; protected set; }
 
-        public List<IDatablockModel> MonitoredDatablocks { get; private set; } = new List<IDatablockModel>();
+        public List<DatablockModel> MonitoredDatablocks { get; private set; } = new List<DatablockModel>();
 
         public event EventHandler ComStateChanged;
 
@@ -147,7 +89,7 @@ namespace PlcComLibrary.PlcCom
         /// </summary>
         /// <param name="add"></param>
         /// <param name="dbModel"></param>
-        public virtual void AddOrRemoveDb(bool add, IDatablockModel dbModel)
+        public virtual void AddOrRemoveDb(bool add, DatablockModel dbModel)
         {
             if (dbModel == null)
                 return;
@@ -175,9 +117,7 @@ namespace PlcComLibrary.PlcCom
         }
 
         protected abstract Task ReadDbAsync(IDatablockModel db);
-
         public abstract Task WriteSingleAsync(string address, object value);
-
         public abstract Task PulseBitAsync(string address);
         public abstract Task ToggleBitAsync(string address);
 
@@ -199,7 +139,7 @@ namespace PlcComLibrary.PlcCom
             return false;
         }
 
-        protected (int dbIndex, int signalIndex) GetIndexFromAddress(string address, List<IDatablockModel> datablocks)
+        protected (int dbIndex, int signalIndex) GetIndexFromAddress(string address, List<DatablockModel> datablocks)
         {
             // Validate address with regular expression
             var regex = new Regex(Constants.SignalAddressRegExp, RegexOptions.IgnoreCase);
@@ -244,7 +184,7 @@ namespace PlcComLibrary.PlcCom
             }
         }
 
-        protected bool VerifyPlcAddressStr(string address, List<IDatablockModel> datablocks)
+        protected bool VerifyPlcAddressStr(string address, List<DatablockModel> datablocks)
         {
             (int dbIndex, int signalIndex) = GetIndexFromAddress(address, datablocks);
 

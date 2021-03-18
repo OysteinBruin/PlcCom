@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PlcComLibrary.Config
 {
-    public class JsonFileConfig : IJsonFileConfig
+    public class JsonFileConfig : ICpuConfigFile
     {
         public string Name { get; set; }
 

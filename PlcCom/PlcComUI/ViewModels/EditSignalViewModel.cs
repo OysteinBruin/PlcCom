@@ -11,12 +11,12 @@ namespace PlcComUI.ViewModels
 {
     public class EditSignalViewModel : Screen
     {
-        private SignalDisplayModel _model;
+        private NumericSignalModel _model;
         private int _selectedLowerRange;
         private int _selectedUpperRange;
         private bool _useFixedRange;
 
-        public EditSignalViewModel(SignalDisplayModel model)
+        public EditSignalViewModel(NumericSignalModel model)
         {
             _model = model;
 
@@ -25,7 +25,7 @@ namespace PlcComUI.ViewModels
             UseFixedRange = model.IsUsingFixedRange;
         }
 
-        public SignalDisplayModel Model
+        public NumericSignalModel Model
         {
             get { return _model; }
             set 
