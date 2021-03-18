@@ -9,6 +9,7 @@ using System.Media;
 using System.ComponentModel;
 using PlcComLibrary.PlcCom;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace PlcComUI.ViewModels
 {
@@ -94,6 +95,14 @@ namespace PlcComUI.ViewModels
             }
             base.OnDeactivate(close);
 
+        }
+
+        private void AddVersionNumber()
+        {
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+
+            //this. += $" v{ versionInfo.FileVersion }";
         }
 
         private void RunLoadConfigsWorker()
