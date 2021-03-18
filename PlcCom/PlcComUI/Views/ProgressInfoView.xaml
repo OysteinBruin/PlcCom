@@ -19,7 +19,7 @@
 
         FontFamily="{materialDesign:MaterialDesignFont}"
         Title="PLC COM" 
-        
+        Background="{DynamicResource MaterialDesignDarkBackground}"
         Width="{usersettings:SettingBinding SplashWindow.Width}"
         Height="{usersettings:SettingBinding SplashWindow.Height}"
         Top="{usersettings:SettingBinding SplashWindow.Top}"
@@ -34,7 +34,6 @@
         <TextBlock
             Grid.Row="0" HorizontalAlignment="Center" Margin="0 150 0 110"
             Style="{StaticResource MaterialDesignHeadline3TextBlock}"
-            Foreground="DimGray"
             > PLC <Bold>COM</Bold></TextBlock>
 
         <TextBlock 
