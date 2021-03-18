@@ -1,4 +1,4 @@
-﻿<Window x:Class="PlcComUI.Views.SplashView"
+﻿<Window x:Class="PlcComUI.Views.ProgressInfoView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -25,9 +25,9 @@
         Top="{usersettings:SettingBinding SplashWindow.Top}"
         Left="{usersettings:SettingBinding SplashWindow.Left}"
         >
-    <Window.Background>
+    <!--<Window.Background>
         <ImageBrush ImageSource="pack://application:,,,/PlcComUI;component/Assets/Images/splash.png"/>
-    </Window.Background>
+    </Window.Background>-->
 
     <StackPanel>
 

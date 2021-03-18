@@ -17,9 +17,9 @@ namespace PlcComUI.Views
     /// <summary>
     /// Interaction logic for SplashView.xaml
     /// </summary>
-    public partial class SplashView : Window
+    public partial class ProgressInfoView : Window
     {
-        public SplashView()
+        public ProgressInfoView()
         {
             InitializeComponent();
         }

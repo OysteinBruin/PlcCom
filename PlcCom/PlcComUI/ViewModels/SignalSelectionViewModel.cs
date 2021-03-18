@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using GongSolutions.Wpf.DragDrop;
 using System.Windows;
 using System.Windows.Input;
+using System.Collections.ObjectModel;
 
 namespace PlcComUI.ViewModels
 {

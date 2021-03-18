@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PlcComUI.EventModels
 {
-    public class SplashStatusChangedEvent
+    public class ProgressInfoChangedEvent
     {
         public string Content { get; set; }
 
@@ -14,14 +14,17 @@ namespace PlcComUI.EventModels
         public int Progress { get; set; }
         public bool CloseDialog { get; set; } = false;
 
-        public SplashStatusChangedEvent(string content, int value = 0, int progressMax = 0)
+
+
+        public ProgressInfoChangedEvent(string content, int value = 0, int progressMax = 0)
         {
             Content = content;
             Progress = value;
             ProgressMax = progressMax;
+
         }
 
-        public SplashStatusChangedEvent(bool closeDialog)
+        public ProgressInfoChangedEvent(bool closeDialog)
         {
             CloseDialog = closeDialog;
         }

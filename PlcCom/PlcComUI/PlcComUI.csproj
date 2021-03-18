@@ -212,7 +212,7 @@
     <Compile Include="EventModels\PlcConnectionCmdEvent.cs" />
     <Compile Include="EventModels\PlcReadEvent.cs" />
     <Compile Include="EventModels\SignalSelectedEvent.cs" />
-    <Compile Include="EventModels\SplashStatusChangedEvent.cs" />
+    <Compile Include="EventModels\ProgressInfoChangedEvent.cs" />
     <Compile Include="Models\CpuDisplayModel.cs" />
     <Compile Include="Models\DatablockDisplayModel.cs" />
     <Compile Include="Models\IDatablockDisplayModel.cs" />
@@ -236,7 +236,7 @@
     <Compile Include="ViewModels\PlcComViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\SignalSelectionViewModel.cs" />
-    <Compile Include="ViewModels\SplashViewModel.cs" />
+    <Compile Include="ViewModels\ProgressInfoViewModel.cs" />
     <Compile Include="ViewModels\TabablzViewModel.cs" />
     <Compile Include="ViewModels\DatablockTabViewModel.cs" />
     <Compile Include="ViewModels\TearedViewModel.cs" />
@@ -262,8 +262,8 @@
     <Compile Include="Views\SignalSelectionView.xaml.cs">
       <DependentUpon>SignalSelectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SplashView.xaml.cs">
-      <DependentUpon>SplashView.xaml</DependentUpon>
+    <Compile Include="Views\ProgressInfoView.xaml.cs">
+      <DependentUpon>ProgressInfoView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TabablzView.xaml.cs" />
     <Compile Include="Views\DatablockTabView.xaml.cs" />
@@ -368,7 +368,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\SplashView.xaml">
+    <Page Include="Views\ProgressInfoView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

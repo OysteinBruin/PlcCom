@@ -1,4 +1,5 @@
 ﻿using PlcComLibrary.Config;
+using System;
 using System.Collections.Generic;
 
 namespace PlcComLibrary.PlcCom
@@ -8,8 +9,10 @@ namespace PlcComLibrary.PlcCom
         IConfigManager ConfigManager { get; }
         List<PlcService> PlcServiceList { get; set; }
 
-        void LoadConfigs();
+        event EventHandler AboutToLoadConfigs;
+        event EventHandler ConfigsLoaded;
 
+        void LoadConfigs();
         bool GetIsAnyServicesBusy();
     }
 }

@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace PlcComUI.ViewModels
 {
-    public class SplashViewModel : Screen, IHandle<SplashStatusChangedEvent>
+    public class ProgressInfoViewModel : Screen, IHandle<ProgressInfoChangedEvent>
     {
         private IEventAggregator _events;
         private string _content;
 
-        public SplashViewModel(IEventAggregator events)
+        public ProgressInfoViewModel(IEventAggregator events)
         {
             _events = events;
             _events.Subscribe(this);
@@ -58,7 +58,7 @@ namespace PlcComUI.ViewModels
         }
 
 
-        public void Handle(SplashStatusChangedEvent message)
+        public void Handle(ProgressInfoChangedEvent message)
         {
             if (message.CloseDialog)
             {

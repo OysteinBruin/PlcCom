@@ -26,10 +26,7 @@ namespace PlcComUI.ViewModels
 			_events = events;
             _plcComManager = plcComManager;
             _plcComManager.ConfigManager.ConfigsLoadingProgressChanged += OnConfigLoadingProgressChanged;
-            foreach (var plc in _plcComManager.PlcServiceList)
-            {
-                plc.ComStateChanged += OnPlcComStateChanged;
-            }
+
             Items.Add(IoC.Get<PlcComViewModel>());
             Items.Add(IoC.Get<SettingsViewModel>());
             _events.Subscribe(this);
@@ -59,7 +56,7 @@ namespace PlcComUI.ViewModels
             RunLoadConfigsWorker();
 
             var windowManager = new WindowManager();
-            windowManager.ShowDialog(new SplashViewModel(_events));
+            windowManager.ShowDialog(new ProgressInfoViewModel(_events));
         }
 
         protected async override void OnViewLoaded(object view)
@@ -133,17 +130,17 @@ namespace PlcComUI.ViewModels
 
         private void LoadingConfigFilesCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            _events.PublishOnUIThread(new SplashStatusChangedEvent(true));
+            _events.PublishOnUIThread(new ProgressInfoChangedEvent(true));
             
-            if (Properties.Settings.Default.SettingsMain.MainWindow.IsWindowStateMaximized)
-            {
-                WindowState = System.Windows.WindowState.Maximized;
-            }
-            else
-            {
-                WindowState = System.Windows.WindowState.Normal;
-            }
-            ActivateHomeView();
+            //if (Properties.Settings.Default.SettingsMain.MainWindow.IsWindowStateMaximized)
+            //{
+            //    WindowState = System.Windows.WindowState.Maximized;
+            //}
+            //else
+            //{
+            //    WindowState = System.Windows.WindowState.Normal;
+            //}
+            //ActivateHomeView();
         }
 
         
@@ -151,17 +148,17 @@ namespace PlcComUI.ViewModels
         private void OnConfigLoadingProgressChanged(object sender, EventArgs args)
         {
             ConfigsProgressEventArgs configArgs = (ConfigsProgressEventArgs)args;
-            string splashContent;
+            string content;
 
             if (configArgs.ProgressInput == configArgs.ProgressTotal)
             {
-                splashContent = "Loading finished. Starting main appplication";
+                content = "Loading finished";
             }
             else
             {
-                splashContent = $"Loading configs {configArgs.ProgressInput} of {configArgs.ProgressTotal}";
+                content = $"Loading configs {configArgs.ProgressInput} of {configArgs.ProgressTotal}";
             }
-            _events.PublishOnUIThread(new SplashStatusChangedEvent(splashContent, configArgs.ProgressInput, configArgs.ProgressTotal));
+            _events.PublishOnUIThread(new ProgressInfoChangedEvent(content, configArgs.ProgressInput, configArgs.ProgressTotal));
         }
 
         public void ActivateHomeView()
@@ -182,7 +179,7 @@ namespace PlcComUI.ViewModels
                 await ShowReloadConfigDialog();
             }
 
-            // RunLoadConfigsWorker();
+            RunLoadConfigsWorker();
         }
 
 
@@ -219,16 +216,13 @@ namespace PlcComUI.ViewModels
 
         private async Task ShowReloadConfigDialog()
         {
+            if (_plcComManager.GetIsAnyServicesBusy())
+            {
+
+            }
             var view = new ErrorMessageView();
             await DialogHost.Show(view, "MainDialogHost");
             _modalViewIsActive = false;
-        }
-
-        //public List<>
-
-        private void OnPlcComStateChanged(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         // TODO: Implement can close check

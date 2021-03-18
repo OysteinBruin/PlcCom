@@ -36,6 +36,9 @@ namespace PlcComUI.ViewModels
             InterTabClient = interTabClient;
             InterLayoutClient = interLayoutClient;
 
+            _plcComManager.AboutToLoadConfigs += OnConfigsAboutToBeLoaded;
+            _plcComManager.ConfigsLoaded += OnConfigsLoaded;
+
             this.ConnectionsViewModel = new ConnectionsViewModel(_events);
             this.SignalSelectionViewModel = new SignalSelectionViewModel(_events);
 
@@ -50,32 +53,7 @@ namespace PlcComUI.ViewModels
         {
             base.OnInitialize();
 
-            try
-            {
-                List<CpuDisplayModel> cpuList = new List<CpuDisplayModel>();
-
-                foreach (var plc in _plcComManager.PlcServiceList)
-                {
-                    CpuDisplayModel cpuDisplayModel = new CpuDisplayModel(plc, _mapper, _events);
-                    cpuList.Add(cpuDisplayModel);
-
-                    plc.ComStateChanged += OnPlcComStateChanged;
-                    plc.HasNewData += OnPlcHasNewData;
-                }
-
-                this.ConnectionsViewModel.CpuList = cpuList;
-                this.SignalSelectionViewModel.CpuList = cpuList;
-
-                WelcomeTabViewModel welcomeModel = new WelcomeTabViewModel();
-                Items.Add(welcomeModel);
-            }
-            catch (Exception)
-            {
-                _events.PublishOnUIThread(new MessageEvent("Unknown error occured during app startup",
-                    "Unknown error occured during app startup", MessageEvent.Level.Warn));
-            }
-
-            
+            // OnConfigsLoaded();
         }
 
         //ItemActionCallback
@@ -125,6 +103,50 @@ namespace PlcComUI.ViewModels
             }
         }
 
+        private void OnConfigsAboutToBeLoaded(object sender, EventArgs e)
+        {
+            FixedTabHeaderCount = 0;
+            for (int i = 0; i < Items.Count; i++)
+            {
+                if (Items.Count >= i)
+                {
+                    Items.Remove(Items[i]);
+                }
+            }
+
+
+        }
+
+        private void OnConfigsLoaded(object sender = null, EventArgs e = null)
+        {
+            try
+            {
+                
+                var cpuList = new List<CpuDisplayModel>();
+                //this.SignalSelectionViewModel.CpuList = cpuList;
+                //this.ConnectionsViewModel.CpuList = cpuList;
+
+                foreach (var plc in _plcComManager.PlcServiceList)
+                {
+                    CpuDisplayModel cpuDisplayModel = new CpuDisplayModel(plc, _mapper, _events);
+                    cpuList.Add(cpuDisplayModel);
+
+                    plc.ComStateChanged += OnPlcComStateChanged;
+                    plc.HasNewData += OnPlcHasNewData;
+                }
+
+                this.ConnectionsViewModel.CpuList = cpuList;
+                this.SignalSelectionViewModel.CpuList = cpuList;
+
+                WelcomeTabViewModel welcomeModel = new WelcomeTabViewModel();
+                Items.Add(welcomeModel);
+            }
+            catch (Exception)
+            {
+                _events.PublishOnUIThread(new MessageEvent("Unknown error occured during app startup",
+                    "Unknown error occured during app startup", MessageEvent.Level.Warn));
+            }
+        }
 
         /// <summary>
         /// Adds the selcted 
@@ -133,6 +155,7 @@ namespace PlcComUI.ViewModels
         /// <param name="args"></param>
         private void OnDatablockSelected(object sender, EventArgs args)
         {
+            
             var eventArgs = (NewDatablockTabEvent)args;
             DatablockDisplayModel dbModel = eventArgs.DatablockSelected;
 
