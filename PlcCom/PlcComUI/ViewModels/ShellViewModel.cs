@@ -249,24 +249,20 @@ namespace PlcComUI.ViewModels
 
         private async Task CheckForUpdates()
         {
-            string devPath = @"C:\dev\C#\Releases\PlcUnitTest";//@"C:\dev\C#\Releases\PlcUnitTest";
-            string prodPath = @"T:\Plc UnitTest\Releases";//@"T:\Plc UnitTest\Releases";
+            string urlOrPath;
+            bool isDevelopment = false;
 
-            if (Directory.Exists(devPath))
+            if (isDevelopment)
             {
-                Console.WriteLine($"ShellViewModel.Ctor - CheckForUpdates() - from prod dir {devPath}");
-                using (var manager = new UpdateManager(devPath))
-                {
-                    await manager.UpdateApp();
-                }
+                urlOrPath = @"D:\Dev\C#\ProjectsReleased\PlcCom\Releases";
             }
-            else if (Directory.Exists(prodPath))
+            else
             {
-                Console.WriteLine($"ShellViewModel.Ctor - CheckForUpdates() - from prod dir {prodPath}");
-                using (var manager = new UpdateManager(prodPath))
-                {
-                    await manager.UpdateApp();
-                }
+                urlOrPath = @"https://plccom.blob.core.windows.net/releases";
+            }
+            using (var manager = new UpdateManager(urlOrPath))
+            {
+                await manager.UpdateApp();
             }
         }
     }
