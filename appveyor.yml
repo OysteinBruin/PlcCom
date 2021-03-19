@@ -12,7 +12,7 @@ branches:
 #---------------------------------#
 #    test configuration           #
 #---------------------------------#
-test: off
+# test: on
   # only assemblies to test
  # assemblies:
  #   only:
@@ -27,7 +27,7 @@ clone_depth: 1
 image: Visual Studio 2019
 
 assembly_info:
-  patch: true
+ # patch: true
   file: AssemblyInfo.*
   assembly_version: '{version}'
   assembly_file_version: '{version}'
