@@ -24,9 +24,8 @@ namespace PlcComLibrary.PlcCom
         private Enums.ComState _comState;
         protected System.Threading.Timer _plcReadWriteTimer;
         protected int _interval = 20;
-        
 
-        protected PlcService(int index, ICpuConfig config, List<DatablockModel> datablocks)
+        protected PlcService(int index, ICpuConfig config, List<IDatablockModel> datablocks)
         {
             Index = index;
             Config = config;
@@ -54,7 +53,7 @@ namespace PlcComLibrary.PlcCom
 
         public ICpuConfig Config { get; protected set; }
 
-        public List<DatablockModel> Datablocks { get; protected set; }
+        public List<IDatablockModel> Datablocks { get; protected set; }
 
         public List<DatablockModel> MonitoredDatablocks { get; private set; } = new List<DatablockModel>();
 
@@ -127,6 +126,11 @@ namespace PlcComLibrary.PlcCom
             await Task.Delay(ms);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
         protected bool AddressIsBoolType(string address)
         {
             // Validate address with regular expression
@@ -139,7 +143,13 @@ namespace PlcComLibrary.PlcCom
             return false;
         }
 
-        protected (int dbIndex, int signalIndex) GetIndexFromAddress(string address, List<DatablockModel> datablocks)
+        /// <summary>
+        /// Checks if signal address is found in list of datablocks and retrives its db and signal index value.
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="datablocks"></param>
+        /// <returns>A tuple of db and signal index</returns>
+        protected (int dbIndex, int signalIndex) GetIndexFromAddress(string address, List<IDatablockModel> datablocks)
         {
             // Validate address with regular expression
             var regex = new Regex(Constants.SignalAddressRegExp, RegexOptions.IgnoreCase);
@@ -176,6 +186,10 @@ namespace PlcComLibrary.PlcCom
             return (-1, -1);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Throws if CPU is not connected</exception>
         protected void VerifyConnected()
         {
             if (ComState != Enums.ComState.Connected)
@@ -184,7 +198,7 @@ namespace PlcComLibrary.PlcCom
             }
         }
 
-        protected bool VerifyPlcAddressStr(string address, List<DatablockModel> datablocks)
+        protected bool VerifyPlcAddressStr(string address, List<IDatablockModel> datablocks)
         {
             (int dbIndex, int signalIndex) = GetIndexFromAddress(address, datablocks);
 

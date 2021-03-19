@@ -19,7 +19,6 @@ namespace PlcComLibrary.Config
         private IJsonConfigFileParser _configParser;
         private IDatablockParser _dbParser;
         private static readonly ILog log = LogManager.GetLogger(typeof(ConfigManager));
-
         public event EventHandler ConfigsLoaded;
         public event EventHandler ConfigsLoadingProgressChanged;
 
@@ -49,7 +48,7 @@ namespace PlcComLibrary.Config
             foreach (var config in cpuConfigFiles)
             {
                 ICpuConfig cpuConfig = new CpuConfig(config);
-                List<DatablockModel> datablocks = new List<DatablockModel>();
+                List<IDatablockModel> datablocks = new List<IDatablockModel>();
 
                 foreach (var dbNumberDbNameString in config.SignalLists)
                 {

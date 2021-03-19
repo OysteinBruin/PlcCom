@@ -18,9 +18,9 @@ namespace PlcComLibrary.Common
 
         public static int LastBitInByte { get => 7; }
 
-        public static string SignalAddressRegExp { get => @"^\bdb[1-9][0-9]{0,4}\b.\bdbx[0-9]{1,4}\b.[0-7]|\bdb[1-9][0-9]{0,4}\b.\bdb[bdw][0-9]{1,4}$"; }
-        public static string SignalAddressBoolRegExp { get => @"^\bdb[0-9]{1,4}\b.\bdbx[0-9]{1,4}\b.[0-7]$"; }
-        public static string SignalAddressNumericRegExp { get => @"^\bdb[0-9]{1,4}\b.\bdb[bdw][0-9]{1,4}$"; }
+        public static string SignalAddressRegExp { get => @"^\bdb[1-9][0-9]{0,5}\b.\bdbx[0-9]{1,5}\b.[0-7]|\bdb[1-9][0-9]{0,4}\b.\bdb[bdw][0-9]{1,4}$"; }
+        public static string SignalAddressBoolRegExp { get => @"^\bdb[1-9]{1,5}\b.\bdbx[0-9]{1,4}\b.[0-7]$"; }
+        public static string SignalAddressNumericRegExp { get => @"^\bdb[1-9]{1,5}\b.\bdb[bdw][0-9]{1,4}$"; }
 
         // https://openautomationsoftware.com/knowledge-base/siemens-address-syntax/
         //public static readonly (string dataTypeStr, string specifier)[] S7DataTypeDataSpecifierLookup = {

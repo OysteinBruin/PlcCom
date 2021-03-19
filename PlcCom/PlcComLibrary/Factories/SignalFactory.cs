@@ -23,9 +23,15 @@ namespace PlcComLibrary.Factories
                 address += context.BitNumber;
             }
 
-            if (!Constants.S7DataTypes.Contains(context.DataTypeStr) || !AddressIsValid(address))
+            if (!Constants.S7DataTypes.Contains(context.DataTypeStr))
             {
                 throw new ArgumentException($"Invalid data type: {context.DataTypeStr} " +
+                    $"Unable to create signal {context.Name}. Datablock creation aborted.");
+            }
+
+            if (!AddressIsValid(address))
+            {
+                throw new ArgumentException($"Invalid address created: {address} " +
                     $"Unable to create signal {context.Name}. Datablock creation aborted.");
             }
 
@@ -38,7 +44,7 @@ namespace PlcComLibrary.Factories
                     return new BoolSignalModel(context);
 
                 case "Byte":
-                    return new Int32SignalModel(context);
+                    throw new NotImplementedException();
 
                 case "Int":
                     return new Int16SignalModel(context);

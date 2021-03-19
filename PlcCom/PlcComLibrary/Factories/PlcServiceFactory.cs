@@ -11,7 +11,7 @@ namespace PlcComLibrary.Factories
 {
     public static class PlcServiceFactory
     {
-        public static PlcService Create(int index, ICpuConfig config, List<DatablockModel> datablocks)
+        public static PlcService Create(int index, ICpuConfig config, List<IDatablockModel> datablocks)
         {
             if (AssemblyEnvironment.IsDevelopment())
             {

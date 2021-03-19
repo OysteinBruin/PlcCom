@@ -23,7 +23,7 @@ namespace PlcComLibrary.PlcCom
         private List<IPlcComTask> _collectedPlcTasksToExecute = new List<IPlcComTask>();
 
 
-        public S7PlcService(int index, ICpuConfig config, List<DatablockModel> datablocks)
+        public S7PlcService(int index, ICpuConfig config, List<IDatablockModel> datablocks)
             : base(index, config, datablocks)
         {
             S7.Net.CpuType S7NetCpuType = ConvertCpuType(Config.CpuType);

@@ -22,7 +22,7 @@ namespace PlcComLibrary.PlcCom
         private List<SimulatedSignal> _simulatedSignals = new List<SimulatedSignal>();
   
 
-        public SimulatedPlcService(int index, ICpuConfig config, List<DatablockModel> datablocks)
+        public SimulatedPlcService(int index, ICpuConfig config, List<IDatablockModel> datablocks)
             : base(index, config, datablocks)
         {
             foreach (var db in datablocks)
