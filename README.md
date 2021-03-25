@@ -11,5 +11,10 @@ PlcCom is a WPF desktop application for real time data communication with one or
 * [Caliburn Micro](https://caliburnmicro.com/)
 * [AutoMapper](https://automapper.org/)
 * [S7NetPlus](https://github.com/S7NetPlus/s7netplus)
+* [MaterialDesignInXamlToolkit](https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit)
 * [XUnit](https://xunit.net/) & [Moq](https://github.com/moq)
 * CI/CD using [Squirrel](https://github.com/Squirrel/Squirrel.Windows) & [AutoReleaseTool](https://github.com/OysteinBruin/AutoReleaseTool)
+
+![](https://github.com/OysteinBruin/PlcCom/blob/main/Doc/Images/graph1.png?raw=true)
+
+![](https://github.com/OysteinBruin/PlcCom/blob/main/Doc/Images/settings-palette.png?raw=true)
