@@ -4,6 +4,7 @@
 
 PlcCom is a WPF desktop application for real time data communication with one or more Siemens SIMATIC controllers. Development is in progress, but there is no stable, usable release available yet.
 
+---- Work in progress - no stable release yet -----
 
 ## Technologies
 
